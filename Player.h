@@ -5,6 +5,7 @@
 #include <allegro5\allegro_primitives.h>
 
 class Property;
+class Street;
 
 class Player {
 public:

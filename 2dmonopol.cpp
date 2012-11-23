@@ -186,6 +186,9 @@ int main(){
 			for(int i = 0; i < n_players; i++){
 				players[i]->draw_player();
 			}
+			for(int i = 0; i < ant_status_box; i++){
+				status_boxes[i]->draw();
+			}
 			al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 5, 0, "FPS: %i", gameFPS);
 			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 15, 940, 0, "Player %i", current_player);
 			al_flip_display();
@@ -344,6 +347,8 @@ void read_Status_box_data(Status_box* status_boxes[], Property** streets){
 	char line[max_config_line_length];
 	char line2[max_config_line_length];
 	bool endfile = false;
+	const int displacement_x = 0;
+	const int displacement_y = 51;
 
 	if(!file){  //Kontrollerar att filen är öppen
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Status_box file config" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
@@ -362,7 +367,8 @@ void read_Status_box_data(Status_box* status_boxes[], Property** streets){
 			r_pos += strlen(line2) + 1; //Räknar hur många tecken som har lästs och används för att veta var nästa inläsning ska ske i strängen
 			intdata[j] = std::atoi(line2);
 		}
-		status_boxes[i] = new Status_box(intdata[0], intdata[1], intdata[2], intdata[3], (Street*)streets[intdata[4]]);
+		status_boxes[i] = new Status_box(intdata[0], intdata[1], intdata[2], intdata[3], (Street*)streets[intdata[4]], displacement_x, displacement_y);
+		((Street*)streets[intdata[4]])->set_Status_box_owner(status_boxes[i]);
 		endfile = false;
 	}
 }

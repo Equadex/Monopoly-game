@@ -31,3 +31,7 @@ void Street::sell_Street(Player* seller){
 	seller->get_money(cost / 2);
 	Owner = 0;
 }
+
+void Street::set_Status_box_owner(Status_box *owner){
+	status_owner = owner;
+}
