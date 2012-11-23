@@ -16,6 +16,7 @@
 #include "Property.h"
 #include "Owner.h"
 #include "Button.h"
+#include "Status_box.h"
 
 //Globala variabler lokala
 
@@ -24,10 +25,12 @@ const int max_name_length = 64;
 const int property_int_data_count = 15;
 const int property_variable_count = property_int_data_count + 1;
 const int button_int_data_count = 5;
+const int status_box_int_data_count = 5;
 const int startpengar = 1500;
 const int start_ruta = 0;
 const int max_tarning = 6;
 const int ant_buttons = 3;
+const int ant_status_box = 28;
 
 //Funktionsdeklartioner
 
@@ -36,6 +39,7 @@ void getline_char(char line_in[],char line_out[],int out_length, int max_read, c
 void create_players(int n_players, Player *players[], Property *tomter[]);
 void roll_dice(int &dice);
 void read_Button_data(Button* buttons[]);
+void read_Status_box_data(Status_box* status_boxes[], Property** streets);
 
 int main(){
 	//Konstanta variabler i main
@@ -65,11 +69,13 @@ int main(){
 	Property *tomter[ant_rutor]; //Fält av tomter
 	Player *players[max_players]; //Fält av spelare
 	Button *buttons[ant_buttons]; //Fält av buttons
+	Status_box *status_boxes[ant_status_box]; //Fält av status boxes (de som presenterar för spelaren vilka gator de äger)
 
 
 	read_Property_data(tomter); //Läser in data till tomter
 	create_players(n_players, players, tomter); //Skapar spelare
 	read_Button_data(buttons); //Läser in buttons koodinater och id
+	read_Status_box_data(status_boxes, tomter); //Läser in status boxarnas positioner och gatunummer
 	
 
 	//Allegro variabler
@@ -150,7 +156,7 @@ int main(){
 						}
 						break;
 					case 3:
-						current_player = (current_player + 1) % n_players;
+						current_player = (current_player + 1) % n_players; //Nästa spelare
 						dice_used = false;
 						break;
 				}
@@ -326,6 +332,37 @@ void read_Button_data(Button* buttons[]) {
 			intdata[j] = std::atoi(line2);
 		}
 		buttons[i] = new Button(intdata[0], intdata[1], intdata[2], intdata[3], intdata[4]);
+		endfile = false;
+	}
+}
+
+void read_Status_box_data(Status_box* status_boxes[], Property** streets){
+	//Öppnar fil för data till klassen Property
+	std::ifstream file("Status_box_config.txt"); 
+	//Tillfällig variabler för initiering av objekten
+	int intdata[status_box_int_data_count];
+	char line[max_config_line_length];
+	char line2[max_config_line_length];
+	bool endfile = false;
+
+	if(!file){  //Kontrollerar att filen är öppen
+		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Status_box file config" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
+		exit(EXIT_FAILURE);
+	}
+
+	for(int i = 0; i < ant_status_box; i++){
+		file.getline(line, (max_config_line_length-1));
+		for(int j = 0, r_pos = 0; j < status_box_int_data_count; j++){
+			while(line[0] == '#'){ //Läser in ny rad om första tecknet är kommentartecken
+				file.getline(line, (max_config_line_length-1));
+			}
+			if(!endfile){ //Kontrollerar om nollförtecken tidigare hittats
+				getline_char(line, line2, max_config_line_length,max_config_line_length, ',', endfile, r_pos);
+			}
+			r_pos += strlen(line2) + 1; //Räknar hur många tecken som har lästs och används för att veta var nästa inläsning ska ske i strängen
+			intdata[j] = std::atoi(line2);
+		}
+		status_boxes[i] = new Status_box(intdata[0], intdata[1], intdata[2], intdata[3], (Street*)streets[intdata[4]]);
 		endfile = false;
 	}
 }

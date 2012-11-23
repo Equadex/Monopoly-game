@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "Constants.h"
 #include <string>
+
 class Player;
 
 class Property{
@@ -45,4 +46,6 @@ protected:
 	int group;
 private:
 };
+
+
 #endif
