@@ -39,6 +39,7 @@ void create_players(int n_players, Player *players[], Property *tomter[]);
 void roll_dice(int &dice);
 void read_Button_data(Button* buttons[]);
 void read_Status_box_data(Property** streets);
+void draw_dice(int &dice);
 
 int main(){
 	//Konstanta variabler i main
@@ -316,6 +317,10 @@ void create_players(int n_players, Player *players[], Property *tomter[]){
 
 void roll_dice(int &dice){
 	dice = rand() % max_tarning + 1;
+}
+
+void draw_dice(int &dice){
+
 }
 
 void read_Button_data(Button* buttons[]) {
