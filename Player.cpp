@@ -35,6 +35,10 @@ bool Player::pay(int sum_to_pay){
 	}
 }
 
-void Player::get_money(int sum_to_get){
-	pengar =+ sum_to_get;
+void Player::recieve_money(int sum_to_get){
+	pengar += sum_to_get;
+}
+
+int Player::get_money() const{
+	return (pengar);
 }

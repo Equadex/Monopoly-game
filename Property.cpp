@@ -37,7 +37,7 @@ void Street::buy_Street(Player* buyer, bool trade){
 }
 
 void Street::sell_Street(Player* seller){
-	seller->get_money(cost / 2);
+	seller->recieve_money(cost / 2);
 	Owner = 0;
 	status_owner->set_active(false);
 }

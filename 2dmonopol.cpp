@@ -29,7 +29,7 @@ const int status_box_int_data_count = 5;
 const int startpengar = 1500;
 const int start_ruta = 0;
 const int max_tarning = 6;
-const int ant_buttons = 3;
+const int ant_buttons = 4;
 const int ant_status_box = 28;
 
 //Funktionsdeklartioner
@@ -150,13 +150,18 @@ int main(){
 						}
 						break;
 					case 2: //Köper tomt
-						if(tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0){
+ 						if(tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0){
 							((Street*)tomter[players[current_player]->get_pos_ruta()])->buy_Street(players[current_player]);
 						}
 						break;
 					case 3:
 						current_player = (current_player + 1) % n_players; //Nästa spelare
 						dice_used = false;
+						break;
+					case 4:
+						if(tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0){
+							((Street*)tomter[players[current_player]->get_pos_ruta()])->sell_Street(players[current_player]);
+						}
 						break;
 				}
 				ID_button_pressed = 0;
@@ -191,6 +196,7 @@ int main(){
 			}
 			al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 5, 0, "FPS: %i", gameFPS);
 			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 15, 940, 0, "Player %i", current_player);
+			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 100, 940, 0, "Funds: %i", (players[current_player])->get_money());
 			al_flip_display();
 			draw = false;
 		}
