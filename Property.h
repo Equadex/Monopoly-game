@@ -16,6 +16,7 @@ public:
 	void get_player_pos(int &pos_x_in, int &pos_y_in) const;
 	int get_pos_ruta() const;
 	int get_typ() const;
+	
 
 	void set_Owner(Player *Owner);
 	Player* get_Owner();
@@ -38,12 +39,14 @@ public:
 			Street::rent[i] = rent[i];
 		}
 	}
+	int get_zon() const;
 
 	void buy_Street(Player* buyer, bool trade = false);
 	void sell_Street(Player* seller);
 	void create_status_box(Status_box* status_box);
 	void draw_status();
 	void pay_rent(Player *guest, Property* tomter[]);
+	bool own_zone(Player *player, Property* tomter[]);
 protected:
 	int cost;
 	int building_cost;

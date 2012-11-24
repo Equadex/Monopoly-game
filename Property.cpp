@@ -21,6 +21,10 @@ int Property::get_typ() const{
 	return (typ);
 }
 
+int Street::get_zon() const{
+	return (group);
+}
+
 void Street::buy_Street(Player* buyer, bool trade){
 	if(Owner == 0 || trade){
 		if(buyer->pay(cost)){
@@ -51,10 +55,25 @@ void Street::draw_status(){
 }
 
 void Street::pay_rent(Player *guest, Property* tomter[]){
-	if(guest->pay(rent[houses])){
-		Owner->recieve_money(rent[houses]);
+	int double_pay_factor = 1;
+	if(houses == 0 && this->own_zone(guest, tomter)){
+		double_pay_factor = 2;
+	}
+	if(guest->pay(rent[houses] * double_pay_factor)){
+		Owner->recieve_money(rent[houses] * double_pay_factor);
 	}
 	else{
 		guest->defeated(Owner, tomter);
 	}
+}
+
+bool Street::own_zone(Player *player, Property* tomter[]){
+	for(int i = 0; i < ant_rutor; i++){
+		if(tomter[i]->get_typ() == 0 && tomter[i]->get_Owner() != player){ //Om det är en gata och inte redan ägs utav spelaren
+			if(((Street*)tomter[i])->get_zon() == this->get_zon()){ //Om denna gata och den gata den jämför med är i samma zon
+				return (false);
+			}
+		}
+	}
+	return (true);
 }
