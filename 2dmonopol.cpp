@@ -39,7 +39,7 @@ void getline_char(char line_in[],char line_out[],int out_length, int max_read, c
 void create_players(int n_players, Player *players[], Property *tomter[]);
 void roll_dice(int &dice);
 void read_Button_data(Button* buttons[]);
-void read_Status_box_data(Status_box* status_boxes[], Property** streets);
+void read_Status_box_data(Property** streets);
 
 int main(){
 	//Konstanta variabler i main
@@ -69,13 +69,12 @@ int main(){
 	Property *tomter[ant_rutor]; //Fält av tomter
 	Player *players[max_players]; //Fält av spelare
 	Button *buttons[ant_buttons]; //Fält av buttons
-	Status_box *status_boxes[ant_status_box]; //Fält av status boxes (de som presenterar för spelaren vilka gator de äger)
 
 
 	read_Property_data(tomter); //Läser in data till tomter
 	create_players(n_players, players, tomter); //Skapar spelare
 	read_Button_data(buttons); //Läser in buttons koodinater och id
-	read_Status_box_data(status_boxes, tomter); //Läser in status boxarnas positioner och gatunummer
+	read_Status_box_data(tomter); //Läser in status boxarnas positioner och gatunummer
 	
 
 	//Allegro variabler
@@ -160,7 +159,7 @@ int main(){
 						dice_used = false;
 						break;
 				}
-								
+				ID_button_pressed = 0;				
 			}
 		}
 		else if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
@@ -186,8 +185,9 @@ int main(){
 			for(int i = 0; i < n_players; i++){
 				players[i]->draw_player();
 			}
-			for(int i = 0; i < ant_status_box; i++){
-				status_boxes[i]->draw();
+			for(int i = 0; i < ant_rutor; i++){
+				if(tomter[i]->get_typ() == 0)
+					((Street*)tomter[i])->draw_status();
 			}
 			al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 5, 0, "FPS: %i", gameFPS);
 			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 15, 940, 0, "Player %i", current_player);
@@ -339,7 +339,7 @@ void read_Button_data(Button* buttons[]) {
 	}
 }
 
-void read_Status_box_data(Status_box* status_boxes[], Property** streets){
+void read_Status_box_data(Property** streets){
 	//Öppnar fil för data till klassen Property
 	std::ifstream file("Status_box_config.txt"); 
 	//Tillfällig variabler för initiering av objekten
@@ -367,8 +367,8 @@ void read_Status_box_data(Status_box* status_boxes[], Property** streets){
 			r_pos += strlen(line2) + 1; //Räknar hur många tecken som har lästs och används för att veta var nästa inläsning ska ske i strängen
 			intdata[j] = std::atoi(line2);
 		}
-		status_boxes[i] = new Status_box(intdata[0], intdata[1], intdata[2], intdata[3], (Street*)streets[intdata[4]], displacement_x, displacement_y);
-		((Street*)streets[intdata[4]])->set_Status_box_owner(status_boxes[i]);
+		
+		((Street*)streets[intdata[4]])->create_status_box(new Status_box(intdata[0], intdata[1], intdata[2], intdata[3], displacement_x, displacement_y));
 		endfile = false;
 	}
 }

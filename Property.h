@@ -41,7 +41,8 @@ public:
 
 	void buy_Street(Player* buyer);
 	void sell_Street(Player* seller);
-	void set_Status_box_owner(Status_box *owner);
+	void create_status_box(Status_box* status_box);
+	void draw_status();
 protected:
 	int cost;
 	int building_cost;

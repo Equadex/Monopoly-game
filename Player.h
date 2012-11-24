@@ -20,6 +20,9 @@ public:
 
 	bool pay(int sum_to_pay);
 	void get_money(int sum_to_get);
+	void get_color(int *color_out){
+		color_out[0] = color_r; color_out[1] = color_g; color_out[2] = color_b;
+	}
 private:
 	int pos_x;
 	int pos_y;
