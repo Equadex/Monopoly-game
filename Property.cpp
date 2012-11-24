@@ -21,15 +21,17 @@ int Property::get_typ() const{
 	return (typ);
 }
 
-void Street::buy_Street(Player* buyer){
-	if(buyer->pay(cost)){
-		Owner = buyer;
-		if(status_owner != 0){
-			int temp[3];
-			buyer->get_color(temp); 
+void Street::buy_Street(Player* buyer, bool trade){
+	if(Owner == 0 || trade){
+		if(buyer->pay(cost)){
 			Owner = buyer;
-			status_owner->set_color(temp[0], temp[1], temp[2]);
-			status_owner->set_active(true);
+			if(status_owner != 0){
+				int temp[3];
+				buyer->get_color(temp); 
+				Owner = buyer;
+				status_owner->set_color(temp[0], temp[1], temp[2]);
+				status_owner->set_active(true);
+			}
 		}
 	}
 }
@@ -37,7 +39,7 @@ void Street::buy_Street(Player* buyer){
 void Street::sell_Street(Player* seller){
 	seller->get_money(cost / 2);
 	Owner = 0;
-	status_owner = 0;
+	status_owner->set_active(false);
 }
 
 void Street::create_status_box(Status_box* status_box){

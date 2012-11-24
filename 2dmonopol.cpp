@@ -159,7 +159,7 @@ int main(){
 						dice_used = false;
 						break;
 				}
-				ID_button_pressed = 0;				
+				ID_button_pressed = 0;
 			}
 		}
 		else if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
