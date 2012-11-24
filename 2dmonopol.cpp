@@ -16,6 +16,7 @@
 #include "Property.h"
 #include "Button.h"
 #include "Status_box.h"
+#include "Sprite.h"
 
 //Globala variabler lokala
 
@@ -69,13 +70,14 @@ int main(){
 	Property *tomter[ant_rutor]; //Fält av tomter
 	Player *players[max_players]; //Fält av spelare
 	Button *buttons[ant_buttons]; //Fält av buttons
+	Sprite *dice_sprite_0;
+	Sprite *dice_sprite_1;
 
 
 	read_Property_data(tomter); //Läser in data till tomter
 	create_players(n_players, players, tomter); //Skapar spelare
 	read_Button_data(buttons); //Läser in buttons koodinater och id
 	read_Status_box_data(tomter); //Läser in status boxarnas positioner och gatunummer
-	
 
 	//Allegro variabler
 
@@ -84,6 +86,7 @@ int main(){
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_BITMAP *spelplan = NULL;
 	ALLEGRO_BITMAP *spelbrade = NULL;
+	ALLEGRO_BITMAP *dice = NULL;
 
 	if(!al_init()){ //Initierar allegro bibloteket
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Allegro" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
@@ -111,6 +114,10 @@ int main(){
 	//Laddar bitmaps
 	spelplan = al_load_bitmap("spelplan.bmp");
 	spelbrade = al_load_bitmap("monopoly.jpg");
+	dice = al_load_bitmap("dice_sprite.bmp");
+
+	dice_sprite_0 = new Sprite(1091, 6, 81, dice);
+	dice_sprite_1 = new Sprite(1172, 6, 81, dice);
 
 	//Skapar fonts
 
@@ -192,13 +199,15 @@ int main(){
 			al_clear_to_color(al_map_rgb(0, 0, 0));
 			al_draw_bitmap(spelplan, 0, 0, 0);
 			al_draw_bitmap(spelbrade, 0, 0, 0);
-			for(int i = 0; i < n_players; i++){
+			for(int i = 0; i < n_players; i++){ //Ritar spelare
 				players[i]->draw_player();
 			}
-			for(int i = 0; i < ant_rutor; i++){
+			for(int i = 0; i < ant_rutor; i++){ //Ritar status_boxar
 				if(tomter[i]->get_typ() == 0)
 					((Street*)tomter[i])->draw_status();
 			}
+			dice_sprite_0->draw();
+			dice_sprite_1->draw();
 			al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 5, 0, "FPS: %i", gameFPS);
 			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 15, 940, 0, "Player %i", current_player);
 			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 100, 940, 0, "Funds: %i", (players[current_player])->get_money());
