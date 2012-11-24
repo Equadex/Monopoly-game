@@ -14,7 +14,6 @@
 
 #include "Player.h"
 #include "Property.h"
-#include "Owner.h"
 #include "Button.h"
 #include "Status_box.h"
 
@@ -146,6 +145,9 @@ int main(){
 						if(!dice_used){
 							roll_dice(dice_1); roll_dice(dice_2); 
 							players[current_player]->move_Player(dice_1 + dice_2, tomter);
+							if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != players[current_player] && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != 0){ //Om tomten är en gata och inte är ägd av dig eller banken
+								((Street*)tomter[players[current_player]->get_pos_ruta()])->pay_rent(players[current_player], tomter);
+							}
 							dice_used = true;
 						}
 						break;
@@ -155,10 +157,12 @@ int main(){
 						}
 						break;
 					case 3:
-						current_player = (current_player + 1) % n_players; //Nästa spelare
-						dice_used = false;
+						if(dice_used){
+							current_player = (current_player + 1) % n_players; //Nästa spelare
+							dice_used = false;
+						}
 						break;
-					case 4:
+					case 4: //Sälja gata
 						if(tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0){
 							((Street*)tomter[players[current_player]->get_pos_ruta()])->sell_Street(players[current_player]);
 						}

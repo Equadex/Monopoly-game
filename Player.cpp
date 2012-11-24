@@ -42,3 +42,12 @@ void Player::recieve_money(int sum_to_get){
 int Player::get_money() const{
 	return (pengar);
 }
+
+void Player::defeated(Player *winner, Property* tomter[]){
+	winner->recieve_money(pengar);
+	for(int i = 0; i < ant_rutor; i++){
+		if(tomter[i]->get_Owner() == this){
+			tomter[i]->set_Owner(winner);
+		}
+	}
+}

@@ -49,3 +49,12 @@ void Street::create_status_box(Status_box* status_box){
 void Street::draw_status(){
 	status_owner->draw();
 }
+
+void Street::pay_rent(Player *guest, Property* tomter[]){
+	if(guest->pay(rent[houses])){
+		Owner->recieve_money(rent[houses]);
+	}
+	else{
+		guest->defeated(Owner, tomter);
+	}
+}
