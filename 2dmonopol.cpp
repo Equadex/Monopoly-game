@@ -17,6 +17,7 @@
 #include "Button.h"
 #include "Status_box.h"
 #include "Sprite.h"
+#include "Question.h"
 
 //Globala variabler lokala
 
@@ -40,7 +41,6 @@ void create_players(int n_players, Player *players[], Property *tomter[]);
 void roll_dice(int &dice);
 void read_Button_data(Button* buttons[]);
 void read_Status_box_data(Property** streets);
-void draw_dice(int &dice);
 
 int main(){
 	//Konstanta variabler i main
@@ -73,11 +73,18 @@ int main(){
 	Sprite *dice_sprite_0;
 	Sprite *dice_sprite_1;
 
+	Button *temp[2];
+	temp[0] = new Button(165 + 162, 275 + 250, 165 + 162 + 80, 275 + 250 + 25, 1);
+	temp[1] = new Button(165 + 527, 275 + 250, 165 + 527 + 80, 275 + 250 + 25, 2);
+
+	Question *buy_street_Q = new Question(165, 275, temp, "Köp eller aktion", "Den här tomten ägs av banken och är till salu. Vill du köpa den eller vill du att den ska aktioneras ut?");
+
 
 	read_Property_data(tomter); //Läser in data till tomter
 	create_players(n_players, players, tomter); //Skapar spelare
 	read_Button_data(buttons); //Läser in buttons koodinater och id
 	read_Status_box_data(tomter); //Läser in status boxarnas positioner och gatunummer
+
 
 	//Allegro variabler
 
@@ -87,6 +94,7 @@ int main(){
 	ALLEGRO_BITMAP *spelplan = NULL;
 	ALLEGRO_BITMAP *spelbrade = NULL;
 	ALLEGRO_BITMAP *dice = NULL;
+	ALLEGRO_BITMAP *question = NULL;
 
 	if(!al_init()){ //Initierar allegro bibloteket
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Allegro" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
@@ -115,6 +123,8 @@ int main(){
 	spelplan = al_load_bitmap("spelplan.bmp");
 	spelbrade = al_load_bitmap("monopoly.jpg");
 	dice = al_load_bitmap("dice_sprite.bmp");
+	question = al_load_bitmap("Question.bmp");
+
 
 	dice_sprite_0 = new Sprite(1091, 6, 81, dice);
 	dice_sprite_1 = new Sprite(1172, 6, 81, dice);
@@ -122,6 +132,7 @@ int main(){
 	//Skapar fonts
 
 	ALLEGRO_FONT *arial_16 = al_load_ttf_font("arial.ttf", 16, 0);
+	ALLEGRO_FONT *arial_36 = al_load_ttf_font("arial.ttf", 36, 0);
 
 	//Skapar event_queue, registrerar källor och startar timer
 	event_queue = al_create_event_queue();
@@ -151,9 +162,16 @@ int main(){
 				switch(ID_button_pressed){
 					case 1: //Slå tärningarna
 						if(!dice_used){
-							roll_dice(dice_1); roll_dice(dice_2); 
-							players[current_player]->move_Player(dice_1 + dice_2, tomter);
-							if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != players[current_player] && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != 0){ //Om tomten är en gata och inte är ägd av dig eller banken
+							roll_dice(dice_1); roll_dice(dice_2);
+							
+							dice_sprite_0->set_curret_frame(max_tarning - (dice_1)); //Byter bild på tärning
+							dice_sprite_1->set_curret_frame(max_tarning - (dice_2));
+
+							players[current_player]->move_Player(dice_1 + dice_2, tomter); //Flyttar spelare
+							if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) == 0){
+
+							}
+							else if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != players[current_player] && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != 0){ //Om tomten är en gata och inte är ägd av dig eller banken
 								((Street*)tomter[players[current_player]->get_pos_ruta()])->pay_rent(players[current_player], tomter);
 							}
 							dice_used = true;
@@ -222,6 +240,8 @@ int main(){
 	al_destroy_timer(timer);
 	al_destroy_bitmap(spelplan);
 	al_destroy_bitmap(spelbrade);
+	al_destroy_bitmap(dice);
+	al_destroy_bitmap(question);
 }
 
 void read_Property_data(Property *tomter[]){
@@ -326,10 +346,6 @@ void create_players(int n_players, Player *players[], Property *tomter[]){
 
 void roll_dice(int &dice){
 	dice = rand() % max_tarning + 1;
-}
-
-void draw_dice(int &dice){
-
 }
 
 void read_Button_data(Button* buttons[]) {

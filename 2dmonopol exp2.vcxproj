@@ -73,6 +73,7 @@
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Property.h" />
+    <ClInclude Include="Question.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Status_box.h" />
   </ItemGroup>
