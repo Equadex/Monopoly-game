@@ -130,7 +130,7 @@ int main(){
 	Button *temp[2];
 	temp[0] = new Button(165 + 162, 275 + 250, 165 + 162 + 80, 275 + 250 + 25, 1, button);
 	temp[1] = new Button(165 + 527, 275 + 250, 165 + 527 + 80, 275 + 250 + 25, 2, button);
-	Question *buy_street_Q = new Question(165, 275, temp, 2, "Kop eller aktion", "Den har tomten ags av banken och ar till salu. Vill du kopa den eller vill du att den ska aktioneras ut?", question);
+	Question *buy_street_Q = new Question(165, 275, temp, 2, "Buy or auction", "This property is owned by the bank and is for sale. Do you want to buy it or let it be by auction?", question);
 
 	//Skapar fonts
 
