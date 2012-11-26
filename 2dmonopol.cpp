@@ -73,13 +73,6 @@ int main(){
 	Sprite *dice_sprite_0;
 	Sprite *dice_sprite_1;
 
-	Button *temp[2];
-	temp[0] = new Button(165 + 162, 275 + 250, 165 + 162 + 80, 275 + 250 + 25, 1);
-	temp[1] = new Button(165 + 527, 275 + 250, 165 + 527 + 80, 275 + 250 + 25, 2);
-
-	Question *buy_street_Q = new Question(165, 275, temp, "Köp eller aktion", "Den här tomten ägs av banken och är till salu. Vill du köpa den eller vill du att den ska aktioneras ut?");
-
-
 	read_Property_data(tomter); //Läser in data till tomter
 	create_players(n_players, players, tomter); //Skapar spelare
 	read_Button_data(buttons); //Läser in buttons koodinater och id
@@ -91,10 +84,14 @@ int main(){
 	ALLEGRO_DISPLAY *display = NULL;
 	ALLEGRO_TIMER *timer = NULL;
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
+
+	//Allegro Bitmaps
+
 	ALLEGRO_BITMAP *spelplan = NULL;
 	ALLEGRO_BITMAP *spelbrade = NULL;
 	ALLEGRO_BITMAP *dice = NULL;
 	ALLEGRO_BITMAP *question = NULL;
+	ALLEGRO_BITMAP *button = NULL;
 
 	if(!al_init()){ //Initierar allegro bibloteket
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Allegro" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
@@ -124,10 +121,16 @@ int main(){
 	spelbrade = al_load_bitmap("monopoly.jpg");
 	dice = al_load_bitmap("dice_sprite.bmp");
 	question = al_load_bitmap("Question.bmp");
+	button = al_load_bitmap("button.bmp");
 
 
 	dice_sprite_0 = new Sprite(1091, 6, 81, dice);
 	dice_sprite_1 = new Sprite(1172, 6, 81, dice);
+
+	Button *temp[2];
+	temp[0] = new Button(165 + 162, 275 + 250, 165 + 162 + 80, 275 + 250 + 25, 1, button);
+	temp[1] = new Button(165 + 527, 275 + 250, 165 + 527 + 80, 275 + 250 + 25, 2, button);
+	Question *buy_street_Q = new Question(165, 275, temp, 2, "Kop eller aktion", "Den har tomten ags av banken och ar till salu. Vill du kopa den eller vill du att den ska aktioneras ut?", question);
 
 	//Skapar fonts
 
@@ -153,48 +156,64 @@ int main(){
 		else if(ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){ //När musknapp är nedtryckt
 			if(ev.mouse.button == 1){ //Vänster musknapp
 				
-				for(int i = 0; i < ant_buttons; i++){ //Kontrollerar vilken knapp som blivit klickad
-					if(buttons[i]->Button_pressed(mouse_pos_x, mouse_pos_y)){
-						ID_button_pressed = buttons[i]->get_ID();
+				if(buy_street_Q->get_active()){
+					int ID_button_pressed_temp = buy_street_Q->button_pressed(mouse_pos_x, mouse_pos_y);
+					if(ID_button_pressed_temp != 0){
+						switch(ID_button_pressed_temp){
+							case 1:
+								((Street*)tomter[players[current_player]->get_pos_ruta()])->buy_Street(players[current_player]);
+								break;
+							case 2:
+							
+								break;
+						}
+						buy_street_Q->set_active(false);
 					}
 				}
+				else{
+					for(int i = 0; i < ant_buttons; i++){ //Kontrollerar vilken knapp som blivit klickad
+						if(buttons[i]->Button_pressed(mouse_pos_x, mouse_pos_y)){
+							ID_button_pressed = buttons[i]->get_ID();
+						}
+					}
 				
-				switch(ID_button_pressed){
-					case 1: //Slå tärningarna
-						if(!dice_used){
-							roll_dice(dice_1); roll_dice(dice_2);
-							
-							dice_sprite_0->set_curret_frame(max_tarning - (dice_1)); //Byter bild på tärning
-							dice_sprite_1->set_curret_frame(max_tarning - (dice_2));
-
-							players[current_player]->move_Player(dice_1 + dice_2, tomter); //Flyttar spelare
-							if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) == 0){
-
+					switch(ID_button_pressed){
+						case 1: //Slå tärningarna
+							if(!dice_used){
+								roll_dice(dice_1); roll_dice(dice_2);
+								
+								dice_sprite_0->set_curret_frame(max_tarning - (dice_1)); //Byter bild på tärning
+								dice_sprite_1->set_curret_frame(max_tarning - (dice_2));
+	
+								players[current_player]->move_Player(dice_1 + dice_2, tomter); //Flyttar spelare
+								if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) == 0){
+									buy_street_Q->set_active(true);
+								}
+								else if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != players[current_player] && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != 0){ //Om tomten är en gata och inte är ägd av dig eller banken
+									((Street*)tomter[players[current_player]->get_pos_ruta()])->pay_rent(players[current_player], tomter);
+								}
+								dice_used = true;
 							}
-							else if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != players[current_player] && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != 0){ //Om tomten är en gata och inte är ägd av dig eller banken
-								((Street*)tomter[players[current_player]->get_pos_ruta()])->pay_rent(players[current_player], tomter);
+							break;
+						case 2: //Köper tomt
+							if(tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0){
+								((Street*)tomter[players[current_player]->get_pos_ruta()])->buy_Street(players[current_player]);
 							}
-							dice_used = true;
-						}
-						break;
-					case 2: //Köper tomt
- 						if(tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0){
-							((Street*)tomter[players[current_player]->get_pos_ruta()])->buy_Street(players[current_player]);
-						}
-						break;
-					case 3:
-						if(dice_used){
-							current_player = (current_player + 1) % n_players; //Nästa spelare
-							dice_used = false;
-						}
-						break;
-					case 4: //Sälja gata
-						if(tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0){
-							((Street*)tomter[players[current_player]->get_pos_ruta()])->sell_Street(players[current_player]);
-						}
-						break;
+							break;
+						case 3:
+							if(dice_used){
+								current_player = (current_player + 1) % n_players; //Nästa spelare
+								dice_used = false;
+							}
+							break;
+						case 4: //Sälja gata
+							if(tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0){
+								((Street*)tomter[players[current_player]->get_pos_ruta()])->sell_Street(players[current_player]);
+							}
+							break;
+					}
+					ID_button_pressed = 0;
 				}
-				ID_button_pressed = 0;
 			}
 		}
 		else if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
@@ -226,6 +245,8 @@ int main(){
 			}
 			dice_sprite_0->draw();
 			dice_sprite_1->draw();
+			if(buy_street_Q->get_active())
+				buy_street_Q->draw(arial_36, arial_16);
 			al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 5, 0, "FPS: %i", gameFPS);
 			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 15, 940, 0, "Player %i", current_player);
 			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 100, 940, 0, "Funds: %i", (players[current_player])->get_money());

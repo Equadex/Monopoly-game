@@ -11,3 +11,7 @@ int Button::Button_pressed(int pos_x, int pos_y) const{
 int Button::get_ID() const{
 	return (ID);
 }
+
+void Button::draw(){
+	al_draw_bitmap(image, pos_x_1, pos_y_1, 0);
+}

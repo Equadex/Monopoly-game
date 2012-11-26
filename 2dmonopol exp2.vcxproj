@@ -65,6 +65,7 @@
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Property.cpp" />
+    <ClCompile Include="Question.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Status_box.cpp" />
   </ItemGroup>
