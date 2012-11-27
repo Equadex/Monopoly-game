@@ -5,8 +5,8 @@ void Question::draw(ALLEGRO_FONT* Title, ALLEGRO_FONT* Text){
 	for(int i = 0; i < n_buttons; i++){
 		buttons[i]->draw();
 	}
-	al_draw_text(Title, al_map_rgb(0, 0, 0), (pos_x + al_get_bitmap_width(image) / 2), (pos_y + al_get_bitmap_height(image) / 10), ALLEGRO_ALIGN_CENTRE, title);
-	al_draw_text(Text, al_map_rgb(0, 0, 0), (pos_x + al_get_bitmap_width(image) / 2), (pos_y + 4 * (al_get_bitmap_height(image) / 10)), ALLEGRO_ALIGN_CENTRE, message);
+	al_draw_text(Title, al_map_rgb(0, 0, 0), (pos_x + al_get_bitmap_width(image) / 2), (pos_y + al_get_bitmap_height(image) / 10), ALLEGRO_ALIGN_CENTRE, "");
+	al_draw_text(Text, al_map_rgb(0, 0, 0), (pos_x + al_get_bitmap_width(image) / 2), (pos_y + 4 * (al_get_bitmap_height(image) / 10)), ALLEGRO_ALIGN_CENTRE, "");
 }
 
 int Question::button_pressed(int mouse_pos_x, int mouse_pos_y){
