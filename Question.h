@@ -37,23 +37,25 @@ public:
 
 		for(int i = 0; i < max_question_lines_title && !done; i++){
 			for(int j = 0; j < max_question_length && !done; j++){
-				if(title_in[j] == '/0'){
+				if(title_in[j + i * max_question_length] == '/0'){
 					done = true;
-					title[i][j] = title_in[j];
+					title[i][j] = title_in[j + i * max_question_length];
+					n_title = i;
 				}
-				title[i][j] = title_in[j];
+				title[i][j] = title_in[j + i * max_question_length];
 			}
 		}
 
 		done = false;
 
-		for(int i = 0; i && !done < max_question_lines; i++){
+		for(int i = 0; !done && i < max_question_lines; i++){
 			for(int j = 0; j < max_question_length && !done; j++){
-				if(message_in[j] == '/0'){
+				if(message_in[j + i * max_question_length] == '/0'){
 					done = true;
-					message[i][j] = message_in[j];
+					message[i][j] = message_in[j + i * max_question_length];
+					n_message = i;
 				}
-				message[i][j] = message_in[j];
+				message[i][j] = message_in[j + i * max_question_length];
 			}
 		}
 	}
