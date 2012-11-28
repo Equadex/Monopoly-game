@@ -1,6 +1,7 @@
 #ifndef QUESTION_H
 #define QUESTION_H
 
+
 #include <string>
 
 #include <allegro5\allegro.h>
@@ -9,43 +10,70 @@
 
 #include "Button.h"
 
+const int max_question_length = 90;
+const int max_question_lines = 10;
+const int max_question_lines_title = 3;
+
 class Question{
 public:
-	Question(int pos_x, int pos_y, Button *buttons[],int n_buttons, std::string title_in, std::string message_in, ALLEGRO_BITMAP *image_in, bool active = false) : pos_x(pos_x), pos_y(pos_y), buttons(buttons),n_buttons(n_buttons), title(0), message(0), image(image_in), active(active) {
-		const int max_question_length = 90;
-		const int max_question_lines = 10;
-		bool done = false;
-		n_title = 0; n_message = 0;
+	Question(int pos_x, int pos_y, Button *buttons[],int n_buttons, char* title_in, char* message_in, ALLEGRO_BITMAP *image_in, bool active = false) : pos_x(pos_x), pos_y(pos_y), buttons(buttons),n_buttons(n_buttons), image(image_in), active(active)  {
+		//Reserving memory
+		
+		title = new char*[max_question_lines_title];
 
-		for(int j = 0; j < 3; j++){
-			for(int i = 0; i < max_question_length && !done; i++){
-				if(title_in[i] == '\0'){
-					n_title += i;
+		for(int i = 0; i < max_question_lines_title; i++){
+			title[i] = new char[max_question_length];
+		}
+
+		message = new char*[max_question_lines];
+
+		for(int i = 0; i < max_question_lines; i++){
+			message[i] = new char[max_question_length];
+		}
+
+		//Delar upp texterna i flera texter
+
+		bool done = false;
+
+		for(int i = 0; i < max_question_lines_title && !done; i++){
+			for(int j = 0; j < max_question_length && !done; j++){
+				if(title_in[j] == '/0'){
 					done = true;
+					title[i][j] = title_in[j];
 				}
-				temp_title = title_in[i];
+				title[i][j] = title_in[j];
 			}
 		}
-		title = temp_title;
+
 		done = false;
 
-		for(int j = 0; j < 3; j++){
-			for(int i = 0; i < max_question_length && !done; i++){
-				if(message_in[i] == '\0'){
-					n_title += i;
+		for(int i = 0; i && !done < max_question_lines; i++){
+			for(int j = 0; j < max_question_length && !done; j++){
+				if(message_in[j] == '/0'){
 					done = true;
+					message[i][j] = message_in[j];
 				}
-				temp_message[j][i] = message_in[i];
+				message[i][j] = message_in[j];
 			}
 		}
-		message = temp_message;
-		
+	}
+	~Question(){
+		//Releasing memory
+		for(int i = 0; i < max_question_lines_title; i++){
+			delete[] title[i];
+		}
+		delete[] title;
+		for(int i = 0; i < max_question_lines; i++){
+			delete[] message[i];
+		}
+		delete[] message;
 	}
 	void set_active(bool active_in){active = active_in;}
 	bool get_active() const{return active;}
 	
 	void draw(ALLEGRO_FONT* Title, ALLEGRO_FONT* Text);
 	int button_pressed(int mouse_pos_x, int mouse_pos_y);
+
 private:
 	bool active;
 	ALLEGRO_BITMAP *image;
@@ -53,9 +81,9 @@ private:
 	int pos_y;
 	int n_buttons;
 	Button **buttons;
-	std::string *title;
+	char **title;
 	int n_title, n_message;
-	std::string *message;
+	char **message;
 };
 
 #endif
