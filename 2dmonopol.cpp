@@ -50,12 +50,12 @@ int main(){
 	int	window_height;
 	int width = 1280;
 	int height = 1000;
-	int sx, sy, scale, scaleW, scaleH, scaleX, scaleY;
 	double FPS = 120;
-	int mouse_pos_x = 0;
-	int mouse_pos_y = 0;
+	float mouse_pos_x = 0;
+	float mouse_pos_y = 0;
 	int frames = 0, gameFPS = 0;
 	float gameTime = 0;
+	double sx, sy, scale, scaleW, scaleH, scaleX, scaleY, scale_m_x, scale_m_y;
 
 	bool done = false;
 	bool draw = false;
@@ -110,20 +110,20 @@ int main(){
 	}
 	window_width = p_info->x2;
 	window_height = p_info->y2;
-	sx = window_width / width;
-	sy = window_height / height;
-	scale = std::min <int>(sx, sy);
+	sx = window_width / (double)width;
+	sy = window_height / (double)height;
+	scale = std::min <double>(sx, sy);
 
 	scaleW = width * scale;
 	scaleH = height * scale;
 	scaleX = (window_width - scaleW) / 2;
-	scaleY = (window_width - scaleH) / 2;
-
+	scaleY = (window_height - scaleH) / 2;
 
 
 
 	//Skapar och testar display
-	display = al_create_display(width, height);
+	al_set_new_display_flags(ALLEGRO_WINDOWED);
+	display = al_create_display(window_width, window_height);
 	if(!display){
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Display" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
 		return (-1);
@@ -175,8 +175,8 @@ int main(){
 		ALLEGRO_EVENT ev;
 		al_wait_for_event(event_queue, &ev);
 		if(ev.type == ALLEGRO_EVENT_MOUSE_AXES){  //Läser av koordinater från musen
-			mouse_pos_x = ev.mouse.x;
-			mouse_pos_y = ev.mouse.y;
+			mouse_pos_x = (ev.mouse.x * 1 - scaleX) / (double)scale;
+			mouse_pos_y = (ev.mouse.y * 1 - scaleY) / (double)scale;
 		}
 		else if(ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){ //När musknapp är nedtryckt
 			if(ev.mouse.button == 1){ //Vänster musknapp
@@ -276,6 +276,7 @@ int main(){
 			al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 5, 0, "FPS: %i", gameFPS);
 			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 15, 940, 0, "Player %i", current_player);
 			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 100, 940, 0, "Funds: %i", (players[current_player])->get_money());
+			al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 20, 0, "Mouse_x: %lf Mouse_y: %lf", mouse_pos_x, mouse_pos_y);
 
 			al_set_target_backbuffer(display);
 			al_clear_to_color(al_map_rgb(0, 0, 0));
