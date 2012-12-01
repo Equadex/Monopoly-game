@@ -50,7 +50,7 @@ int main(){
 	int	window_height;
 	int width = 1280;
 	int height = 1000;
-	double FPS = 120;
+	double FPS = 10;
 	float mouse_pos_x = 0;
 	float mouse_pos_y = 0;
 	int frames = 0, gameFPS = 0;
@@ -109,7 +109,7 @@ int main(){
 		return(-1);
 	}
 	window_width = p_info->x2;
-	window_height = p_info->y2;
+	window_height = p_info->y2 - 30;
 	sx = window_width / (double)width;
 	sy = window_height / (double)height;
 	scale = std::min <double>(sx, sy);
@@ -122,7 +122,7 @@ int main(){
 
 
 	//Skapar och testar display
-	al_set_new_display_flags(ALLEGRO_FULLSCREEN);
+	//al_set_new_display_flags(ALLEGRO_WINDOWED);
 	display = al_create_display(window_width, window_height);
 	if(!display){
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Display" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
@@ -147,7 +147,7 @@ int main(){
 	dice = al_load_bitmap("dice_sprite.bmp");
 	question = al_load_bitmap("Question.bmp");
 	button = al_load_bitmap("button.bmp");
-	buffer = al_create_bitmap(window_width, window_height);
+	buffer = al_create_bitmap(width, height);
 
 	dice_sprite_0 = new Sprite(1091, 6, 81, dice);
 	dice_sprite_1 = new Sprite(1172, 6, 81, dice);
@@ -177,6 +177,9 @@ int main(){
 		if(ev.type == ALLEGRO_EVENT_MOUSE_AXES){  //Läser av koordinater från musen
 			mouse_pos_x = (ev.mouse.x * 1 - scaleX) / (double)scale;
 			mouse_pos_y = (ev.mouse.y * 1 - scaleY) / (double)scale;
+			//mouse_pos_x = ev.mouse.x;
+			//mouse_pos_y = ev.mouse.y;
+
 		}
 		else if(ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){ //När musknapp är nedtryckt
 			if(ev.mouse.button == 1){ //Vänster musknapp
@@ -277,14 +280,16 @@ int main(){
 			for(int i = 0; i < ant_buttons; i++){
 				buttons[i]->draw();
 			}
-			al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 5, 0, "FPS: %i", gameFPS);
+			//al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 5, 0, "FPS: %i", gameFPS);
 			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 15, 940, 0, "Player %i", current_player);
 			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 100, 940, 0, "Funds: %i", (players[current_player])->get_money());
-			al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 20, 0, "Mouse_x: %lf Mouse_y: %lf", mouse_pos_x, mouse_pos_y);
+			//al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 20, 0, "Mouse_x: %lf Mouse_y: %lf", mouse_pos_x, mouse_pos_y);
 
 			al_set_target_backbuffer(display);
 			al_clear_to_color(al_map_rgb(0, 0, 0));
-			al_draw_scaled_bitmap(buffer, 0, 0, width, height, scaleX, scaleY, scaleW, scaleH, 0);
+			al_draw_scaled_bitmap(buffer, 0, 0, width, height, scaleX, scaleY, scaleW , scaleH, 0);
+			//al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 20, 0, "Mouse_x: %lf Mouse_y: %lf", mouse_pos_x, mouse_pos_y);
+			al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 5, 0, "FPS: %i", gameFPS);
 			al_flip_display();
 			draw = false;
 		}
