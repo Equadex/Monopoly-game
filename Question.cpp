@@ -1,5 +1,60 @@
 #include "Question.h"
 
+Question::Question(int pos_x, int pos_y, Button *buttons[],int n_buttons, char* title_in, char* message_in, ALLEGRO_BITMAP *image_in, bool active) : pos_x(pos_x), pos_y(pos_y), buttons(buttons),n_buttons(n_buttons), image(image_in), active(active)  {
+	//Reserving memory
+	
+	title = new char*[max_question_lines_title];
+	for(int i = 0; i < max_question_lines_title; i++){
+		title[i] = new char[max_question_length];
+	}
+		message = new char*[max_question_lines];
+	for(int i = 0; i < max_question_lines; i++){
+		message[i] = new char[max_question_length];
+	}
+	//Delar upp texterna i flera texter
+	bool done = false;
+	for(int i = 0; i < max_question_lines_title && !done; i++){
+		for(int j = 0; j < max_question_length && !done; j++){
+			
+			//getline_char(title_in, title[i], max_question_length, max_question_length, '\0', , j);
+			if(title_in[j + i * max_question_length] == '\0'){
+				done = true;
+				title[i][j] = title_in[j + i * max_question_length];
+				n_title = i;
+			}
+			else if(j == (max_question_length - 1))
+				title[i][j] = '\0';
+			else
+				title[i][j] = title_in[j + i * (max_question_length - 1)];
+		}
+	}
+		done = false;
+		for(int i = 0; !done && i < max_question_lines; i++){
+		for(int j = 0; j < max_question_length && !done; j++){
+			if(message_in[j + i * max_question_length] == '\0'){
+				done = true;
+				message[i][j] = message_in[j + i * max_question_length];
+				n_message = i;
+			}
+			else if(j == (max_question_length - 1))
+				message[i][j] = '\0';
+			else
+				message[i][j] = message_in[j + i * (max_question_length - 1)];
+		}
+	}
+}
+
+Question::~Question(){
+	//Releasing memory
+	for(int i = 0; i < max_question_lines_title; i++){
+		delete[] title[i];
+	}
+	delete[] title;
+	for(int i = 0; i < max_question_lines; i++){
+		delete[] message[i];
+	}
+	delete[] message;
+}
 void Question::draw(ALLEGRO_FONT* Title, ALLEGRO_FONT* Text){
 	al_draw_bitmap(image, pos_x, pos_y, 0);
 	for(int i = 0; i < n_buttons; i++){
