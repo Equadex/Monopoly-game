@@ -46,9 +46,11 @@ int main(){
 	//Konstanta variabler i main
 
 	//Variabler som behövs för hantera allegro
-
+	int window_width;
+	int	window_height;
 	int width = 1280;
 	int height = 1000;
+	int sx, sy, scale, scaleW, scaleH, scaleX, scaleY;
 	double FPS = 120;
 	int mouse_pos_x = 0;
 	int mouse_pos_y = 0;
@@ -84,9 +86,12 @@ int main(){
 	ALLEGRO_DISPLAY *display = NULL;
 	ALLEGRO_TIMER *timer = NULL;
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
+	ALLEGRO_MONITOR_INFO info;
+	ALLEGRO_MONITOR_INFO* p_info = &info;
 
 	//Allegro Bitmaps
 
+	ALLEGRO_BITMAP *buffer = NULL;
 	ALLEGRO_BITMAP *spelplan = NULL;
 	ALLEGRO_BITMAP *spelbrade = NULL;
 	ALLEGRO_BITMAP *dice = NULL;
@@ -97,6 +102,26 @@ int main(){
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Allegro" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
 		return (-1);
 	}
+
+	//Tar reda på skärmens storlek och omskalninsförhållanden
+	if(!al_get_monitor_info(0, p_info)){
+		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to get screen info" , NULL, ALLEGRO_MESSAGEBOX_ERROR); 
+		return(-1);
+	}
+	window_width = p_info->x2;
+	window_height = p_info->y2;
+	sx = window_width / width;
+	sy = window_height / height;
+	scale = std::min <int>(sx, sy);
+
+	scaleW = width * scale;
+	scaleH = height * scale;
+	scaleX = (window_width - scaleW) / 2;
+	scaleY = (window_width - scaleH) / 2;
+
+
+
+
 	//Skapar och testar display
 	display = al_create_display(width, height);
 	if(!display){
@@ -122,7 +147,7 @@ int main(){
 	dice = al_load_bitmap("dice_sprite.bmp");
 	question = al_load_bitmap("Question.bmp");
 	button = al_load_bitmap("button.bmp");
-
+	buffer = al_create_bitmap(window_width, window_height);
 
 	dice_sprite_0 = new Sprite(1091, 6, 81, dice);
 	dice_sprite_1 = new Sprite(1172, 6, 81, dice);
@@ -233,6 +258,7 @@ int main(){
 
 		if(draw){
 			//Drawing
+			al_set_target_bitmap(buffer);
 			al_clear_to_color(al_map_rgb(0, 0, 0));
 			al_draw_bitmap(spelplan, 0, 0, 0);
 			al_draw_bitmap(spelbrade, 0, 0, 0);
@@ -250,6 +276,10 @@ int main(){
 			al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 5, 0, "FPS: %i", gameFPS);
 			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 15, 940, 0, "Player %i", current_player);
 			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 100, 940, 0, "Funds: %i", (players[current_player])->get_money());
+
+			al_set_target_backbuffer(display);
+			al_clear_to_color(al_map_rgb(0, 0, 0));
+			al_draw_scaled_bitmap(buffer, 0, 0, width, height, scaleX, scaleY, scaleW, scaleH, 0);
 			al_flip_display();
 			draw = false;
 		}
