@@ -37,12 +37,18 @@ public:
 
 		for(int i = 0; i < max_question_lines_title && !done; i++){
 			for(int j = 0; j < max_question_length && !done; j++){
-				if(title_in[j + i * max_question_length] == '/0'){
+				
+				//getline_char(title_in, title[i], max_question_length, max_question_length, '\0', , j);
+
+				if(title_in[j + i * max_question_length] == '\0'){
 					done = true;
 					title[i][j] = title_in[j + i * max_question_length];
 					n_title = i;
 				}
-				title[i][j] = title_in[j + i * max_question_length];
+				else if(j == (max_question_length - 1))
+					title[i][j] = '\0';
+				else
+					title[i][j] = title_in[j + i * max_question_length];
 			}
 		}
 
@@ -50,12 +56,15 @@ public:
 
 		for(int i = 0; !done && i < max_question_lines; i++){
 			for(int j = 0; j < max_question_length && !done; j++){
-				if(message_in[j + i * max_question_length] == '/0'){
+				if(message_in[j + i * max_question_length] == '\0'){
 					done = true;
 					message[i][j] = message_in[j + i * max_question_length];
 					n_message = i;
 				}
-				message[i][j] = message_in[j + i * max_question_length];
+				else if(j == (max_question_length - 1))
+					message[i][j] = '\0';
+				else
+					message[i][j] = message_in[j + i * (max_question_length - 1)];
 			}
 		}
 	}
@@ -86,6 +95,27 @@ private:
 	char **title;
 	int n_title, n_message;
 	char **message;
+
+	/*void getline_char(char line_in[],char line_out[],int out_length, int max_read, char stop, bool &endfile, int start){
+	bool size_ok = true;
+	if(out_length < (strlen(line_in))){
+		size_ok = false;
+	}
+	for(int i = start, j = 0; i < max_read+start && size_ok && start < strlen(line_in); i++, j++){
+		if(line_in[i] == stop){
+			line_out[j] = '\0';
+			break;
+		}
+		else if(line_in[i] == '\0'){
+			endfile = true;
+			line_out[j] = '\0';
+			break;
+			}
+		else{
+			line_out[j] = line_in[i];
+		}
+	}
+}*/
 };
 
 #endif
