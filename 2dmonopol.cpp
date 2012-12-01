@@ -55,7 +55,7 @@ int main(){
 	float mouse_pos_y = 0;
 	int frames = 0, gameFPS = 0;
 	float gameTime = 0;
-	double sx, sy, scale, scaleW, scaleH, scaleX, scaleY, scale_m_x, scale_m_y;
+	double sx, sy, scale, scaleW, scaleH, scaleX, scaleY;
 
 	bool done = false;
 	bool draw = false;
@@ -122,7 +122,7 @@ int main(){
 
 
 	//Skapar och testar display
-	al_set_new_display_flags(ALLEGRO_WINDOWED);
+	al_set_new_display_flags(ALLEGRO_FULLSCREEN);
 	display = al_create_display(window_width, window_height);
 	if(!display){
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Display" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
@@ -273,6 +273,10 @@ int main(){
 			dice_sprite_1->draw();
 			if(buy_street_Q->get_active())
 				buy_street_Q->draw(arial_36, arial_16);
+
+			for(int i = 0; i < ant_buttons; i++){
+				buttons[i]->draw();
+			}
 			al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 5, 0, "FPS: %i", gameFPS);
 			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 15, 940, 0, "Player %i", current_player);
 			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 100, 940, 0, "Funds: %i", (players[current_player])->get_money());
