@@ -1,4 +1,4 @@
-﻿Build started 12/2/2012 2:50:22 AM.
+﻿Build started 12/2/2012 3:49:10 AM.
      1>Project "C:\Users\Anders\Documents\Visual Studio 2010\SKOLProjects\2dmonopol exp2\2dmonopol exp2\2dmonopol exp2.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\2dmonopol exp2.unsuccessfulbuild" because "AlwaysCreate" was specified.
@@ -29,4 +29,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.76
+Time Elapsed 00:00:00.73
