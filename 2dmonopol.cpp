@@ -50,7 +50,7 @@ int main(){
 	int	window_height;
 	int width = 1280;
 	int height = 1000;
-	double FPS = 10;
+	double FPS = 140;
 	float mouse_pos_x = 0;
 	float mouse_pos_y = 0;
 	int frames = 0, gameFPS = 0;
@@ -108,8 +108,12 @@ int main(){
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to get screen info" , NULL, ALLEGRO_MESSAGEBOX_ERROR); 
 		return(-1);
 	}
-	window_width = p_info->x2;
+	window_width = p_info->x2; 
 	window_height = p_info->y2 - 30;
+
+	//window_width = 1920;
+	//window_height = 1050;
+
 	sx = window_width / (double)width;
 	sy = window_height / (double)height;
 	scale = std::min <double>(sx, sy);
@@ -123,7 +127,7 @@ int main(){
 
 	//Skapar och testar display
 	//al_set_new_display_flags(ALLEGRO_WINDOWED);
-	display = al_create_display(window_width, window_height);
+	display = al_create_display(scaleW, scaleH);
 	if(!display){
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Display" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
 		return (-1);
@@ -287,7 +291,7 @@ int main(){
 
 			al_set_target_backbuffer(display);
 			al_clear_to_color(al_map_rgb(0, 0, 0));
-			al_draw_scaled_bitmap(buffer, 0, 0, width, height, scaleX, scaleY, scaleW , scaleH, 0);
+			al_draw_scaled_bitmap(buffer, 0, 0, width, height, 0, 0, scaleW , scaleH, 0);
 			//al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 20, 0, "Mouse_x: %lf Mouse_y: %lf", mouse_pos_x, mouse_pos_y);
 			al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 5, 0, "FPS: %i", gameFPS);
 			al_flip_display();
