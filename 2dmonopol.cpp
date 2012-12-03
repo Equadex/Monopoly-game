@@ -45,12 +45,12 @@ void read_Status_box_data(Property** streets);
 int main(){
 	//Konstanta variabler i main
 
-	//Variabler som behövs för hantera allegro
+	//Variabler som behï¿½vs fï¿½r hantera allegro
 	int window_width;
 	int	window_height;
 	int width = 1280;
 	int height = 1000;
-	double FPS = 5;
+	double FPS = 30;
 	float mouse_pos_x = 0;
 	float mouse_pos_y = 0;
 	int frames = 0, gameFPS = 0;
@@ -60,7 +60,7 @@ int main(){
 	bool done = false;
 	bool draw = false;
 
-	//Variabler nödvändiga för spelet
+	//Variabler nï¿½dvï¿½ndiga fï¿½r spelet
 
 	enum typ{TOMT, SKATT, CHANS, ALLMANING};
 	int n_players = 2, current_player = 0;
@@ -69,16 +69,16 @@ int main(){
 
 	bool dice_used = false;
 
-	Property *tomter[ant_rutor]; //Fält av tomter
-	Player *players[max_players]; //Fält av spelare
-	Button *buttons[ant_buttons]; //Fält av buttons
+	Property *tomter[ant_rutor]; //Fï¿½lt av tomter
+	Player *players[max_players]; //Fï¿½lt av spelare
+	Button *buttons[ant_buttons]; //Fï¿½lt av buttons
 	Sprite *dice_sprite_0;
 	Sprite *dice_sprite_1;
 
-	read_Property_data(tomter); //Läser in data till tomter
+	read_Property_data(tomter); //Lï¿½ser in data till tomter
 	create_players(n_players, players, tomter); //Skapar spelare
-	read_Button_data(buttons); //Läser in buttons koodinater och id
-	read_Status_box_data(tomter); //Läser in status boxarnas positioner och gatunummer
+	read_Button_data(buttons); //Lï¿½ser in buttons koodinater och id
+	read_Status_box_data(tomter); //Lï¿½ser in status boxarnas positioner och gatunummer
 
 
 	//Allegro variabler
@@ -103,7 +103,7 @@ int main(){
 		return (-1);
 	}
 
-	//Tar reda på skärmens storlek och omskalninsförhållanden
+	//Tar reda pï¿½ skï¿½rmens storlek och omskalninsfï¿½rhï¿½llanden
 	if(!al_get_monitor_info(0, p_info)){
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to get screen info" , NULL, ALLEGRO_MESSAGEBOX_ERROR); 
 		return(-1);
@@ -166,7 +166,7 @@ int main(){
 	ALLEGRO_FONT *arial_16 = al_load_ttf_font("arial.ttf", 16, 0);
 	ALLEGRO_FONT *arial_36 = al_load_ttf_font("arial.ttf", 36, 0);
 
-	//Skapar event_queue, registrerar källor och startar timer
+	//Skapar event_queue, registrerar kï¿½llor och startar timer
 	event_queue = al_create_event_queue();
 	al_register_event_source(event_queue, al_get_display_event_source(display));
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
@@ -178,15 +178,15 @@ int main(){
 	while(!done){
 		ALLEGRO_EVENT ev;
 		al_wait_for_event(event_queue, &ev);
-		if(ev.type == ALLEGRO_EVENT_MOUSE_AXES){  //Läser av koordinater från musen
-			mouse_pos_x = (ev.mouse.x * 1 - scaleX) / (double)scale;
-			mouse_pos_y = (ev.mouse.y * 1 - scaleY) / (double)scale;
+		if(ev.type == ALLEGRO_EVENT_MOUSE_AXES){  //Lï¿½ser av koordinater frï¿½n musen
+			mouse_pos_x = (ev.mouse.x * 1 ) / (double)scale;
+			mouse_pos_y = (ev.mouse.y * 1 ) / (double)scale;
 			//mouse_pos_x = ev.mouse.x;
 			//mouse_pos_y = ev.mouse.y;
 
 		}
-		else if(ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){ //När musknapp är nedtryckt
-			if(ev.mouse.button == 1){ //Vänster musknapp
+		else if(ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){ //Nï¿½r musknapp ï¿½r nedtryckt
+			if(ev.mouse.button == 1){ //Vï¿½nster musknapp
 				
 				if(buy_street_Q->get_active()){
 					int ID_button_pressed_temp = buy_street_Q->button_pressed(mouse_pos_x, mouse_pos_y);
@@ -210,35 +210,35 @@ int main(){
 					}
 				
 					switch(ID_button_pressed){
-						case 1: //Slå tärningarna
+						case 1: //Slï¿½ tï¿½rningarna
 							if(!dice_used){
 								roll_dice(dice_1); roll_dice(dice_2);
 								
-								dice_sprite_0->set_curret_frame(max_tarning - (dice_1)); //Byter bild på tärning
+								dice_sprite_0->set_curret_frame(max_tarning - (dice_1)); //Byter bild pï¿½ tï¿½rning
 								dice_sprite_1->set_curret_frame(max_tarning - (dice_2));
 	
 								players[current_player]->move_Player(dice_1 + dice_2, tomter); //Flyttar spelare
 								if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) == 0){
 									buy_street_Q->set_active(true);
 								}
-								else if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != players[current_player] && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != 0){ //Om tomten är en gata och inte är ägd av dig eller banken
+								else if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != players[current_player] && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != 0){ //Om tomten ï¿½r en gata och inte ï¿½r ï¿½gd av dig eller banken
 									((Street*)tomter[players[current_player]->get_pos_ruta()])->pay_rent(players[current_player], tomter);
 								}
 								dice_used = true;
 							}
 							break;
-						case 2: //Köper tomt
+						case 2: //Kï¿½per tomt
 							if(tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0){
 								((Street*)tomter[players[current_player]->get_pos_ruta()])->buy_Street(players[current_player]);
 							}
 							break;
 						case 3:
 							if(dice_used){
-								current_player = (current_player + 1) % n_players; //Nästa spelare
+								current_player = (current_player + 1) % n_players; //Nï¿½sta spelare
 								dice_used = false;
 							}
 							break;
-						case 4: //Sälja gata
+						case 4: //Sï¿½lja gata
 							if(tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0){
 								((Street*)tomter[players[current_player]->get_pos_ruta()])->sell_Street(players[current_player]);
 							}
@@ -253,7 +253,7 @@ int main(){
 		}
 		else if(ev.type == ALLEGRO_EVENT_TIMER){
 			
-			frames++; //Räknar frames
+			frames++; //Rï¿½knar frames
 			if(al_get_time() - gameTime >= 1){ //Uppdaterar fps efter 1 sekund 
 				gameTime = al_current_time();
 				gameFPS = frames;
@@ -292,7 +292,7 @@ int main(){
 			al_set_target_backbuffer(display);
 			al_clear_to_color(al_map_rgb(0, 0, 0));
 			al_draw_scaled_bitmap(buffer, 0, 0, width, height, 0, 0, scaleW , scaleH, 0);
-			//al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 20, 0, "Mouse_x: %lf Mouse_y: %lf", mouse_pos_x, mouse_pos_y);
+			al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 20, 0, "Mouse_x: %lf Mouse_y: %lf", mouse_pos_x, mouse_pos_y);
 			al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 5, 0, "FPS: %i", gameFPS);
 			al_flip_display();
 			draw = false;
@@ -310,9 +310,9 @@ int main(){
 }
 
 void read_Property_data(Property *tomter[]){
-	//Öppnar fil för data till klassen Property
+	//ï¿½ppnar fil fï¿½r data till klassen Property
 	std::ifstream file("property_config.txt"); 
-	//Tillfällig variabler för initiering av objekten
+	//Tillfï¿½llig variabler fï¿½r initiering av objekten
 	char namn[max_name_length];
 	namn[0] = '/0';
 	enum intdata {posx1, posx2, posy1, posy2, posruta};
@@ -321,7 +321,7 @@ void read_Property_data(Property *tomter[]){
 	char line2[max_config_line_length];
 	bool endfile = false;
 	
-	if(!file){  //Kontrollerar att filen är öppen
+	if(!file){  //Kontrollerar att filen ï¿½r ï¿½ppen
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize load Property file config" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
 		exit(EXIT_FAILURE);
 	}
@@ -329,14 +329,14 @@ void read_Property_data(Property *tomter[]){
 	for(int i = 0; i < ant_rutor; i++){
 			
 			file.getline(line, (max_config_line_length-1));
-			while(line[0] == '#'){ //Läser in ny rad om första tecknet är kommentartecken
+			while(line[0] == '#'){ //Lï¿½ser in ny rad om fï¿½rsta tecknet ï¿½r kommentartecken
 				file.getline(line, (max_config_line_length-1));
 			}
 			for(int j = 0, r_pos = 0; j < property_variable_count; j++){
-				if(!endfile){ //Kontrollerar om nollförtecken tidigare hittats
+				if(!endfile){ //Kontrollerar om nollfï¿½rtecken tidigare hittats
 					getline_char(line, line2, max_config_line_length,max_config_line_length, ',', endfile, r_pos);
 				}
-				r_pos += strlen(line2) + 1; //Räknar hur många tecken som har lästs och används för att veta var nästa inläsning ska ske i strängen
+				r_pos += strlen(line2) + 1; //Rï¿½knar hur mï¿½nga tecken som har lï¿½sts och anvï¿½nds fï¿½r att veta var nï¿½sta inlï¿½sning ska ske i strï¿½ngen
 
 				if(j < property_int_data_count){
 					intdata[j] = std::atoi(line2);
@@ -384,7 +384,7 @@ void getline_char(char line_in[],char line_out[],int out_length, int max_read, c
 }
 
 void create_players(int n_players, Player *players[], Property *tomter[]){
-	//Definerar färger till de olika spelarna
+	//Definerar fï¿½rger till de olika spelarna
 
 	int player_colors[max_players * 3];
 	player_colors[0] = 255; player_colors[1] = 131; player_colors[2] = 43;
@@ -403,7 +403,7 @@ void create_players(int n_players, Player *players[], Property *tomter[]){
 	for(int i = 0; i < n_players; i++){ //Skapar spelare
 		int pos_x, pos_y, pos_ruta;
 
-		tomter[start_ruta]->get_player_pos(pos_x, pos_y);  //Ger startposition för spelaren
+		tomter[start_ruta]->get_player_pos(pos_x, pos_y);  //Ger startposition fï¿½r spelaren
 		pos_ruta = tomter[start_ruta]->get_pos_ruta();
 		players[i] = new Player(pos_x, pos_y, pos_ruta, i, startpengar, player_colors[i + (i * 3)], player_colors[i + (i * 3) + 1], player_colors[i + (i * 3)] + 2);
 	}
@@ -414,15 +414,15 @@ void roll_dice(int &dice){
 }
 
 void read_Button_data(Button* buttons[]) {
-	//Öppnar fil för data till klassen Property
+	//ï¿½ppnar fil fï¿½r data till klassen Property
 	std::ifstream file("button_config.txt"); 
-	//Tillfällig variabler för initiering av objekten
+	//Tillfï¿½llig variabler fï¿½r initiering av objekten
 	int intdata[button_int_data_count];
 	char line[max_config_line_length];
 	char line2[max_config_line_length];
 	bool endfile = false;
 
-	if(!file){  //Kontrollerar att filen är öppen
+	if(!file){  //Kontrollerar att filen ï¿½r ï¿½ppen
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize load Property file config" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
 		exit(EXIT_FAILURE);
 	}
@@ -430,13 +430,13 @@ void read_Button_data(Button* buttons[]) {
 	for(int i = 0; i < ant_buttons; i++){
 		file.getline(line, (max_config_line_length-1));
 		for(int j = 0, r_pos = 0; j < button_int_data_count; j++){
-			while(line[0] == '#'){ //Läser in ny rad om första tecknet är kommentartecken
+			while(line[0] == '#'){ //Lï¿½ser in ny rad om fï¿½rsta tecknet ï¿½r kommentartecken
 				file.getline(line, (max_config_line_length-1));
 			}
-			if(!endfile){ //Kontrollerar om nollförtecken tidigare hittats
+			if(!endfile){ //Kontrollerar om nollfï¿½rtecken tidigare hittats
 				getline_char(line, line2, max_config_line_length,max_config_line_length, ',', endfile, r_pos);
 			}
-			r_pos += strlen(line2) + 1; //Räknar hur många tecken som har lästs och används för att veta var nästa inläsning ska ske i strängen
+			r_pos += strlen(line2) + 1; //Rï¿½knar hur mï¿½nga tecken som har lï¿½sts och anvï¿½nds fï¿½r att veta var nï¿½sta inlï¿½sning ska ske i strï¿½ngen
 			intdata[j] = std::atoi(line2);
 		}
 		buttons[i] = new Button(intdata[0], intdata[1], intdata[2], intdata[3], intdata[4]);
@@ -445,9 +445,9 @@ void read_Button_data(Button* buttons[]) {
 }
 
 void read_Status_box_data(Property** streets){
-	//Öppnar fil för data till klassen Property
+	//ï¿½ppnar fil fï¿½r data till klassen Property
 	std::ifstream file("Status_box_config.txt"); 
-	//Tillfällig variabler för initiering av objekten
+	//Tillfï¿½llig variabler fï¿½r initiering av objekten
 	int intdata[status_box_int_data_count];
 	char line[max_config_line_length];
 	char line2[max_config_line_length];
@@ -455,7 +455,7 @@ void read_Status_box_data(Property** streets){
 	const int displacement_x = 0;
 	const int displacement_y = 51;
 
-	if(!file){  //Kontrollerar att filen är öppen
+	if(!file){  //Kontrollerar att filen ï¿½r ï¿½ppen
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Status_box file config" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
 		exit(EXIT_FAILURE);
 	}
@@ -463,13 +463,13 @@ void read_Status_box_data(Property** streets){
 	for(int i = 0; i < ant_status_box; i++){
 		file.getline(line, (max_config_line_length-1));
 		for(int j = 0, r_pos = 0; j < status_box_int_data_count; j++){
-			while(line[0] == '#'){ //Läser in ny rad om första tecknet är kommentartecken
+			while(line[0] == '#'){ //Lï¿½ser in ny rad om fï¿½rsta tecknet ï¿½r kommentartecken
 				file.getline(line, (max_config_line_length-1));
 			}
-			if(!endfile){ //Kontrollerar om nollförtecken tidigare hittats
+			if(!endfile){ //Kontrollerar om nollfï¿½rtecken tidigare hittats
 				getline_char(line, line2, max_config_line_length,max_config_line_length, ',', endfile, r_pos);
 			}
-			r_pos += strlen(line2) + 1; //Räknar hur många tecken som har lästs och används för att veta var nästa inläsning ska ske i strängen
+			r_pos += strlen(line2) + 1; //Rï¿½knar hur mï¿½nga tecken som har lï¿½sts och anvï¿½nds fï¿½r att veta var nï¿½sta inlï¿½sning ska ske i strï¿½ngen
 			intdata[j] = std::atoi(line2);
 		}
 		
