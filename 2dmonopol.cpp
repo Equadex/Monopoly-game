@@ -26,6 +26,7 @@ const int max_name_length = 64;
 const int property_int_data_count = 15;
 const int property_variable_count = property_int_data_count + 1;
 const int button_int_data_count = 5;
+const int button_variable_data_count = button_int_data_count + 1;
 const int status_box_int_data_count = 5;
 const int startpengar = 1500;
 const int start_ruta = 0;
@@ -50,7 +51,7 @@ int main(){
 	int	window_height;
 	int width = 1280;
 	int height = 1000;
-	double FPS = 30;
+	double FPS = 120;
 	float mouse_pos_x = 0;
 	float mouse_pos_y = 0;
 	int frames = 0, gameFPS = 0;
@@ -157,8 +158,8 @@ int main(){
 	dice_sprite_1 = new Sprite(1172, 6, 81, dice);
 
 	Button *temp[2];
-	temp[0] = new Button(165 + 162, 275 + 250, 165 + 162 + 80, 275 + 250 + 25, 1, button);
-	temp[1] = new Button(165 + 527, 275 + 250, 165 + 527 + 80, 275 + 250 + 25, 2, button);
+	temp[0] = new Button(165 + 162, 275 + 250, 165 + 162 + 80, 275 + 250 + 25, 1, "Buy", button);
+	temp[1] = new Button(600 - 162 + 80, 275 + 250, 600, 275 + 250 + 25, 2, "Auction", button);
 	Question *buy_street_Q = new Question(165, 275, temp, 2, "Buy or auction?", "This property is owned by the bank and is for sale. Do you want to buy it or let it be sold by auction?", question);
 
 	//Skapar fonts
@@ -276,18 +277,20 @@ int main(){
 				if(tomter[i]->get_typ() == 0)
 					((Street*)tomter[i])->draw_status();
 			}
-			dice_sprite_0->draw();
+			dice_sprite_0->draw(); //Ritar tärningar
 			dice_sprite_1->draw();
-			if(buy_street_Q->get_active())
+			if(buy_street_Q->get_active()) //Ritar köpfrågan om den är aktiv
 				buy_street_Q->draw(arial_36, arial_16);
 
-			for(int i = 0; i < ant_buttons; i++){
-				buttons[i]->draw();
+			for(int i = 0; i < ant_buttons; i++){ //Ritar knappar
+				buttons[i]->draw(arial_16);
 			}
 			//al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 5, 0, "FPS: %i", gameFPS);
 			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 15, 940, 0, "Player %i", current_player);
 			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 100, 940, 0, "Funds: %i", (players[current_player])->get_money());
 			//al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 20, 0, "Mouse_x: %lf Mouse_y: %lf", mouse_pos_x, mouse_pos_y);
+
+			//Skalar om bilden och ritar till backbuffern. Vänder sedan på buffern
 
 			al_set_target_backbuffer(display);
 			al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -420,6 +423,7 @@ void read_Button_data(Button* buttons[]) {
 	int intdata[button_int_data_count];
 	char line[max_config_line_length];
 	char line2[max_config_line_length];
+	char label[max_config_line_length];
 	bool endfile = false;
 
 	if(!file){  //Kontrollerar att filen är öppen
@@ -429,7 +433,7 @@ void read_Button_data(Button* buttons[]) {
 
 	for(int i = 0; i < ant_buttons; i++){
 		file.getline(line, (max_config_line_length-1));
-		for(int j = 0, r_pos = 0; j < button_int_data_count; j++){
+		for(int j = 0, r_pos = 0; j < button_variable_data_count; j++){
 			while(line[0] == '#'){ //Läser in ny rad om första tecknet är kommentartecken
 				file.getline(line, (max_config_line_length-1));
 			}
@@ -437,9 +441,14 @@ void read_Button_data(Button* buttons[]) {
 				getline_char(line, line2, max_config_line_length,max_config_line_length, ',', endfile, r_pos);
 			}
 			r_pos += strlen(line2) + 1; //Räknar hur många tecken som har lästs och används för att veta var nästa inläsning ska ske i strängen
-			intdata[j] = std::atoi(line2);
+			
+			if(j < button_int_data_count){
+				intdata[j] = std::atoi(line2);
+			}
+			else
+				strncpy(label, line2, max_name_length-1);
 		}
-		buttons[i] = new Button(intdata[0], intdata[1], intdata[2], intdata[3], intdata[4]);
+		buttons[i] = new Button(intdata[0], intdata[1], intdata[2], intdata[3], intdata[4], label);
 		endfile = false;
 	}
 }
