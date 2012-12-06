@@ -26,6 +26,7 @@ const int max_name_length = 64;
 const int property_int_data_count = 15;
 const int property_variable_count = property_int_data_count + 1;
 const int button_int_data_count = 5;
+const int button_variable_data_count = button_int_data_count + 1;
 const int status_box_int_data_count = 5;
 const int startpengar = 1500;
 const int start_ruta = 0;
@@ -41,6 +42,7 @@ void create_players(int n_players, Player *players[], Property *tomter[]);
 void roll_dice(int &dice);
 void read_Button_data(Button* buttons[]);
 void read_Status_box_data(Property** streets);
+void auction();
 
 int main(){
 	//Konstanta variabler i main
@@ -50,7 +52,7 @@ int main(){
 	int	window_height;
 	int width = 1280;
 	int height = 1000;
-	double FPS = 5;
+	double FPS = 120;
 	float mouse_pos_x = 0;
 	float mouse_pos_y = 0;
 	int frames = 0, gameFPS = 0;
@@ -97,6 +99,7 @@ int main(){
 	ALLEGRO_BITMAP *dice = NULL;
 	ALLEGRO_BITMAP *question = NULL;
 	ALLEGRO_BITMAP *button = NULL;
+	ALLEGRO_BITMAP *auction = NULL;
 
 	if(!al_init()){ //Initierar allegro bibloteket
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Allegro" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
@@ -152,13 +155,14 @@ int main(){
 	question = al_load_bitmap("Question.bmp");
 	button = al_load_bitmap("button.bmp");
 	buffer = al_create_bitmap(width, height);
+	auction = al_load_bitmap("Auction.bmp");
 
 	dice_sprite_0 = new Sprite(1091, 6, 81, dice);
 	dice_sprite_1 = new Sprite(1172, 6, 81, dice);
 
 	Button *temp[2];
-	temp[0] = new Button(165 + 162, 275 + 250, 165 + 162 + 80, 275 + 250 + 25, 1, button);
-	temp[1] = new Button(165 + 527, 275 + 250, 165 + 527 + 80, 275 + 250 + 25, 2, button);
+	temp[0] = new Button(165 + 162, 275 + 250, 165 + 162 + 80, 275 + 250 + 25, 1, "Buy", button);
+	temp[1] = new Button(600 - 162 + 80, 275 + 250, 600, 275 + 250 + 25, 2, "Auction", button);
 	Question *buy_street_Q = new Question(165, 275, temp, 2, "Buy or auction?", "This property is owned by the bank and is for sale. Do you want to buy it or let it be sold by auction?", question);
 
 	//Skapar fonts
@@ -196,7 +200,9 @@ int main(){
 								((Street*)tomter[players[current_player]->get_pos_ruta()])->buy_Street(players[current_player]);
 								break;
 							case 2:
-							
+								al_draw_bitmap(auction, 100, 100, 0);
+								al_flip_display();
+								al_rest(30);
 								break;
 						}
 						buy_street_Q->set_active(false);
@@ -218,7 +224,7 @@ int main(){
 								dice_sprite_1->set_curret_frame(max_tarning - (dice_2));
 	
 								players[current_player]->move_Player(dice_1 + dice_2, tomter); //Flyttar spelare
-								if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) == 0){
+								if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) == 0){ //Om en tomt �r �gd av banken
 									buy_street_Q->set_active(true);
 								}
 								else if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != players[current_player] && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != 0){ //Om tomten �r en gata och inte �r �gd av dig eller banken
@@ -276,23 +282,25 @@ int main(){
 				if(tomter[i]->get_typ() == 0)
 					((Street*)tomter[i])->draw_status();
 			}
-			dice_sprite_0->draw();
+			dice_sprite_0->draw(); //Ritar t�rningar
 			dice_sprite_1->draw();
-			if(buy_street_Q->get_active())
+			if(buy_street_Q->get_active()) //Ritar k�pfr�gan om den �r aktiv
 				buy_street_Q->draw(arial_36, arial_16);
 
-			for(int i = 0; i < ant_buttons; i++){
-				buttons[i]->draw();
+			for(int i = 0; i < ant_buttons; i++){ //Ritar knappar
+				buttons[i]->draw(arial_16);
 			}
 			//al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 5, 0, "FPS: %i", gameFPS);
 			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 15, 940, 0, "Player %i", current_player);
 			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 100, 940, 0, "Funds: %i", (players[current_player])->get_money());
 			//al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 20, 0, "Mouse_x: %lf Mouse_y: %lf", mouse_pos_x, mouse_pos_y);
 
+			//Skalar om bilden och ritar till backbuffern. V�nder sedan p� buffern
+
 			al_set_target_backbuffer(display);
 			al_clear_to_color(al_map_rgb(0, 0, 0));
 			al_draw_scaled_bitmap(buffer, 0, 0, width, height, 0, 0, scaleW , scaleH, 0);
-			//al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 20, 0, "Mouse_x: %lf Mouse_y: %lf", mouse_pos_x, mouse_pos_y);
+			al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 20, 0, "Mouse_x: %lf Mouse_y: %lf", mouse_pos_x, mouse_pos_y);
 			al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 5, 0, "FPS: %i", gameFPS);
 			al_flip_display();
 			draw = false;
@@ -420,6 +428,7 @@ void read_Button_data(Button* buttons[]) {
 	int intdata[button_int_data_count];
 	char line[max_config_line_length];
 	char line2[max_config_line_length];
+	char label[max_config_line_length];
 	bool endfile = false;
 
 	if(!file){  //Kontrollerar att filen �r �ppen
@@ -429,7 +438,7 @@ void read_Button_data(Button* buttons[]) {
 
 	for(int i = 0; i < ant_buttons; i++){
 		file.getline(line, (max_config_line_length-1));
-		for(int j = 0, r_pos = 0; j < button_int_data_count; j++){
+		for(int j = 0, r_pos = 0; j < button_variable_data_count; j++){
 			while(line[0] == '#'){ //L�ser in ny rad om f�rsta tecknet �r kommentartecken
 				file.getline(line, (max_config_line_length-1));
 			}
@@ -437,9 +446,14 @@ void read_Button_data(Button* buttons[]) {
 				getline_char(line, line2, max_config_line_length,max_config_line_length, ',', endfile, r_pos);
 			}
 			r_pos += strlen(line2) + 1; //R�knar hur m�nga tecken som har l�sts och anv�nds f�r att veta var n�sta inl�sning ska ske i str�ngen
-			intdata[j] = std::atoi(line2);
+			
+			if(j < button_int_data_count){
+				intdata[j] = std::atoi(line2);
+			}
+			else
+				strncpy(label, line2, max_name_length-1);
 		}
-		buttons[i] = new Button(intdata[0], intdata[1], intdata[2], intdata[3], intdata[4]);
+		buttons[i] = new Button(intdata[0], intdata[1], intdata[2], intdata[3], intdata[4], label);
 		endfile = false;
 	}
 }
@@ -476,4 +490,8 @@ void read_Status_box_data(Property** streets){
 		((Street*)streets[intdata[4]])->create_status_box(new Status_box(intdata[0], intdata[1], intdata[2], intdata[3], displacement_x, displacement_y));
 		endfile = false;
 	}
+}
+
+void auction(Question* buy_street_Q){
+	buy_street_Q->set_active(false);
 }

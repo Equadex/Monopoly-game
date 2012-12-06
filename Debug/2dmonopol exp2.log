@@ -1,17 +1,17 @@
-﻿Build started 12/4/2012 2:49:25 PM.
-     1>Project "C:\Anders\git\Respository\2dmonopol exp2\2dmonopol exp2.vcxproj" on node 2 (build target(s)).
+Build started 12/6/2012 12:49:03 AM.
+     1>Project "C:\Users\Anders\Documents\Visual Studio 2010\SKOLProjects\2dmonopol exp2\2dmonopol exp2\2dmonopol exp2.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\2dmonopol exp2.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
          All outputs are up-to-date.
        Link:
          All outputs are up-to-date.
-         2dmonopol exp2.vcxproj -> C:\Anders\git\Respository\Debug\2dmonopol exp2.exe
+         2dmonopol exp2.vcxproj -> C:\Users\Anders\Documents\Visual Studio 2010\SKOLProjects\2dmonopol exp2\Debug\2dmonopol exp2.exe
        FinalizeBuildStatus:
          Deleting file "Debug\2dmonopol exp2.unsuccessfulbuild".
          Touching "Debug\2dmonopol exp2.lastbuildstate".
-     1>Done Building Project "C:\Anders\git\Respository\2dmonopol exp2\2dmonopol exp2.vcxproj" (build target(s)).
+     1>Done Building Project "C:\Users\Anders\Documents\Visual Studio 2010\SKOLProjects\2dmonopol exp2\2dmonopol exp2\2dmonopol exp2.vcxproj" (build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:03.12
+Time Elapsed 00:00:00.07

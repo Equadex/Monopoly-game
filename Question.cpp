@@ -58,7 +58,7 @@ Question::~Question(){
 void Question::draw(ALLEGRO_FONT* Title, ALLEGRO_FONT* Text){
 	al_draw_bitmap(image, pos_x, pos_y, 0);
 	for(int i = 0; i < n_buttons; i++){
-		buttons[i]->draw();
+		buttons[i]->draw(Text);
 	}
 
 	for(int i = 0; i < max_question_lines_title && n_title >= i; i++){
