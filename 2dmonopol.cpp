@@ -42,6 +42,7 @@ void create_players(int n_players, Player *players[], Property *tomter[]);
 void roll_dice(int &dice);
 void read_Button_data(Button* buttons[]);
 void read_Status_box_data(Property** streets);
+void auction();
 
 int main(){
 	//Konstanta variabler i main
@@ -98,6 +99,7 @@ int main(){
 	ALLEGRO_BITMAP *dice = NULL;
 	ALLEGRO_BITMAP *question = NULL;
 	ALLEGRO_BITMAP *button = NULL;
+	ALLEGRO_BITMAP *auction = NULL;
 
 	if(!al_init()){ //Initierar allegro bibloteket
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Allegro" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
@@ -153,6 +155,7 @@ int main(){
 	question = al_load_bitmap("Question.bmp");
 	button = al_load_bitmap("button.bmp");
 	buffer = al_create_bitmap(width, height);
+	auction = al_load_bitmap("Auction.bmp");
 
 	dice_sprite_0 = new Sprite(1091, 6, 81, dice);
 	dice_sprite_1 = new Sprite(1172, 6, 81, dice);
@@ -197,7 +200,9 @@ int main(){
 								((Street*)tomter[players[current_player]->get_pos_ruta()])->buy_Street(players[current_player]);
 								break;
 							case 2:
-							
+								al_draw_bitmap(auction, 100, 100, 0);
+								al_flip_display();
+								al_rest(30);
 								break;
 						}
 						buy_street_Q->set_active(false);
@@ -219,7 +224,7 @@ int main(){
 								dice_sprite_1->set_curret_frame(max_tarning - (dice_2));
 	
 								players[current_player]->move_Player(dice_1 + dice_2, tomter); //Flyttar spelare
-								if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) == 0){
+								if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) == 0){ //Om en tomt är ägd av banken
 									buy_street_Q->set_active(true);
 								}
 								else if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != players[current_player] && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != 0){ //Om tomten är en gata och inte är ägd av dig eller banken
@@ -485,4 +490,8 @@ void read_Status_box_data(Property** streets){
 		((Street*)streets[intdata[4]])->create_status_box(new Status_box(intdata[0], intdata[1], intdata[2], intdata[3], displacement_x, displacement_y));
 		endfile = false;
 	}
+}
+
+void auction(Question* buy_street_Q){
+	buy_street_Q->set_active(false);
 }
