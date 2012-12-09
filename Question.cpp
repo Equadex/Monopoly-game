@@ -101,7 +101,7 @@ void Auction_window::draw(ALLEGRO_FONT* Title, ALLEGRO_FONT* Text){
 		al_draw_text(Text, al_map_rgb(0, 0, 0), (pos_x + al_get_bitmap_width(image) / 2), (15 * i + pos_y + 4 * (al_get_bitmap_height(image) / 10)), ALLEGRO_ALIGN_CENTRE, message[i]);
 	}
 
-	/*for(int i = 0; i < ant_text_fields; i++){
+	for(int i = 0; i < ant_text_fields; i++){
 		text_fields[i]->draw();
-	}*/
+	}
 }

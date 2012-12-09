@@ -15,7 +15,7 @@ Auction::Auction(int pos_x, int pos_y, Player** players, int n_players, ALLEGRO_
 	temp_text = new Text_field*[ant_text_fields];
 
 	temp_text[0] = new Text_field(300, 240,"%Name is on auction and the current bid is %bid" , normal_text);
-	temp_text[1] = new Text_field(330, 255,"Your bid: %bid", normal_text);
+	temp_text[1] = new Text_field(340, 380,"Your bid: %bid", normal_text);
 
 	window = new Auction_window(pos_x, pos_y, buttons, ant_buttons, "Auction", "", image,temp_text, ant_text_fields);
 }
