@@ -172,7 +172,7 @@ int main(){
 	temp[0] = new Button(165 + 162, 275 + 250, 165 + 162 + 80, 275 + 250 + 25, 1, "Buy", button);
 	temp[1] = new Button(600 - 162 + 80, 275 + 250, 600, 275 + 250 + 25, 2, "Auction", button);
 	Question *buy_street_Q = new Question(165, 275, temp, 2, "Buy or auction?", "This property is owned by the bank and is for sale. Do you want to buy it or let it be sold by auction?", question);
-	Auction *auction = new Auction(165, 275, players, n_players, auction_image, arial_36, arial_16);
+	Auction *auction = new Auction(0, 120, players, n_players, auction_image, button, arial_36, arial_16);
 
 	//Skapar event_queue, registrerar källor och startar timer
 	event_queue = al_create_event_queue();

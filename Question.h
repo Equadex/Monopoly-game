@@ -9,6 +9,7 @@
 #include <allegro5\allegro_font.h>
 
 #include "Button.h"
+#include "Text_field.h"
 
 const int max_question_length = 90;
 const int max_question_lines = 10;
@@ -24,7 +25,7 @@ public:
 	void draw(ALLEGRO_FONT* Title, ALLEGRO_FONT* Text);
 	int button_pressed(int mouse_pos_x, int mouse_pos_y);
 
-private:
+protected:
 	bool active;
 	ALLEGRO_BITMAP *image;
 	int pos_x;
@@ -34,6 +35,15 @@ private:
 	char **title;
 	int n_title, n_message;
 	char **message;
+};
+
+class Auction_window : public Question{
+public:
+	Auction_window(int pos_x, int pos_y, Button *buttons[],int n_buttons, char* title_in, char* message_in, ALLEGRO_BITMAP *image_in, Text_field** text_fields_in, int ant_text_fields_in, bool active = false) : Question(pos_x, pos_y, buttons, n_buttons, title_in, message_in, image_in, active), text_fields(text_fields_in), ant_text_fields(ant_text_fields_in){}
+	void draw(ALLEGRO_FONT* Title, ALLEGRO_FONT* Text);
+protected:
+	Text_field **text_fields;
+	int ant_text_fields;
 };
 
 #endif
