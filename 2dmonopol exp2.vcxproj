@@ -62,12 +62,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="2dmonopol.cpp" />
+    <ClCompile Include="Auction.cpp" />
+    <ClCompile Include="Auction_window.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Property.cpp" />
     <ClCompile Include="Question.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Status_box.cpp" />
+    <ClCompile Include="Text_field.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Auction.h" />
@@ -78,6 +81,7 @@
     <ClInclude Include="Question.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Status_box.h" />
+    <ClInclude Include="Text_field.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

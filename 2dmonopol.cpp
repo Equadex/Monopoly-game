@@ -11,6 +11,7 @@
 #include <allegro5\allegro_native_dialog.h>
 #include <allegro5\allegro_font.h>
 #include <allegro5\allegro_ttf.h>
+#include <allegro5/allegro_opengl.h>
 
 #include "Player.h"
 #include "Property.h"
@@ -18,6 +19,7 @@
 #include "Status_box.h"
 #include "Sprite.h"
 #include "Question.h"
+#include "Auction.h"
 
 //Globala variabler lokala
 
@@ -52,7 +54,7 @@ int main(){
 	int	window_height;
 	int width = 1280;
 	int height = 1000;
-	double FPS = 5;
+	double FPS = 1200;
 	float mouse_pos_x = 0;
 	float mouse_pos_y = 0;
 	int frames = 0, gameFPS = 0;
@@ -99,7 +101,7 @@ int main(){
 	ALLEGRO_BITMAP *dice = NULL;
 	ALLEGRO_BITMAP *question = NULL;
 	ALLEGRO_BITMAP *button = NULL;
-	ALLEGRO_BITMAP *auction = NULL;
+	ALLEGRO_BITMAP *auction_image = NULL;
 
 	if(!al_init()){ //Initierar allegro bibloteket
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Allegro" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
@@ -130,6 +132,7 @@ int main(){
 
 	//Skapar och testar display
 	//al_set_new_display_flags(ALLEGRO_WINDOWED);
+	al_set_new_display_flags(ALLEGRO_OPENGL);
 	display = al_create_display(scaleW, scaleH);
 	if(!display){
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Display" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
@@ -155,20 +158,23 @@ int main(){
 	question = al_load_bitmap("Question.bmp");
 	button = al_load_bitmap("button.bmp");
 	buffer = al_create_bitmap(width, height);
-	auction = al_load_bitmap("Auction.bmp");
+	auction_image = al_load_bitmap("Auction.bmp");
 
-	dice_sprite_0 = new Sprite(1091, 6, 81, dice);
+	//Skapar fonts
+
+	ALLEGRO_FONT *arial_16 = al_load_ttf_font("arial.ttf", 16, 0);
+	ALLEGRO_FONT *arial_36 = al_load_ttf_font("arial.ttf", 36, 0);
+
+	//Temp kod som inte borde se ut s�h�r
+
+	dice_sprite_0 = new Sprite(1091, 6, 81, dice); 
 	dice_sprite_1 = new Sprite(1172, 6, 81, dice);
 
 	Button *temp[2];
 	temp[0] = new Button(165 + 162, 275 + 250, 165 + 162 + 80, 275 + 250 + 25, 1, "Buy", button);
 	temp[1] = new Button(600 - 162 + 80, 275 + 250, 600, 275 + 250 + 25, 2, "Auction", button);
 	Question *buy_street_Q = new Question(165, 275, temp, 2, "Buy or auction?", "This property is owned by the bank and is for sale. Do you want to buy it or let it be sold by auction?", question);
-
-	//Skapar fonts
-
-	ALLEGRO_FONT *arial_16 = al_load_ttf_font("arial.ttf", 16, 0);
-	ALLEGRO_FONT *arial_36 = al_load_ttf_font("arial.ttf", 36, 0);
+	Auction *auction = new Auction(0, 120, players, n_players, auction_image, button, arial_36, arial_16);
 
 	//Skapar event_queue, registrerar k�llor och startar timer
 	event_queue = al_create_event_queue();
@@ -200,9 +206,8 @@ int main(){
 								((Street*)tomter[players[current_player]->get_pos_ruta()])->buy_Street(players[current_player]);
 								break;
 							case 2:
-								al_draw_bitmap(auction, 100, 100, 0);
-								al_flip_display();
-								al_rest(30);
+								auction->set_property(((Street*)tomter[players[current_player]->get_pos_ruta()]));
+								auction->set_active(true);
 								break;
 						}
 						buy_street_Q->set_active(false);
@@ -286,6 +291,9 @@ int main(){
 			dice_sprite_1->draw();
 			if(buy_street_Q->get_active()) //Ritar k�pfr�gan om den �r aktiv
 				buy_street_Q->draw(arial_36, arial_16);
+			else if(auction->get_active()){
+				auction->draw();
+			}
 
 			for(int i = 0; i < ant_buttons; i++){ //Ritar knappar
 				buttons[i]->draw(arial_16);
