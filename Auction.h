@@ -13,7 +13,12 @@ public:
 	~Auction();
 	void draw();
 	void set_property(Street *property_on_sale_in){property_on_sale = property_on_sale_in;}
-	void set_active(bool active_in){active = active_in;}
+	void set_active(bool active_in){
+		char temp[100];
+		active = active_in;
+		property_on_sale->get_namn(temp, 100);
+		window->update(temp, current_max_bid, 0, c_player);
+	}
 	bool get_active(){return active;}
 private:
 	ALLEGRO_BITMAP *image;
@@ -22,11 +27,13 @@ private:
 	Auction_window* window;
 	Player** players;
 	Street *property_on_sale;
-	int n_players;
+	int n_players, c_player;
 	int *players_bids;
+	int current_max_bid;
 	int pos_x, pos_y;
 	Button* *buttons;
 	int ant_buttons;
+	int max_number(int array_in[], int length);
 };
 
 #endif
