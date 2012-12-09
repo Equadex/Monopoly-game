@@ -1,6 +1,6 @@
 #include "Auction.h"
 
-Auction::Auction(int pos_x, int pos_y, Player** players, int n_players, ALLEGRO_BITMAP *image, ALLEGRO_BITMAP *button, ALLEGRO_FONT *title, ALLEGRO_FONT *normal_text, Street *property_on_sale,bool active) : pos_x(pos_x), pos_y(pos_y), players(players), n_players(n_players), image(image), ant_buttons(4), title(title), normal_text(normal_text), property_on_sale(property_on_sale), active(active), current_max_bid(0), c_player(0){
+Auction::Auction(int pos_x, int pos_y, Player** players, int n_players, ALLEGRO_BITMAP *image, ALLEGRO_BITMAP *button, ALLEGRO_BITMAP *box, ALLEGRO_FONT *title, ALLEGRO_FONT *normal_text, Street *property_on_sale,bool active) : pos_x(pos_x), pos_y(pos_y), players(players), n_players(n_players), image(image), ant_buttons(9), title(title), normal_text(normal_text), property_on_sale(property_on_sale), active(active), current_max_bid(0), c_player(0){
 	const int ant_text_fields = 3;
 	Text_field** temp_text = new Text_field*[ant_text_fields];
 	
@@ -8,9 +8,13 @@ Auction::Auction(int pos_x, int pos_y, Player** players, int n_players, ALLEGRO_
 	buttons = new Button*[ant_buttons];
 	buttons[0] = new Button(pos_x + 450 - 30 - 80, pos_y + 400, pos_x + 450 - 30, pos_y + 400 + 25, 1, "No bid", button);
 	buttons[1] = new Button(pos_x + 450 + 30, pos_y + 400, pos_x + 450 + 30 + 80, pos_y + 400 + 25, 2, "Bid", button);
-	buttons[2] = new Button(pos_x + 575, pos_y + 234, pos_x + 575 + 30, pos_y + 234 + 38, 3);
-	buttons[3] = new Button(pos_x + 575, pos_y + 285, pos_x + 575 + 30, pos_y + 285 + 38, 4);
-	
+	buttons[2] = new Button(pos_x + 565, pos_y + 255, pos_x + 565 + 30, pos_y + 255 + 30, 3, "1", box);
+	buttons[3] = new Button(pos_x + 565 + 50, pos_y + 255, pos_x + 565 + 80, pos_y + 255 + 30, 4, "5", box);
+	buttons[4] = new Button(pos_x + 665, pos_y + 255, pos_x + 665 + 30, pos_y + 255 + 30, 5, "10", box);
+	buttons[5] = new Button(pos_x + 665 + 50, pos_y + 255, pos_x + 665 + 80, pos_y + 255 + 30, 6, "50", box);
+	buttons[6] = new Button(pos_x + 765, pos_y + 255, pos_x + 765 + 30, pos_y + 255 + 30, 7, "100", box);
+	buttons[7] = new Button(pos_x + 765 + 50, pos_y + 255, pos_x + 765 + 80, pos_y + 255 + 30, 8, "500", box);
+	buttons[8] = new Button(pos_x + 865, pos_y + 255, pos_x + 865 + 30, pos_y + 255 + 30, 9, "1000", box);
 
 	temp_text = new Text_field*[ant_text_fields];
 
@@ -41,4 +45,32 @@ int Auction::max_number(int array_in[], int length){
 		}
 	}
 	return(max_n);
+}
+
+void Auction::set_active(bool active_in){
+	char temp[100];
+	active = active_in;
+	property_on_sale->get_namn(temp, 100);
+	window->update(temp, current_max_bid, 0, c_player);
+}
+
+void Auction::button_pressed(int mouse_x, int mouse_y){
+	int button_pressed = window->button_pressed(mouse_x, mouse_y);
+
+	switch(button_pressed){
+		case 1:
+			players_bids[c_player] = -1;
+			c_player = (c_player + 1) % n_players;
+			break;
+		case 2:
+			players_bids[c_player] = current_max_bid;
+			c_player = (c_player + 1) % n_players;
+			break;
+		case 3:
+			
+			break;
+		case 4:
+
+			break;
+	}
 }
