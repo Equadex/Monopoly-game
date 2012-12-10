@@ -20,6 +20,7 @@ private:
 	ALLEGRO_BITMAP *image;
 	ALLEGRO_FONT *title, *normal_text;
 	bool active;
+	bool *no_bid;
 	Auction_window* window;
 	Player** players;
 	Street *property_on_sale;
@@ -29,8 +30,8 @@ private:
 	int pos_x, pos_y;
 	Button* *buttons;
 	int ant_buttons;
-	int max_number(int array_in[], int length);
-	void clr_player_bids();
+	int max_number(int array_in[], int length, int *n);
+	void clr_player_data();
 };
 
 #endif

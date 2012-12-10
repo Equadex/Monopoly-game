@@ -50,7 +50,7 @@ public:
 	}
 	int get_zon() const;
 
-	void buy_Street(Player* buyer, bool trade = false);
+	void buy_Street(Player* buyer, bool trade = false, int cost_in = 0);
 	void sell_Street(Player* seller);
 	void create_status_box(Status_box* status_box);
 	void draw_status();

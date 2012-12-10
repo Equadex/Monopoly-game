@@ -5,9 +5,11 @@ Auction::Auction(int pos_x, int pos_y, Player** players, int n_players, ALLEGRO_
 	Text_field** temp_text = new Text_field*[ant_text_fields];
 	
 	players_bids = new int[n_players];
+	no_bid = new bool[n_players];
 
 	for(int i = 0; i < n_players; i++){
 		players_bids[i] = 0;
+		no_bid[i] = false;
 	}
 
 	buttons = new Button*[ant_buttons];
@@ -41,12 +43,14 @@ void Auction::draw(){
 	window->draw(title, normal_text);
 }
 
-int Auction::max_number(int array_in[], int length){
+int Auction::max_number(int array_in[], int length, int *n){
 	int max_n = array_in[0];
-	
+	n[0] = 0;
+
 	for(int i = 1; i < length; i++){
 		if(max_n < array_in[i]){
 			max_n = array_in[i];
+			n[0] = i;
 		}
 	}
 	return(max_n);
@@ -67,12 +71,13 @@ void Auction::button_pressed(int mouse_x, int mouse_y){
 
 	switch(button_pressed){
 		case 1:
-			players_bids[c_player] = -1;
+			no_bid[c_player] = true;
 			current_bid = 0;
 			c_player = (c_player + 1) % n_players;
 			break;
 		case 2:
 			players_bids[c_player] = current_bid;
+			current_max_bid = current_bid;
 			current_bid = 0;
 			c_player = (c_player + 1) % n_players;
 			break;
@@ -104,7 +109,7 @@ void Auction::button_pressed(int mouse_x, int mouse_y){
 	
 	int folders = 0;
 	for(int i = 0; i < n_players; i++){
-		if(players_bids[i] == -1){
+		if(no_bid[i] == true){
 			folders++;
 		}
 	}
@@ -112,12 +117,20 @@ void Auction::button_pressed(int mouse_x, int mouse_y){
 		window->set_active(false);
 		set_active(false);
 		folders = 0;
-		clr_player_bids();
+
+		int sum;
+		int n[1];
+
+		sum = max_number(players_bids, n_players, n);
+		if(sum > 0)
+			property_on_sale->buy_Street(players[n[0]], false, sum);
+		clr_player_data();
 	}
 }
 
-void Auction::clr_player_bids(){
+void Auction::clr_player_data(){
 	for(int i = 0; i < n_players; i++){
 		players_bids[i] = 0;
+		no_bid[i] = false;
 	}
 }
