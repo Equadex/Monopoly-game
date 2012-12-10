@@ -23,7 +23,7 @@ private:
 	Auction_window* window;
 	Player** players;
 	Street *property_on_sale;
-	int n_players, c_player;
+	int n_players, c_player, current_bid;
 	int *players_bids;
 	int current_max_bid;
 	int pos_x, pos_y;

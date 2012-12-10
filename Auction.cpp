@@ -1,10 +1,15 @@
 #include "Auction.h"
 
-Auction::Auction(int pos_x, int pos_y, Player** players, int n_players, ALLEGRO_BITMAP *image, ALLEGRO_BITMAP *button, ALLEGRO_BITMAP *box, ALLEGRO_FONT *title, ALLEGRO_FONT *normal_text, Street *property_on_sale,bool active) : pos_x(pos_x), pos_y(pos_y), players(players), n_players(n_players), image(image), ant_buttons(9), title(title), normal_text(normal_text), property_on_sale(property_on_sale), active(active), current_max_bid(0), c_player(0){
+Auction::Auction(int pos_x, int pos_y, Player** players, int n_players, ALLEGRO_BITMAP *image, ALLEGRO_BITMAP *button, ALLEGRO_BITMAP *box, ALLEGRO_FONT *title, ALLEGRO_FONT *normal_text, Street *property_on_sale,bool active) : pos_x(pos_x), pos_y(pos_y), players(players), n_players(n_players), image(image), ant_buttons(9), title(title), normal_text(normal_text), property_on_sale(property_on_sale), active(active), current_max_bid(0), c_player(0), current_bid(0){
 	const int ant_text_fields = 3;
 	Text_field** temp_text = new Text_field*[ant_text_fields];
 	
 	players_bids = new int[n_players];
+
+	for(int i = 0; i < n_players; i++){
+		players_bids[i] = 0;
+	}
+
 	buttons = new Button*[ant_buttons];
 	buttons[0] = new Button(pos_x + 450 - 30 - 80, pos_y + 400, pos_x + 450 - 30, pos_y + 400 + 25, 1, "No bid", button);
 	buttons[1] = new Button(pos_x + 450 + 30, pos_y + 400, pos_x + 450 + 30 + 80, pos_y + 400 + 25, 2, "Bid", button);
@@ -22,7 +27,7 @@ Auction::Auction(int pos_x, int pos_y, Player** players, int n_players, ALLEGRO_
 	temp_text[1] = new Text_field(340, 380,"Your bid: %i", normal_text);
 	temp_text[2] = new Text_field(20, 175, "Player %i", normal_text);
 
-	window = new Auction_window(pos_x, pos_y, buttons, ant_buttons, "Auction", "", image,temp_text, ant_text_fields);
+	window = new Auction_window(pos_x, pos_y, buttons, ant_buttons, "Auction", "", image,temp_text, ant_text_fields, true);
 }
 
 Auction::~Auction(){
@@ -56,21 +61,54 @@ void Auction::set_active(bool active_in){
 
 void Auction::button_pressed(int mouse_x, int mouse_y){
 	int button_pressed = window->button_pressed(mouse_x, mouse_y);
+	if(current_bid == 0)
+		current_bid = current_max_bid + 1;
 
 	switch(button_pressed){
 		case 1:
 			players_bids[c_player] = -1;
+			current_bid = 0;
 			c_player = (c_player + 1) % n_players;
 			break;
 		case 2:
-			players_bids[c_player] = current_max_bid;
+			players_bids[c_player] = current_bid;
+			current_bid = 0;
 			c_player = (c_player + 1) % n_players;
 			break;
 		case 3:
-			
+			current_bid++;
 			break;
 		case 4:
-
+			current_bid = current_bid + 5;
 			break;
+		case 5:
+			current_bid = current_bid + 10;
+			break;
+		case 6:
+			current_bid = current_bid + 50;
+			break;
+		case 7:
+			current_bid = current_bid + 100;
+			break;
+		case 8:
+			current_bid = current_bid + 500;
+			break;
+		case 9:
+			current_bid = current_bid + 1000;
+			break;
+	}
+	char temp[100];
+	property_on_sale->get_namn(temp, 100);
+	window->update(temp, current_max_bid, current_bid, c_player);
+	
+	int folders = 0;
+	for(int i = 0; i < n_players; i++){
+		if(players_bids[i] == -1){
+			folders++;
+		}
+	}
+	if(folders == n_players){
+		window->set_active(false);
+		set_active(false);
 	}
 }
