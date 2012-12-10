@@ -30,6 +30,7 @@ private:
 	Button* *buttons;
 	int ant_buttons;
 	int max_number(int array_in[], int length);
+	void clr_player_bids();
 };
 
 #endif

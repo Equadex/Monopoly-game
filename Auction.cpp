@@ -56,6 +56,7 @@ void Auction::set_active(bool active_in){
 	char temp[100];
 	active = active_in;
 	property_on_sale->get_namn(temp, 100);
+	window->set_active(true);
 	window->update(temp, current_max_bid, 0, c_player);
 }
 
@@ -110,5 +111,13 @@ void Auction::button_pressed(int mouse_x, int mouse_y){
 	if(folders == n_players){
 		window->set_active(false);
 		set_active(false);
+		folders = 0;
+		clr_player_bids();
+	}
+}
+
+void Auction::clr_player_bids(){
+	for(int i = 0; i < n_players; i++){
+		players_bids[i] = 0;
 	}
 }
