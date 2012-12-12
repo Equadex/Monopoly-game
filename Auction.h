@@ -9,24 +9,29 @@
 
 class Auction{
 public:
-	Auction(int pos_x, int pos_y, Player** players, int n_players, ALLEGRO_BITMAP *image, ALLEGRO_BITMAP *button, ALLEGRO_FONT *title, ALLEGRO_FONT *normal_text, Street *property_on_sale = 0,bool active = false);
+	Auction(int pos_x, int pos_y, Player** players, int n_players, ALLEGRO_BITMAP *image, ALLEGRO_BITMAP *button, ALLEGRO_BITMAP *box, ALLEGRO_FONT *title, ALLEGRO_FONT *normal_text, Street *property_on_sale = 0,bool active = false);
 	~Auction();
 	void draw();
 	void set_property(Street *property_on_sale_in){property_on_sale = property_on_sale_in;}
-	void set_active(bool active_in){active = active_in;}
+	void set_active(bool active_in);
 	bool get_active(){return active;}
+	void button_pressed(int mouse_x, int mouse_y);
 private:
 	ALLEGRO_BITMAP *image;
 	ALLEGRO_FONT *title, *normal_text;
 	bool active;
+	bool *no_bid;
 	Auction_window* window;
 	Player** players;
 	Street *property_on_sale;
-	int n_players;
+	int n_players, c_player, current_bid;
 	int *players_bids;
+	int current_max_bid;
 	int pos_x, pos_y;
 	Button* *buttons;
 	int ant_buttons;
+	int max_number(int array_in[], int length, int *n);
+	void clr_player_data();
 };
 
 #endif

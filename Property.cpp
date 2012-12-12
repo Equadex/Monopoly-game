@@ -25,9 +25,17 @@ int Street::get_zon() const{
 	return (group);
 }
 
-void Street::buy_Street(Player* buyer, bool trade){
+void Street::buy_Street(Player* buyer, bool trade, int cost_in){
+	int temp_cost;
+	if(cost_in != 0){
+		temp_cost = cost_in;
+	}
+	else
+		temp_cost = cost;
+
+
 	if(Owner == 0 || trade){
-		if(buyer->pay(cost)){
+		if(buyer->pay(temp_cost)){
 			Owner = buyer;
 			if(status_owner != 0){
 				int temp[3];

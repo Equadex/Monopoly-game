@@ -16,6 +16,15 @@ public:
 	void get_player_pos(int &pos_x_in, int &pos_y_in) const;
 	int get_pos_ruta() const;
 	int get_typ() const;
+	void get_namn(char array_out[], int length){
+		char temp[100];
+		int i = 0;
+		for(; i < 100 && i < namn.length(); i++){
+			temp[i] = namn[i];
+		}
+		temp[i] = '\0';
+		strncpy(array_out, temp, length);
+	}
 	
 
 	void set_Owner(Player *Owner);
@@ -41,7 +50,7 @@ public:
 	}
 	int get_zon() const;
 
-	void buy_Street(Player* buyer, bool trade = false);
+	void buy_Street(Player* buyer, bool trade = false, int cost_in = 0);
 	void sell_Street(Player* seller);
 	void create_status_box(Status_box* status_box);
 	void draw_status();

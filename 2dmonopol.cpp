@@ -54,7 +54,7 @@ int main(){
 	int	window_height;
 	int width = 1280;
 	int height = 1000;
-	double FPS = 1;
+	double FPS = 120;
 	float mouse_pos_x = 0;
 	float mouse_pos_y = 0;
 	int frames = 0, gameFPS = 0;
@@ -102,6 +102,7 @@ int main(){
 	ALLEGRO_BITMAP *question = NULL;
 	ALLEGRO_BITMAP *button = NULL;
 	ALLEGRO_BITMAP *auction_image = NULL;
+	ALLEGRO_BITMAP *box = NULL;
 
 	if(!al_init()){ //Initierar allegro bibloteket
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Allegro" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
@@ -139,7 +140,6 @@ int main(){
 		return (-1);
 	}
 
-	int version = al_get_opengl_version();
 
 	//Skapar timer
 	timer = al_create_timer(1/FPS);
@@ -161,6 +161,7 @@ int main(){
 	button = al_load_bitmap("button.bmp");
 	buffer = al_create_bitmap(width, height);
 	auction_image = al_load_bitmap("Auction.bmp");
+	box = al_load_bitmap("box.bmp");
 
 	//Skapar fonts
 
@@ -176,7 +177,7 @@ int main(){
 	temp[0] = new Button(165 + 162, 275 + 250, 165 + 162 + 80, 275 + 250 + 25, 1, "Buy", button);
 	temp[1] = new Button(600 - 162 + 80, 275 + 250, 600, 275 + 250 + 25, 2, "Auction", button);
 	Question *buy_street_Q = new Question(165, 275, temp, 2, "Buy or auction?", "This property is owned by the bank and is for sale. Do you want to buy it or let it be sold by auction?", question);
-	Auction *auction = new Auction(0, 120, players, n_players, auction_image, button, arial_36, arial_16);
+	Auction *auction = new Auction(0, 120, players, n_players, auction_image, button, box, arial_36, arial_16);
 
 	//Skapar event_queue, registrerar k�llor och startar timer
 	event_queue = al_create_event_queue();
@@ -214,6 +215,9 @@ int main(){
 						}
 						buy_street_Q->set_active(false);
 					}
+				}
+				else if(auction->get_active()){
+					auction->button_pressed(mouse_pos_x, mouse_pos_y);
 				}
 				else{
 					for(int i = 0; i < ant_buttons; i++){ //Kontrollerar vilken knapp som blivit klickad
