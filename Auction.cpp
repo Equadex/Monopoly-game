@@ -61,7 +61,7 @@ void Auction::set_active(bool active_in){
 	active = active_in;
 	property_on_sale->get_namn(temp, 100);
 	window->set_active(true);
-	window->update(temp, current_max_bid, 0, c_player);
+	window->update(temp, current_max_bid, 1, c_player);
 }
 
 void Auction::button_pressed(int mouse_x, int mouse_y){
@@ -72,13 +72,13 @@ void Auction::button_pressed(int mouse_x, int mouse_y){
 	switch(button_pressed){
 		case 1:
 			no_bid[c_player] = true;
-			current_bid = 0;
+			current_bid = current_max_bid + 1;
 			c_player = (c_player + 1) % n_players;
 			break;
 		case 2:
 			players_bids[c_player] = current_bid;
 			current_max_bid = current_bid;
-			current_bid = 0;
+			current_bid = current_max_bid + 1;
 			c_player = (c_player + 1) % n_players;
 			break;
 		case 3:

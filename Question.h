@@ -49,4 +49,21 @@ protected:
 private:
 };
 
+class Window_list : public Question{
+public:
+	Window_list(int pos_x, int pos_y, char* title_in, char* message_in, int color_r, int color_g, int color_b, ALLEGRO_BITMAP *image_in = 0, bool active = false) : Question(pos_x, pos_y, 0, 0, title_in, message_in, image_in, active){
+		color = new int[3];
+		color[0] = color_r;
+		color[1] = color_g;
+		color[2] = color_b;
+	}
+	~Window_list(){
+		delete[] color;
+	}
+
+
+private:
+	int *color;
+}
+
 #endif
