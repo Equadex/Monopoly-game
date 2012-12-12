@@ -54,7 +54,7 @@ int main(){
 	int	window_height;
 	int width = 1280;
 	int height = 1000;
-	double FPS = 1200;
+	double FPS = 1;
 	float mouse_pos_x = 0;
 	float mouse_pos_y = 0;
 	int frames = 0, gameFPS = 0;
@@ -138,6 +138,8 @@ int main(){
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Display" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
 		return (-1);
 	}
+
+	int version = al_get_opengl_version();
 
 	//Skapar timer
 	timer = al_create_timer(1/FPS);
