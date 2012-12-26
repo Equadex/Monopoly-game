@@ -54,7 +54,7 @@ int main(){
 	int	window_height;
 	int width = 1280;
 	int height = 1000;
-	double FPS = 1;
+	double FPS = 120;
 	float mouse_pos_x = 0;
 	float mouse_pos_y = 0;
 	int frames = 0, gameFPS = 0;
