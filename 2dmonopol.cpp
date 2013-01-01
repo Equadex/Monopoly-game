@@ -67,7 +67,7 @@ int main(){
 	//Variabler n�dv�ndiga f�r spelet
 
 	enum typ{TOMT, SKATT, CHANS, ALLMANING};
-	int n_players = 2, current_player = 0;
+	int n_players = 3, current_player = 0;
 	int dice_1, dice_2;
 	int ID_button_pressed;
 

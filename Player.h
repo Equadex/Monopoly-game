@@ -15,6 +15,7 @@ public:
 	void get_pos(int &pos_x, int &pos_y) const;
 	void update_Player(Property *tomter[]);
 	int get_pos_ruta(){return pos_ruta;}
+	int get_id(){return id;}
 
 	void draw_player() const;
 
@@ -24,6 +25,7 @@ public:
 		color_out[0] = color_r; color_out[1] = color_g; color_out[2] = color_b;
 	}
 	int get_money() const;
+	void get_color(int *array_in) const;
 
 	void defeated(Player *winner, Property* tomter[]);
 private:

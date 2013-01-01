@@ -30,6 +30,7 @@ Auction::Auction(int pos_x, int pos_y, Player** players, int n_players, ALLEGRO_
 	temp_text[2] = new Text_field(20, 175, "Player %i", normal_text);
 
 	window = new Auction_window(pos_x, pos_y, buttons, ant_buttons, "Auction", "", image,temp_text, ant_text_fields, true);
+	player_bid_list = new Window_list(pos_x + 50, pos_y + 120, players_bids, players, n_players, 0, true);
 }
 
 Auction::~Auction(){
@@ -41,6 +42,7 @@ Auction::~Auction(){
 void Auction::draw(){
 
 	window->draw(title, normal_text);
+	player_bid_list->draw(title, normal_text);
 }
 
 int Auction::max_number(int array_in[], int length, int *n){
@@ -73,37 +75,47 @@ void Auction::button_pressed(int mouse_x, int mouse_y){
 	switch(button_pressed){
 		case 1:
 			no_bid[c_player] = true;
+			player_bid_list->update_status(false, players[c_player]);
 			current_bid = current_max_bid + 1;
 			c_player = (c_player + 1) % n_players;
 			break;
 		case 2:
 			players_bids[c_player] = current_bid;
+			player_bid_list->update_status(true, players[c_player]);
 			current_max_bid = current_bid;
 			current_bid = current_max_bid + 1;
 			c_player = (c_player + 1) % n_players;
 			break;
 		case 3:
-			current_bid++;
+			if((current_bid + 1) < players[c_player]->get_money())
+				current_bid++;
 			break;
 		case 4:
-			current_bid = current_bid + 5;
+			if((current_bid + 5) < players[c_player]->get_money())
+				current_bid = current_bid + 5;
 			break;
 		case 5:
-			current_bid = current_bid + 10;
+			if((current_bid + 10) < players[c_player]->get_money())
+				current_bid = current_bid + 10;
 			break;
 		case 6:
-			current_bid = current_bid + 50;
+			if((current_bid + 50) < players[c_player]->get_money())
+				current_bid = current_bid + 50;
 			break;
 		case 7:
-			current_bid = current_bid + 100;
+			if((current_bid + 100) < players[c_player]->get_money())
+				current_bid = current_bid + 100;
 			break;
 		case 8:
-			current_bid = current_bid + 500;
+			if((current_bid + 500) < players[c_player]->get_money())
+				current_bid = current_bid + 500;
 			break;
 		case 9:
-			current_bid = current_bid + 1000;
+			if((current_bid + 1000) < players[c_player]->get_money())
+				current_bid = current_bid + 1000;
 			break;
 	}
+	
 	char temp[100];
 	property_on_sale->get_namn(temp, 100);
 	window->update(temp, current_max_bid, current_bid, c_player);
@@ -123,7 +135,7 @@ void Auction::button_pressed(int mouse_x, int mouse_y){
 		int n[1];
 
 		sum = max_number(players_bids, n_players, n);
-		if(sum > 0)
+		if(sum > 0 && players[n[0]]->get_money() >= sum)
 			property_on_sale->buy_Street(players[n[0]], false, sum);
 		clr_player_data();
 	}

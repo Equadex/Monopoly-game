@@ -22,6 +22,7 @@ private:
 	bool active;
 	bool *no_bid;
 	Auction_window* window;
+	Window_list *player_bid_list;
 	Player** players;
 	Street *property_on_sale;
 	int n_players, c_player, current_bid;

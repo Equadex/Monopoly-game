@@ -43,6 +43,12 @@ int Player::get_money() const{
 	return (pengar);
 }
 
+void Player::get_color(int *array_in) const{
+	array_in[0] = color_r;
+	array_in[1] = color_g;
+	array_in[2] = color_b;
+}
+
 void Player::defeated(Player *winner, Property* tomter[]){
 	winner->recieve_money(pengar);
 	for(int i = 0; i < ant_rutor; i++){

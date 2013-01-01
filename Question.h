@@ -10,6 +10,7 @@
 
 #include "Button.h"
 #include "Text_field.h"
+#include "Player.h"
 
 const int max_question_length = 90;
 const int max_question_lines = 10;
@@ -52,11 +53,24 @@ private:
 
 class Window_list : public Question{
 public:
-	Window_list(int pos_x, int pos_y, char* title_in, char* message_in, int color_r, int color_g, int color_b, int player_bids[], int n_players, ALLEGRO_BITMAP *image_in = 0, bool active = false) : Question(pos_x, pos_y, image_in, active), player_bids(player_bids), n_players(n_players), max_question_length(90), max_question_lines(n_players), max_question_lines_title(n_players) {
-		color = new int[3];
-		color[0] = color_r;
-		color[1] = color_g;
-		color[2] = color_b;
+	Window_list(int pos_x, int pos_y, int player_bids[],Player** players, int n_players, ALLEGRO_BITMAP *image_in = 0, bool active = false) : Question(pos_x, pos_y, image_in, active), player_bids(player_bids), n_players(n_players), max_question_length(90), max_question_lines(n_players), max_question_lines_title(n_players), players(players) {
+		//Default colors for status for a players bid 
+		
+		status_color = new int*[n_players];
+		for(int i = 0; i < n_players; i++){
+			status_color[i] = new int[3];
+			status_color[i][0] = 255;
+			status_color[i][1] = 0;
+			status_color[i][2] = 0;
+		}
+
+		//Color for player in list
+		player_color = new int*[n_players];
+
+		for(int i = 0; i < n_players; i++){
+			player_color[i] = new int[3];
+			(players[i])->get_color(player_color[i]);
+		}
 
 		//Reserving memory
 		
@@ -83,7 +97,13 @@ public:
 		}
 	}
 	~Window_list(){
-		delete[] color;
+		for(int i = 0; i < n_players; i++){
+			delete[] status_color[i];
+			delete[] player_color[i];
+		};
+		delete[] status_color;
+		delete[] player_color;
+
 
 		//Releasing memory
 		for(int i = 0; i < max_question_lines_title; i++){
@@ -96,15 +116,32 @@ public:
 		delete[] message;	
 	}
 	void draw(ALLEGRO_FONT* Title, ALLEGRO_FONT* Text){
-
+		char temp[9];
+		for(int i = 0; i < n_players; i++){
+			sprintf(temp, "%d", player_bids[i]);
+			al_draw_filled_rectangle(pos_x - 20, pos_y + 25 * i, pos_x - 5, pos_y + 25 * i + 15, al_map_rgb(status_color[i][0], status_color[i][1], status_color[i][2]));
+			al_draw_text(Text, al_map_rgb(player_color[i][0], player_color[i][1], player_color[i][2]), pos_x, pos_y + i * 25, 0, title[i]);
+			al_draw_text(Text, al_map_rgb(player_color[i][0], player_color[i][1], player_color[i][2]), pos_x + 130, pos_y + i * 25, 0, temp);
+		}
 	}
-	void update(){
-
+	void update_status(bool bid, Player *player){
+		if(bid){
+			status_color[player->get_id()][0] = 0;
+			status_color[player->get_id()][1] = 255;
+			status_color[player->get_id()][2] = 0;
+		}
+		else{
+			status_color[player->get_id()][0] = 255;
+			status_color[player->get_id()][1] = 0;
+			status_color[player->get_id()][2] = 0;
+		}
 	}
 
 private:
-	int *color;
+	int **status_color;
+	int **player_color;
 	int *player_bids;
+	Player** players;
 	int n_players;
 
 	const int max_question_length;
