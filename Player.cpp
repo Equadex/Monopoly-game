@@ -3,10 +3,10 @@
 #include "Player.h"
 #include "Property.h"
 
-void Player::move_Player(int steg, Property *tomter[], Player **players, int n_player_setoff){
+void Player::move_Player(int steg){
 	pos_ruta += steg;
 	pos_ruta = pos_ruta % ant_rutor;
-	update_Player(tomter, players, n_player_setoff);
+	//update_Player(tomter, player_IDs, n_player_setoff);
 }
 
 void Player::get_pos(int &pos_x_in, int &pos_y_in) const{
@@ -15,27 +15,46 @@ void Player::get_pos(int &pos_x_in, int &pos_y_in) const{
 }
 
 void Player::draw_player() const  {
-	al_draw_filled_rectangle(pos_x, pos_y, pos_x + 40, pos_y + 40, al_map_rgb(color_r, color_g, color_b));	
+	al_draw_filled_rectangle(pos_x, pos_y, pos_x + square_size, pos_y + square_size, al_map_rgb(color_r, color_g, color_b));	
 }
 
-void Player::update_Player(Property *tomter[], Player **players, int n_player_setoff){
+void Player::update_Player(Property *tomter[], Player **players, int *player_IDs, int n_player_setoff, bool first_update){ 
 	int pos_x_temp, pos_y_temp;
+	int displacement_factor;
 	tomter[pos_ruta]->get_player_pos(pos_x_temp, pos_y_temp);
 	pos_x = pos_x_temp;
 	pos_y = pos_y_temp;
 
-	if(n_player_setoff > 1){
+	//Centrerar spelaren på positionen
 
+	pos_x -= square_size / 2;
+	pos_y -= square_size / 2;
+	
+	//Beräknar hur förskjuten spelaren ska vara på rutan
+
+	for(int i = 0; i < n_player_setoff; i++){
+		if(player_IDs[i] == id && !first_update){
+			displacement_factor = n_player_setoff - 1;
+			break;
+		}
+		else if(player_IDs[i] >= id && first_update){
+			displacement_factor = i;
+			break;
+		}
 	}
 
-	if(pos_ruta <= 10)
-		pos_y += 10 * (n_player_setoff );
+	if(pos_ruta == 0){
+		pos_y -= 20;
+		pos_y += 10 * (displacement_factor );
+	}
+	else if(pos_ruta <= 10)
+		pos_y += 10 * (displacement_factor );
 	else if(pos_ruta > 10 && pos_ruta <= 20)
-		pos_x -= 10 * (n_player_setoff - id);
+		pos_x -= 10 * (displacement_factor) + 10;
 	else if(pos_ruta > 20 && pos_ruta <= 30)
-		pos_y -= 10 * (n_player_setoff - id);
+		pos_y -= 10 * (displacement_factor) + 10;
 	else if(pos_ruta > 30 && pos_ruta <= 40)
-		pos_x += 10 * (n_player_setoff - id);
+		pos_x += 10 * (displacement_factor);
 }
 
 bool Player::pay(int sum_to_pay){

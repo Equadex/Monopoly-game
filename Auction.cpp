@@ -80,6 +80,7 @@ void Auction::button_pressed(int mouse_x, int mouse_y){
 			c_player = (c_player + 1) % n_players;
 			break;
 		case 2:
+			no_bid[c_player] = false;
 			players_bids[c_player] = current_bid;
 			player_bid_list->update_status(true, players[c_player]);
 			current_max_bid = current_bid;

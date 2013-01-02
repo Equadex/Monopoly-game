@@ -45,7 +45,7 @@ void roll_dice(int &dice);
 void read_Button_data(Button* buttons[]);
 void read_Status_box_data(Property** streets);
 void auction();
-int players_on_property(int pos_ruta, Player** players, int n_players);
+int players_on_property(int pos_ruta, Player** players, int *players_IDs, int n_players);
 
 int main(){
 	//Konstanta variabler i main
@@ -201,7 +201,12 @@ int main(){
 					if(ID_button_pressed_temp != 0){
 						switch(ID_button_pressed_temp){
 							case 1:
-								((Street*)tomter[players[current_player]->get_pos_ruta()])->buy_Street(players[current_player]);
+								if(((Street*)tomter[players[current_player]->get_pos_ruta()])->get_cost() > players[current_player]->get_money()){ //If property cost more than the player has, do case 2(auction)
+									auction->set_property(((Street*)tomter[players[current_player]->get_pos_ruta()]));
+									auction->set_active(true);
+								}
+								else
+									((Street*)tomter[players[current_player]->get_pos_ruta()])->buy_Street(players[current_player]);
 								break;
 							case 2:
 								auction->set_property(((Street*)tomter[players[current_player]->get_pos_ruta()]));
@@ -224,12 +229,17 @@ int main(){
 					switch(ID_button_pressed){
 						case 1: //Sl� t�rningarna
 							if(!dice_used){
+								int temp[max_players];
+								int temp_2;
 								roll_dice(dice_1); roll_dice(dice_2);
 								
 								dice_sprite_0->set_curret_frame(max_tarning - (dice_1)); //Byter bild p� t�rning
 								dice_sprite_1->set_curret_frame(max_tarning - (dice_2));
+
+								players[current_player]->move_Player(dice_1 + dice_2); //Flyttar spelare
+								temp_2 = players_on_property(players[current_player]->get_pos_ruta(), players, temp, n_players); //n_player på samma ruta samt deras id i temp2 array
 	
-								players[current_player]->move_Player(dice_1 + dice_2, tomter, players, players_on_property(players[current_player]->get_pos_ruta() + dice_1 + dice_2, players, n_players)); //Flyttar spelare
+								players[current_player]->update_Player(tomter, players, temp, temp_2); //Uppdaterar spelare
 								if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) == 0){ //Om en tomt �r �gd av banken
 									buy_street_Q->set_active(true);
 								}
@@ -279,6 +289,9 @@ int main(){
 		}
 
 		if(draw){
+			int c_player_color[3];
+			players[current_player]->get_color(c_player_color); //Färg för nuvarrande spelare
+
 			//Drawing
 			al_set_target_bitmap(buffer);
 			al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -303,7 +316,7 @@ int main(){
 				buttons[i]->draw(arial_16);
 			}
 			//al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 5, 0, "FPS: %i", gameFPS);
-			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 15, 940, 0, "Player %i", current_player);
+			al_draw_textf(arial_16, al_map_rgb(c_player_color[0], c_player_color[1] , c_player_color[2]), 15, 940, 0, "Player %i", current_player);
 			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 100, 940, 0, "Funds: %i", (players[current_player])->get_money());
 			//al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 20, 0, "Mouse_x: %lf Mouse_y: %lf", mouse_pos_x, mouse_pos_y);
 
@@ -428,8 +441,13 @@ void create_players(int n_players, Player *players[], Property *tomter[]){
 		players[i] = new Player(pos_x, pos_y, pos_ruta, i, startpengar, player_colors[i + (i * 3)], player_colors[i + (i * 3) + 1], player_colors[i + (i * 3)] + 2);
 	}
 	//Uppdaterar spelarnas positioner
+	int temp[max_players];
+	for(int i = 0; i < max_players; i++){
+		temp[i] = i;
+	}
+	
 	for(int i = 0; i < n_players; i++){
-		players[i]->update_Player(tomter, players, n_players);
+		players[i]->update_Player(tomter, players, temp, n_players, true);
 	}
 }
 
@@ -512,11 +530,14 @@ void auction(Question* buy_street_Q){
 	buy_street_Q->set_active(false);
 }
 
-int players_on_property(int pos_ruta, Player** players, int n_players){
+int players_on_property(int pos_ruta, Player** players, int *players_IDs, int n_players){
 	int player_on_pos_ruta = 0;
-	for(int i = 0; i < n_players; i++){
-		if(players[i]->get_pos_ruta() == pos_ruta)
+	for(int i = 0, j = 0; i < n_players; i++){
+		if(players[i]->get_pos_ruta() == pos_ruta){
 			player_on_pos_ruta++;
+			players_IDs[j] = players[i]->get_id();
+			j++;
+		}
 	}
 	return(player_on_pos_ruta);
 }

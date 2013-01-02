@@ -49,6 +49,7 @@ public:
 		}
 	}
 	int get_zon() const;
+	int get_cost() const;
 
 	void buy_Street(Player* buyer, bool trade = false, int cost_in = 0);
 	void sell_Street(Player* seller);

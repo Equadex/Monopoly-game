@@ -25,6 +25,10 @@ int Street::get_zon() const{
 	return (group);
 }
 
+int Street::get_cost() const{
+	return (cost);
+}
+
 void Street::buy_Street(Player* buyer, bool trade, int cost_in){
 	int temp_cost;
 	if(cost_in != 0){
