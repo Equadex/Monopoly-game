@@ -11,9 +11,9 @@ class Player {
 public:
 	Player (int pos_x, int pos_y, int pos_ruta, int id, int pengar, int color1, int color2, int color3):pos_x(pos_x), pos_y(pos_y), pos_ruta(pos_ruta), id(id), pengar(pengar), color_r(color1), color_g(color2), color_b(color3), alive(true){}
 	
-	void move_Player(int steg, Property *tomter[]);
+	void move_Player(int steg, Property *tomter[], Player **players, int n_player_setoff);
 	void get_pos(int &pos_x, int &pos_y) const;
-	void update_Player(Property *tomter[]);
+	void update_Player(Property *tomter[], Player **players, int n_player_setoff);
 	int get_pos_ruta(){return pos_ruta;}
 	int get_id(){return id;}
 

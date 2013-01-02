@@ -1,7 +1,7 @@
-﻿Build started 1/2/2013 12:58:29 AM.
+﻿Build started 1/2/2013 2:30:56 AM.
      1>Project "C:\Users\Anders\Documents\Visual Studio 2010\SKOLProjects\2dmonopol exp2\2dmonopol exp2\2dmonopol exp2.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
-         Creating "Debug\2dmonopol exp2.unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "Debug\2dmonopol exp2.unsuccessfulbuild".
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt 2dmonopol.cpp
          2dmonopol.cpp
@@ -14,11 +14,11 @@
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
      1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\question.h(121): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : see declaration of 'sprintf'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(341): warning C4309: '=' : truncation of constant value
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(369): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(337): warning C4309: '=' : truncation of constant value
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(365): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(391): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(394): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(387): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(390): warning C4018: '<' : signed/unsigned mismatch
      1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(470): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
        Link:
@@ -43,4 +43,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.99
+Time Elapsed 00:00:00.91

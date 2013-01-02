@@ -45,6 +45,7 @@ void roll_dice(int &dice);
 void read_Button_data(Button* buttons[]);
 void read_Status_box_data(Property** streets);
 void auction();
+int players_on_property(int pos_ruta, Player** players, int n_players);
 
 int main(){
 	//Konstanta variabler i main
@@ -67,7 +68,7 @@ int main(){
 	//Variabler n�dv�ndiga f�r spelet
 
 	enum typ{TOMT, SKATT, CHANS, ALLMANING};
-	int n_players = 3, current_player = 0;
+	int n_players = 6, current_player = 0;
 	int dice_1, dice_2;
 	int ID_button_pressed;
 
@@ -116,9 +117,6 @@ int main(){
 	}
 	window_width = p_info->x2; 
 	window_height = p_info->y2 - 30;
-
-	//window_width = 1920;
-	//window_height = 1050;
 
 	sx = window_width / (double)width;
 	sy = window_height / (double)height;
@@ -193,8 +191,6 @@ int main(){
 		if(ev.type == ALLEGRO_EVENT_MOUSE_AXES){  //L�ser av koordinater fr�n musen
 			mouse_pos_x = (ev.mouse.x * 1 ) / (double)scale;
 			mouse_pos_y = (ev.mouse.y * 1 ) / (double)scale;
-			//mouse_pos_x = ev.mouse.x;
-			//mouse_pos_y = ev.mouse.y;
 
 		}
 		else if(ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){ //N�r musknapp �r nedtryckt
@@ -233,7 +229,7 @@ int main(){
 								dice_sprite_0->set_curret_frame(max_tarning - (dice_1)); //Byter bild p� t�rning
 								dice_sprite_1->set_curret_frame(max_tarning - (dice_2));
 	
-								players[current_player]->move_Player(dice_1 + dice_2, tomter); //Flyttar spelare
+								players[current_player]->move_Player(dice_1 + dice_2, tomter, players, players_on_property(players[current_player]->get_pos_ruta() + dice_1 + dice_2, players, n_players)); //Flyttar spelare
 								if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) == 0){ //Om en tomt �r �gd av banken
 									buy_street_Q->set_active(true);
 								}
@@ -431,6 +427,10 @@ void create_players(int n_players, Player *players[], Property *tomter[]){
 		pos_ruta = tomter[start_ruta]->get_pos_ruta();
 		players[i] = new Player(pos_x, pos_y, pos_ruta, i, startpengar, player_colors[i + (i * 3)], player_colors[i + (i * 3) + 1], player_colors[i + (i * 3)] + 2);
 	}
+	//Uppdaterar spelarnas positioner
+	for(int i = 0; i < n_players; i++){
+		players[i]->update_Player(tomter, players, n_players);
+	}
 }
 
 void roll_dice(int &dice){
@@ -510,4 +510,13 @@ void read_Status_box_data(Property** streets){
 
 void auction(Question* buy_street_Q){
 	buy_street_Q->set_active(false);
+}
+
+int players_on_property(int pos_ruta, Player** players, int n_players){
+	int player_on_pos_ruta = 0;
+	for(int i = 0; i < n_players; i++){
+		if(players[i]->get_pos_ruta() == pos_ruta)
+			player_on_pos_ruta++;
+	}
+	return(player_on_pos_ruta);
 }
