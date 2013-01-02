@@ -162,7 +162,6 @@ int main(){
 	buffer = al_create_bitmap(width, height);
 	auction_image = al_load_bitmap("Auction.bmp");
 	box = al_load_bitmap("box.bmp");
-
 	//Skapar fonts
 
 	ALLEGRO_FONT *arial_16 = al_load_ttf_font("arial.ttf", 16, 0);
@@ -241,7 +240,10 @@ int main(){
 								else if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != players[current_player] && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != 0){ //Om tomten �r en gata och inte �r �gd av dig eller banken
 									((Street*)tomter[players[current_player]->get_pos_ruta()])->pay_rent(players[current_player], tomter);
 								}
-								dice_used = true;
+								if(dice_1 != dice_2)
+									dice_used = true;
+								else
+									dice_used = false;
 							}
 							break;
 						case 2: //K�per tomt
