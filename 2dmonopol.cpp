@@ -46,6 +46,7 @@ void read_Button_data(Button* buttons[]);
 void read_Status_box_data(Property** streets);
 void auction();
 int players_on_property(int pos_ruta, Player** players, int *players_IDs, int n_players);
+void color_to_comp_color(const int color[], int color_comp[]);
 
 int main(){
 	//Konstanta variabler i main
@@ -71,6 +72,7 @@ int main(){
 	int n_players = 6, current_player = 0;
 	int dice_1, dice_2;
 	int ID_button_pressed;
+	int c_player_color[3];
 
 	bool dice_used = false;
 
@@ -85,6 +87,7 @@ int main(){
 	read_Button_data(buttons); //L�ser in buttons koodinater och id
 	read_Status_box_data(tomter); //L�ser in status boxarnas positioner och gatunummer
 
+	players[current_player]->get_color(c_player_color); //Färg för nuvarrande spelare
 
 	//Allegro variabler
 
@@ -261,6 +264,7 @@ int main(){
 							if(dice_used){
 								current_player = (current_player + 1) % n_players; //N�sta spelare
 								dice_used = false;
+								players[current_player]->get_color(c_player_color); //Färg för nuvarrande spelare
 							}
 							break;
 						case 4: //S�lja gata
@@ -289,8 +293,6 @@ int main(){
 		}
 
 		if(draw){
-			int c_player_color[3];
-			players[current_player]->get_color(c_player_color); //Färg för nuvarrande spelare
 
 			//Drawing
 			al_set_target_bitmap(buffer);
@@ -422,7 +424,7 @@ void create_players(int n_players, Player *players[], Property *tomter[]){
 	int player_colors[max_players * 3];
 	player_colors[0] = 255; player_colors[1] = 131; player_colors[2] = 43;
 	//player_colors[0] = al_map_rgb(255, 131, 43);
-	player_colors[3] = 255; player_colors[4] = 206; player_colors[5] = 102;
+	player_colors[3] = 255; player_colors[4] = 50; player_colors[5] = 71;
 	//player_colors[1] = al_map_rgb(255, 206, 102);
 	//player_colors[2] = al_map_rgb(166, 213, 68);
 	player_colors[6] = 166; player_colors[7] = 213; player_colors[8] = 68;
@@ -431,14 +433,19 @@ void create_players(int n_players, Player *players[], Property *tomter[]){
 	//player_colors[4] = al_map_rgb(155, 0, 155);
 	player_colors[12] = 155; player_colors[13] = 0; player_colors[14] = 155;
 	//player_colors[5] = al_map_rgb(36, 166, 145);
-	player_colors[15] = 36; player_colors[16] = 166; player_colors[17] = 145;
+	player_colors[15] = 0; player_colors[16] = 0; player_colors[17] = 255;
 	
 	for(int i = 0; i < n_players; i++){ //Skapar spelare
 		int pos_x, pos_y, pos_ruta;
 
 		tomter[start_ruta]->get_player_pos(pos_x, pos_y);  //Ger startposition f�r spelaren
 		pos_ruta = tomter[start_ruta]->get_pos_ruta();
-		players[i] = new Player(pos_x, pos_y, pos_ruta, i, startpengar, player_colors[i + (i * 3)], player_colors[i + (i * 3) + 1], player_colors[i + (i * 3)] + 2);
+
+		int temp_r = player_colors[(i * 3)];
+		int temp_g = player_colors[(i * 3) + 1];
+		int temp_b = player_colors[(i * 3) + 2];
+
+		players[i] = new Player(pos_x, pos_y, pos_ruta, i, startpengar, player_colors[(i * 3)], player_colors[(i * 3) + 1], player_colors[(i * 3) + 2]);
 	}
 	//Uppdaterar spelarnas positioner
 	int temp[max_players];
