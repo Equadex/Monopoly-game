@@ -70,10 +70,13 @@
     <ClCompile Include="Question.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Status_box.cpp" />
+    <ClCompile Include="Street.cpp" />
     <ClCompile Include="Text_field.cpp" />
+    <ClCompile Include="Window_list.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Auction.h" />
+    <ClInclude Include="Auction_window.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Player.h" />
@@ -81,7 +84,10 @@
     <ClInclude Include="Question.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Status_box.h" />
+    <ClInclude Include="Street.h" />
+    <ClInclude Include="Street_info.h" />
     <ClInclude Include="Text_field.h" />
+    <ClInclude Include="Window_list.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

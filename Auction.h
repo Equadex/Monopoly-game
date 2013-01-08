@@ -1,10 +1,12 @@
 #ifndef AUCTION_H
 #define AUCTION_H
 
-#include "Question.h"
-#include "Player.h"
-#include "Button.h"
-#include "Text_field.h"
+#include "Button.h" //Must be here
+#include "Text_field.h" //Must be here
+#include "Window_list.h" //Must be here
+#include "Auction_window.h" //Must be here, will include base class Question
+#include "Player.h" //Is used to optain an players money
+#include "Street.h" //Is used to get street name
 
 
 class Auction{

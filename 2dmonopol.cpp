@@ -15,11 +15,14 @@
 
 #include "Player.h"
 #include "Property.h"
+#include "Street.h"
 #include "Button.h"
 #include "Status_box.h"
+#include "Street_info.h"
 #include "Sprite.h"
 #include "Question.h"
 #include "Auction.h"
+
 
 //Globala variabler lokala
 
@@ -41,9 +44,10 @@ const int ant_status_box = 28;
 void read_Property_data(Property *tomter[]);
 void getline_char(char line_in[],char line_out[],int out_length, int max_read, char stop, bool &endfile, int start = 0);
 void create_players(int n_players, Player *players[], Property *tomter[]);
+void create_Street_info(Property **tomter, ALLEGRO_BITMAP *street_info_bitmap);
 void roll_dice(int &dice);
 void read_Button_data(Button* buttons[]);
-void read_Status_box_data(Property** streets);
+void read_Status_box_data(Property** streets, ALLEGRO_BITMAP *info_street);
 void auction();
 int players_on_property(int pos_ruta, Player** players, int *players_IDs, int n_players);
 void color_to_comp_color(const int color[], int color_comp[]);
@@ -85,7 +89,6 @@ int main(){
 	read_Property_data(tomter); //L�ser in data till tomter
 	create_players(n_players, players, tomter); //Skapar spelare
 	read_Button_data(buttons); //L�ser in buttons koodinater och id
-	read_Status_box_data(tomter); //L�ser in status boxarnas positioner och gatunummer
 
 	players[current_player]->get_color(c_player_color); //Färg för nuvarrande spelare
 
@@ -107,6 +110,7 @@ int main(){
 	ALLEGRO_BITMAP *button = NULL;
 	ALLEGRO_BITMAP *auction_image = NULL;
 	ALLEGRO_BITMAP *box = NULL;
+	ALLEGRO_BITMAP *street_info = NULL;
 
 	if(!al_init()){ //Initierar allegro bibloteket
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Allegro" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
@@ -163,6 +167,7 @@ int main(){
 	buffer = al_create_bitmap(width, height);
 	auction_image = al_load_bitmap("Auction.bmp");
 	box = al_load_bitmap("box.bmp");
+	street_info = al_load_bitmap("street_info.bmp");
 	//Skapar fonts
 
 	ALLEGRO_FONT *arial_16 = al_load_ttf_font("arial.ttf", 16, 0);
@@ -170,8 +175,13 @@ int main(){
 
 	//Temp kod som inte borde se ut s�h�r
 
+	//Street_info *test = new Street_info(0, 0, (Street*)tomter[0], street_info, false); //Test, ska tas bort
+	create_Street_info(tomter, street_info);
+
 	dice_sprite_0 = new Sprite(1091, 6, 81, dice); 
 	dice_sprite_1 = new Sprite(1172, 6, 81, dice);
+
+	read_Status_box_data(tomter, street_info); //L�ser in status boxarnas positioner och gatunummer
 
 	Button *temp[2];
 	temp[0] = new Button(165 + 162, 275 + 250, 165 + 162 + 80, 275 + 250 + 25, 1, "Buy", button);
@@ -199,6 +209,17 @@ int main(){
 		else if(ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){ //N�r musknapp �r nedtryckt
 			if(ev.mouse.button == 1){ //V�nster musknapp
 				
+				for(int i = 0; i < ant_rutor; i++){
+					if(tomter[i]->get_typ()  == TOMT && ((Street*)tomter[i])->button_pressed(mouse_pos_x, mouse_pos_y)){ // Om tomten är av gatutyp OCH Om knapp nedtryckt(statusboxen till den gatan)
+						if((((Street*)tomter[i])->get_Street_info())->get_active()){ //OM aktiv, sätt till inaktiv och tvärtom
+							(((Street*)tomter[i])->get_Street_info())->set_active(false);
+						}
+						else
+							(((Street*)tomter[i])->get_Street_info())->set_active(true);
+					}
+				} //Ny kod för street_info ska läggas in här
+
+
 				if(buy_street_Q->get_active()){
 					int ID_button_pressed_temp = buy_street_Q->button_pressed(mouse_pos_x, mouse_pos_y);
 					if(ID_button_pressed_temp != 0){
@@ -209,7 +230,7 @@ int main(){
 									auction->set_active(true);
 								}
 								else
-									((Street*)tomter[players[current_player]->get_pos_ruta()])->buy_Street(players[current_player]);
+									((Street*)tomter[players[current_player]->get_pos_ruta()])->buy_Street(players[current_player]); //Buy street
 								break;
 							case 2:
 								auction->set_property(((Street*)tomter[players[current_player]->get_pos_ruta()]));
@@ -317,6 +338,13 @@ int main(){
 			for(int i = 0; i < ant_buttons; i++){ //Ritar knappar
 				buttons[i]->draw(arial_16);
 			}
+			for(int i = 0; i < ant_rutor; i++){ //Ritar Street_info
+				if(tomter[i]->get_typ()  == TOMT){
+					if((((Street*)tomter[i])->get_Street_info())->get_active())
+						(((Street*)tomter[i])->get_Street_info())->draw();
+				}
+			}
+
 			//al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 5, 0, "FPS: %i", gameFPS);
 			al_draw_textf(arial_16, al_map_rgb(c_player_color[0], c_player_color[1] , c_player_color[2]), 15, 940, 0, "Player %i", current_player);
 			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 100, 940, 0, "Funds: %i", (players[current_player])->get_money());
@@ -499,7 +527,7 @@ void read_Button_data(Button* buttons[]) {
 	}
 }
 
-void read_Status_box_data(Property** streets){
+void read_Status_box_data(Property** streets, ALLEGRO_BITMAP *info_street){
 	//�ppnar fil f�r data till klassen Property
 	std::ifstream file("Status_box_config.txt"); 
 	//Tillf�llig variabler f�r initiering av objekten
@@ -528,7 +556,7 @@ void read_Status_box_data(Property** streets){
 			intdata[j] = std::atoi(line2);
 		}
 		
-		((Street*)streets[intdata[4]])->create_status_box(new Status_box(intdata[0], intdata[1], intdata[2], intdata[3], displacement_x, displacement_y));
+		((Street*)streets[intdata[4]])->create_status_box(new Status_box(intdata[0], intdata[1], intdata[2], intdata[3], ((Street*)streets[intdata[4]]), i + 10, info_street, displacement_x, displacement_y ));
 		endfile = false;
 	}
 }
@@ -547,4 +575,12 @@ int players_on_property(int pos_ruta, Player** players, int *players_IDs, int n_
 		}
 	}
 	return(player_on_pos_ruta);
+}
+
+void create_Street_info(Property **tomter, ALLEGRO_BITMAP *street_info_bitmap){
+	for(int i = 0; i < ant_rutor; i++){
+		if(tomter[i]->get_typ() == TOMT){
+			((Street*)tomter[i])->create_street_info(new Street_info(1020, 460, ((Street*)tomter[i]), street_info_bitmap));
+		}
+	}
 }

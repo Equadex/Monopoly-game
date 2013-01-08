@@ -4,3 +4,4 @@
 370,930,470,999,2,DO NOT USE
 1010,850,1270,892,3,End turn
 470,930,570,999,4,Sell
+#Reserving button id 10-38 for street status_boxes

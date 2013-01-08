@@ -1,11 +1,10 @@
 #ifndef PLAYER_H
 #define PLAYER_H
-#include "Property.h"
+#include "Property.h" //Used for coordinates and transfer ownership if player loses 
 #include <allegro5\allegro5.h>
 #include <allegro5\allegro_primitives.h>
 
-class Property;
-class Street;
+//class Property; //Should not be forward declared!
 
 class Player {
 public:

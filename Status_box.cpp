@@ -1,6 +1,5 @@
 #include "Status_box.h"
 
-class Property;
 
 void Status_box::set_color(int color_r, int color_g, int color_b){
 	Status_box::color_r = color_r; Status_box::color_g = color_g; Status_box::color_b = color_b;

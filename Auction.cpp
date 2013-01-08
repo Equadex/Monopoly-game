@@ -1,5 +1,7 @@
 #include "Auction.h"
 
+
+
 Auction::Auction(int pos_x, int pos_y, Player** players, int n_players, ALLEGRO_BITMAP *image, ALLEGRO_BITMAP *button, ALLEGRO_BITMAP *box, ALLEGRO_FONT *title, ALLEGRO_FONT *normal_text, Street *property_on_sale,bool active) : pos_x(pos_x), pos_y(pos_y), players(players), n_players(n_players), image(image), ant_buttons(9), title(title), normal_text(normal_text), property_on_sale(property_on_sale), active(active), current_max_bid(0), c_player(0), current_bid(0){
 	const int ant_text_fields = 3;
 	Text_field** temp_text = new Text_field*[ant_text_fields];

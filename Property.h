@@ -1,13 +1,12 @@
 #ifndef PROPERTY_H
 #define PROPERTY_H
 
-#include "Player.h"
+//#include "Player.h" //Should not be here
 #include "Constants.h"
-#include "Status_box.h"
 #include <string>
 
 class Player;
-class Status_box;
+
 
 class Property{
 public:
@@ -38,33 +37,6 @@ protected:
 	Player *Owner;
 private:
 
-};
-
-class Street : public Property {
-public:
-	Street(int pos_x_1, int pos_x_2, int pos_y_1, int pos_y_2, int pos_ruta, std::string namn, int typ, int cost, int building_cost, int rent[], int group) : Property(pos_x_1, pos_x_2, pos_y_1, pos_y_2, pos_ruta, namn, typ), cost(cost), building_cost(building_cost), group(group), status_owner(0),houses(0) {
-		//Kopierar fält
-		for(int i = 0; i < max_houses + 1; i++){
-			Street::rent[i] = rent[i];
-		}
-	}
-	int get_zon() const;
-	int get_cost() const;
-
-	void buy_Street(Player* buyer, bool trade = false, int cost_in = 0);
-	void sell_Street(Player* seller);
-	void create_status_box(Status_box* status_box);
-	void draw_status();
-	void pay_rent(Player *guest, Property* tomter[]);
-	bool own_zone(Player *player, Property* tomter[]);
-protected:
-	int cost;
-	int building_cost;
-	int rent[max_houses + 1];
-	int group;
-	int houses;
-	Status_box *status_owner;
-private:
 };
 
 
