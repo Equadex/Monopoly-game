@@ -21,6 +21,12 @@ public:
 	Street_info* get_Street_info() const{
 		return (info);
 	}
+	int get_building_cost() const{
+		return building_cost;
+	}
+	Status_box* get_status_box() const{
+		return status_owner;
+	}
 
 	void buy_Street(Player* buyer, bool trade = false, int cost_in = 0);
 	void sell_Street(Player* seller);
