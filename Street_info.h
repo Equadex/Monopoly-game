@@ -42,9 +42,9 @@ public:
 			al_draw_text(normal_text, al_map_rgb(0, 0, 0), pos_x + 20, pos_y + 240, 0, "Mortage value");
 			al_draw_textf(normal_text, al_map_rgb(0, 0, 0), pos_x + al_get_bitmap_width(image) - 20, pos_y + 240, ALLEGRO_ALIGN_RIGHT, "%i", (streat->get_cost() / 2));
 
-			al_draw_text(small_text, al_map_rgb(0, 0, 0), pos_x + al_get_bitmap_width(image) / 2, pos_y + 270, ALLEGRO_ALIGN_CENTRE, "If a player owns all the land in a");
-			al_draw_text(small_text, al_map_rgb(0, 0, 0), pos_x + al_get_bitmap_width(image) / 2, pos_y + 285, ALLEGRO_ALIGN_CENTRE, "particular colorgroup, the rent is");
-			al_draw_text(small_text, al_map_rgb(0, 0, 0), pos_x + al_get_bitmap_width(image) / 2, pos_y + 300, ALLEGRO_ALIGN_CENTRE, "double for vacant sites in the group");
+			al_draw_text(small_text, al_map_rgb(0, 0, 0), pos_x + al_get_bitmap_width(image) / 2, pos_y + 270, ALLEGRO_ALIGN_CENTRE, "If a player owns all the lots of any");
+			al_draw_text(small_text, al_map_rgb(0, 0, 0), pos_x + al_get_bitmap_width(image) / 2, pos_y + 285, ALLEGRO_ALIGN_CENTRE, "color-group, the rent is doubled");
+			al_draw_text(small_text, al_map_rgb(0, 0, 0), pos_x + al_get_bitmap_width(image) / 2, pos_y + 300, ALLEGRO_ALIGN_CENTRE, "on unimproved lots in that group.");
 	
 		}
 	}
