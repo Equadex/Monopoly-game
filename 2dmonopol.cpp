@@ -28,7 +28,7 @@
 
 const int max_config_line_length = 128;
 const int max_name_length = 64;
-const int property_int_data_count = 15;
+const int property_int_data_count = 18;
 const int property_variable_count = property_int_data_count + 1;
 const int button_int_data_count = 5;
 const int button_variable_data_count = button_int_data_count + 1;
@@ -51,7 +51,7 @@ void read_Status_box_data(Property **tomter);
 void auction();
 int players_on_property(int pos_ruta, Player** players, int *players_IDs, int n_players);
 void color_to_comp_color(const int color[], int color_comp[]);
-bool al_street_info_inactive(Property *tomter[]);
+void al_set_street_info_false(Property *tomter[], bool full = false); //Full = true resets all, false only the first
 
 int main(){
 	//Konstanta variabler i main
@@ -217,8 +217,10 @@ int main(){
 						if((((Street*)tomter[i])->get_Street_info())->get_active()){ //OM aktiv, sätt till inaktiv och tvärtom
 							(((Street*)tomter[i])->get_Street_info())->set_active(false);
 						}
-						else if(al_street_info_inactive(tomter))
+						else{
+							al_set_street_info_false(tomter);
 							(((Street*)tomter[i])->get_Street_info())->set_active(true);
+						}
 					}
 				} //Ny kod för street_info ska läggas in här
 
@@ -418,7 +420,7 @@ void read_Property_data(Property *tomter[]){
 				for(int k = 0; k < (max_houses + 1); k++){
 					temp_rent_array[k] = intdata[8 + k];
 				}
-				tomter[i] = new Street(intdata[0], intdata[2], intdata[1], intdata[3], intdata[4], namn,intdata[5] , intdata[7], intdata[14],temp_rent_array , intdata[6]);
+				tomter[i] = new Street(intdata[0], intdata[2], intdata[1], intdata[3], intdata[4], namn,intdata[5] , intdata[7], intdata[14],temp_rent_array , intdata[6], intdata[15],intdata[16],intdata[17]);
 			}
 			else{
 				tomter[i] = new Property(intdata[0], intdata[2], intdata[1], intdata[3], intdata[4], namn, intdata[5]); //Skapar tomt
@@ -588,13 +590,14 @@ void create_Street_info(Property **tomter, ALLEGRO_BITMAP *street_info_bitmap, A
 	}
 }
 
-bool al_street_info_inactive(Property *tomter[]){
+void al_set_street_info_false(Property *tomter[], bool full){
 	for(int i = 0; i < ant_rutor; i++){
 		if(tomter[i]->get_typ()  == TOMT){ // Om tomten är av gatutyp
 			if((((Street*)tomter[i])->get_Street_info())->get_active()){
-				return false;
+				(((Street*)tomter[i])->get_Street_info())->set_active(false);
+				if(!full)
+					break;
 			}
 		}
 	}
-	return true;
 }

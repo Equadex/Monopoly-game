@@ -11,11 +11,6 @@ public:
 	Status_box(int pos_x_1, int pos_y_1, int pos_x_2, int pos_y_2, Street* street, int pos_x_displacement = 0, int pos_y_displacement = 0) : pos_x_1(pos_x_1), pos_x_2(pos_x_2), pos_y_1(pos_y_1), pos_y_2(pos_y_2), pos_x_displacement(pos_x_displacement), pos_y_displacement(pos_y_displacement), color_r(255), color_g(0), color_b(0), active(false) {
 	}
 	//void init(int pos_x_1_in, int pos_y_1_in, int pos_x_2_in, int pos_y_2_in, int pos_x_displacement_in = 0, int pos_y_displacement_in = 0){pos_x_1_in = pos_x_1; pos_x_2_in = pos_x_2_in; pos_y_1_in = pos_y_1; pos_y_2_in; pos_x_displacement_in = pos_x_displacement; active = false; color_r = 255; color_g = 0; color_b = 0;}
-	void get_colors(int colors[]){
-		colors[0] = color_r;
-		colors[1] = color_g;
-		colors[2] = color_b;
-	}
 	void set_color(int color_r, int color_g, int color_b);
 	void set_active(bool active);
 	bool pressed(int mouse_pos_x, int mouse_pos_y){

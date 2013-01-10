@@ -5,12 +5,11 @@ class Street;
 
 #include "Question.h" //Base class
 #include "Street.h" //All information needed about streat needs to be optained from the class Street
-#include "Status_box.h" //Needed for getting colors
 
 class Street_info : public Question{
 public:
 	Street_info(int pos_x, int pos_y, Street *street, ALLEGRO_BITMAP *image_in, ALLEGRO_FONT *normal_text, ALLEGRO_FONT *bigger_text, ALLEGRO_FONT *small_text, bool active = false) : Question(pos_x, pos_y, image_in, active), streat(street), normal_text(normal_text), bigger_text(bigger_text), small_text(small_text){
-		(streat->get_status_box())->get_colors(colors); //gets the color for the street
+		streat->get_colors(colors); //gets the color for the street
 	}
 	void draw(){
 		if(active){
@@ -41,7 +40,7 @@ public:
 			al_draw_textf(normal_text, al_map_rgb(0, 0, 0), pos_x + al_get_bitmap_width(image) - 20, pos_y + 205, ALLEGRO_ALIGN_RIGHT, "%i plus %i houses", streat->get_building_cost(), max_houses-1);
 
 			al_draw_text(normal_text, al_map_rgb(0, 0, 0), pos_x + 20, pos_y + 240, 0, "Mortage value");
-			al_draw_textf(normal_text, al_map_rgb(0, 0, 0), pos_x + al_get_bitmap_width(image) - 20, pos_y + 240, ALLEGRO_ALIGN_RIGHT, "%i?", 0);
+			al_draw_textf(normal_text, al_map_rgb(0, 0, 0), pos_x + al_get_bitmap_width(image) - 20, pos_y + 240, ALLEGRO_ALIGN_RIGHT, "%i", (streat->get_cost() / 2));
 
 			al_draw_text(small_text, al_map_rgb(0, 0, 0), pos_x + al_get_bitmap_width(image) / 2, pos_y + 270, ALLEGRO_ALIGN_CENTRE, "If a player owns all the land in a");
 			al_draw_text(small_text, al_map_rgb(0, 0, 0), pos_x + al_get_bitmap_width(image) / 2, pos_y + 285, ALLEGRO_ALIGN_CENTRE, "particular colorgroup, the rent is");
