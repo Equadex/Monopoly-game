@@ -44,7 +44,7 @@ const int ant_status_box = 28;
 void read_Property_data(Property *tomter[]);
 void getline_char(char line_in[],char line_out[],int out_length, int max_read, char stop, bool &endfile, int start = 0);
 void create_players(int n_players, Player *players[], Property *tomter[]);
-void create_Street_info(Property **tomter, ALLEGRO_BITMAP *street_info_bitmap, ALLEGRO_FONT *normal_text, ALLEGRO_FONT *bigger_text, ALLEGRO_FONT *headline);
+void create_Street_info(Property **tomter, ALLEGRO_BITMAP *street_info_bitmap, ALLEGRO_BITMAP *street_info_railroad, ALLEGRO_BITMAP *street_info_el, ALLEGRO_BITMAP *steet_info_water, ALLEGRO_FONT *normal_text, ALLEGRO_FONT *bigger_text, ALLEGRO_FONT *small_text);
 void roll_dice(int &dice);
 void read_Button_data(Button* buttons[]);
 void read_Status_box_data(Property **tomter);
@@ -113,6 +113,9 @@ int main(){
 	ALLEGRO_BITMAP *auction_image = NULL;
 	ALLEGRO_BITMAP *box = NULL;
 	ALLEGRO_BITMAP *street_info = NULL;
+	ALLEGRO_BITMAP *street_info_railroad = NULL;
+	ALLEGRO_BITMAP *street_info_el = NULL;
+	ALLEGRO_BITMAP *street_info_water = NULL;
 
 	if(!al_init()){ //Initierar allegro bibloteket
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Allegro" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
@@ -170,6 +173,9 @@ int main(){
 	auction_image = al_load_bitmap("Auction.bmp");
 	box = al_load_bitmap("box.bmp");
 	street_info = al_load_bitmap("street_info.bmp");
+	street_info_railroad = al_load_bitmap("street_info_railroad.bmp");
+	street_info_el = al_load_bitmap("street_info_el.bmp");
+	street_info_water = al_load_bitmap("street_info_water.bmp");
 	//Skapar fonts
 
 	ALLEGRO_FONT *arial_16 = al_load_ttf_font("arial.ttf", 16, 0);
@@ -180,7 +186,7 @@ int main(){
 	//Temp kod som inte borde se ut s�h�r
 
 	//Street_info *test = new Street_info(0, 0, (Street*)tomter[0], street_info, false); //Test, ska tas bort
-	create_Street_info(tomter, street_info, arial_16, arial_20, arial_10);
+	create_Street_info(tomter, street_info, street_info_railroad, street_info_el, street_info_water, arial_16, arial_20, arial_10);
 
 	dice_sprite_0 = new Sprite(1091, 6, 81, dice); 
 	dice_sprite_1 = new Sprite(1172, 6, 81, dice);
@@ -582,10 +588,10 @@ int players_on_property(int pos_ruta, Player** players, int *players_IDs, int n_
 	return(player_on_pos_ruta);
 }
 
-void create_Street_info(Property **tomter, ALLEGRO_BITMAP *street_info_bitmap, ALLEGRO_FONT *normal_text, ALLEGRO_FONT *bigger_text, ALLEGRO_FONT *small_text){
+void create_Street_info(Property **tomter, ALLEGRO_BITMAP *street_info_bitmap, ALLEGRO_BITMAP *street_info_railroad, ALLEGRO_BITMAP *street_info_el, ALLEGRO_BITMAP *steet_info_water, ALLEGRO_FONT *normal_text, ALLEGRO_FONT *bigger_text, ALLEGRO_FONT *small_text){
 	for(int i = 0; i < ant_rutor; i++){
 		if(tomter[i]->get_typ() == TOMT){
-			((Street*)tomter[i])->create_street_info(new Street_info(1020, 460, ((Street*)tomter[i]), street_info_bitmap, normal_text, bigger_text, small_text));
+			((Street*)tomter[i])->create_street_info(new Street_info(1020, 460, ((Street*)tomter[i]), street_info_bitmap, street_info_railroad, street_info_el, steet_info_water, normal_text, bigger_text, small_text));
 		}
 	}
 }
