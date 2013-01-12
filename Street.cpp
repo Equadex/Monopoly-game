@@ -51,7 +51,7 @@ void Street::pay_rent(Player *guest, Property* tomter[], int dice){
 	int util_factor_full = 10;
 	bool util_full_factor = false;
 
-	if(houses == 0 && this->own_zone(guest, tomter)){
+	if(houses == 0 && own_zone(tomter) && group != 1){//grupp 1 = järnväg
 		double_pay_factor = 2;
 		if(pos_ruta == 12 || pos_ruta == 28)
 			util_full_factor = true;
@@ -62,10 +62,20 @@ void Street::pay_rent(Player *guest, Property* tomter[], int dice){
 			temp_cost = dice * util_factor_full;
 		else
 			temp_cost = dice * util_factor;
-		if(guest->pay(temp_cost))
+		if(guest->pay(temp_cost))//Pay, else defeat
 			Owner->recieve_money(temp_cost);
+		else
+			guest->defeated(Owner, tomter);
 	}
-	else if(guest->pay(rent[houses] * double_pay_factor)){ //guest pay and return true if succesful
+	else if(group == 1){
+		int rail_roads = n_street_in_zone(tomter);
+		
+		if(guest->pay(rent[rail_roads - 1]))//Pay, else defeat
+			Owner->recieve_money(rent[rail_roads - 1]);
+		else
+			guest->defeated(Owner, tomter);
+	}
+	else if(guest->pay(rent[houses] * double_pay_factor)){ //Normal street, guest pay and return true if succesful
 		Owner->recieve_money(rent[houses] * double_pay_factor);
 	}
 	else{
@@ -77,13 +87,25 @@ int Street::get_rent(int houses){
 	return rent[houses];
 }
 
-bool Street::own_zone(Player *player, Property* tomter[]){
+bool Street::own_zone(Property* tomter[]){
 	for(int i = 0; i < ant_rutor; i++){
-		if(tomter[i]->get_typ() == 0 && tomter[i]->get_Owner() != player){ //Om det är en gata och inte redan ägs utav spelaren
-			if(((Street*)tomter[i])->get_zon() == this->get_zon()){ //Om denna gata och den gata den jämför med är i samma zon
+		if(tomter[i]->get_typ() == 0 && ((Street*)tomter[i])->get_zon() == get_zon()){ //Om det är en gata och är i samma zon
+			if(tomter[i]->get_Owner() != Owner){ //Om denna gata inte ägs av samma ägare
 				return (false);
 			}
 		}
 	}
 	return (true);
+}
+
+int Street::n_street_in_zone(Property* tomter[]){
+	int n_owned = 0;
+	for(int i = 0; i < ant_rutor; i++){
+		if(tomter[i]->get_typ() == 0 && ((Street*)tomter[i])->get_zon() == get_zon()){ //Om det är en gata och är i samma zon
+			if(tomter[i]->get_Owner() == Owner){ //Om denna gata ägs av samma ägare
+				n_owned++;
+			}
+		}
+	}
+	return (n_owned);
 }
