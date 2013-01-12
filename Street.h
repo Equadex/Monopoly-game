@@ -37,7 +37,7 @@ public:
 		info = street_in_info;
 	}
 	void draw_status();
-	void pay_rent(Player *guest, Property* tomter[]);
+	void pay_rent(Player *guest, Property* tomter[], int dice = 0);
 	bool own_zone(Player *player, Property* tomter[]);
 	bool button_pressed(int mouse_pos_x, int mouse_pos_y){
 		if(info != 0 ){ //if pressed and not null pointer

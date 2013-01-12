@@ -181,10 +181,10 @@ int main(){
 	ALLEGRO_FONT *arial_16 = al_load_ttf_font("arial.ttf", 16, 0);
 	ALLEGRO_FONT *arial_36 = al_load_ttf_font("arial.ttf", 36, 0);
 	ALLEGRO_FONT *arial_20 = al_load_ttf_font("arial.ttf", 20, 0);
-	ALLEGRO_FONT *arial_10 = al_load_ttf_font("arial.ttf", 12, 0);
+	ALLEGRO_FONT *arial_10 = al_load_ttf_font("arial.ttf", 12, 0); 
 
 	//Temp kod som inte borde se ut s�h�r
-
+	
 	//Street_info *test = new Street_info(0, 0, (Street*)tomter[0], street_info, false); //Test, ska tas bort
 	create_Street_info(tomter, street_info, street_info_railroad, street_info_el, street_info_water, arial_16, arial_20, arial_10);
 
@@ -279,7 +279,11 @@ int main(){
 									buy_street_Q->set_active(true);
 								}
 								else if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != players[current_player] && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != 0){ //Om tomten �r en gata och inte �r �gd av dig eller banken
-									((Street*)tomter[players[current_player]->get_pos_ruta()])->pay_rent(players[current_player], tomter);
+									if(players[current_player]->get_pos_ruta() == 12 || players[current_player]->get_pos_ruta() == 28){ //Om det är en utility(el och vatten)
+										(((Street*)tomter[players[current_player]->get_pos_ruta()])->pay_rent(players[current_player], tomter, std::max <int>(dice_1, dice_2)));
+									}
+									else									
+										((Street*)tomter[players[current_player]->get_pos_ruta()])->pay_rent(players[current_player], tomter);
 								}
 								if(dice_1 != dice_2)
 									dice_used = true;
@@ -342,7 +346,7 @@ int main(){
 			dice_sprite_1->draw();
 			if(buy_street_Q->get_active()) //Ritar k�pfr�gan om den �r aktiv
 				buy_street_Q->draw(arial_36, arial_16);
-			else if(auction->get_active()){
+			else if(auction->get_active()){//Ritar auktionsfönstret
 				auction->draw();
 			}
 

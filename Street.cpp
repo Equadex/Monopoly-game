@@ -45,12 +45,27 @@ void Street::draw_status(){
 	status_owner->draw();
 }
 
-void Street::pay_rent(Player *guest, Property* tomter[]){
+void Street::pay_rent(Player *guest, Property* tomter[], int dice){
 	int double_pay_factor = 1;
+	int util_factor = 4; //util is special for electric company and water works
+	int util_factor_full = 10;
+	bool util_full_factor = false;
+
 	if(houses == 0 && this->own_zone(guest, tomter)){
 		double_pay_factor = 2;
+		if(pos_ruta == 12 || pos_ruta == 28)
+			util_full_factor = true;
 	}
-	if(guest->pay(rent[houses] * double_pay_factor)){
+	if(pos_ruta == 12 || pos_ruta == 28){ //If it is a utility
+		int temp_cost;
+		if(util_full_factor)
+			temp_cost = dice * util_factor_full;
+		else
+			temp_cost = dice * util_factor;
+		if(guest->pay(temp_cost))
+			Owner->recieve_money(temp_cost);
+	}
+	else if(guest->pay(rent[houses] * double_pay_factor)){ //guest pay and return true if succesful
 		Owner->recieve_money(rent[houses] * double_pay_factor);
 	}
 	else{
