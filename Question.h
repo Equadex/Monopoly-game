@@ -15,7 +15,7 @@
 //class Player;
 //class Status_box;
 
-const int max_question_length = 90;
+const int max_question_length = 80;
 const int max_question_lines = 10;
 const int max_question_lines_title = 3;
 

@@ -198,6 +198,7 @@ int main(){
 	temp[1] = new Button(600 - 162 + 80, 275 + 250, 600, 275 + 250 + 25, 2, "Auction", button);
 	Question *buy_street_Q = new Question(165, 275, temp, 2, "Buy or auction?", "This property is owned by the bank and is for sale. Do you want to buy it or let it be sold by auction?", question);
 	Auction *auction = new Auction(0, 120, players, n_players, auction_image, button, box, arial_36, arial_16);
+	((Tax*)tomter[4])->create_income_tax_question(165, 275, button, question); //Skapar fråga till inkomst skatt ruta
 
 	//Skapar event_queue, registrerar k�llor och startar timer
 	event_queue = al_create_event_queue();
@@ -255,6 +256,21 @@ int main(){
 				else if(auction->get_active()){
 					auction->button_pressed(mouse_pos_x, mouse_pos_y);
 				}
+				else if(((Tax*)tomter[4])->get_question()->get_active()){ //Om inkomst skatt är aktiv
+					int ID_button_pressed_temp = ((Tax*)tomter[4])->get_question()->button_pressed(mouse_pos_x, mouse_pos_y);
+					
+					if(ID_button_pressed_temp != 0){
+						switch(ID_button_pressed_temp){
+							case 1:
+								((Tax*)tomter[4])->pay(players[current_player], tomter);
+								break;
+							case 2:
+								((Tax*)tomter[4])->pay_fee(players[current_player], tomter);
+								break;
+						}
+						((Tax*)tomter[4])->set_question_active(false);
+					}
+				}
 				else{
 					for(int i = 0; i < ant_buttons; i++){ //Kontrollerar vilken knapp som blivit klickad
 						if(buttons[i]->Button_pressed(mouse_pos_x, mouse_pos_y)){
@@ -296,7 +312,11 @@ int main(){
 									}
 								}
 								else if((tomter[players[current_player]->get_pos_ruta()])->get_typ() == SKATT){ //OM skatt
-									((Tax*)tomter[players[current_player]->get_pos_ruta()])->pay(players[current_player], tomter);
+									if(players[current_player]->get_pos_ruta() == 4){
+										((Tax*)tomter[players[current_player]->get_pos_ruta()])->set_question_active(true);
+									}
+									else
+										((Tax*)tomter[players[current_player]->get_pos_ruta()])->pay(players[current_player], tomter);
 								}
 								if(dice_1 != dice_2)
 									dice_used = true;
@@ -361,6 +381,9 @@ int main(){
 				buy_street_Q->draw(arial_36, arial_16);
 			else if(auction->get_active()){//Ritar auktionsfönstret
 				auction->draw();
+			}
+			else if((((Tax*)tomter[4])->get_question())->get_active()){ //Om inkomst skatt fråga är aktiv
+				(((Tax*)tomter[4])->get_question())->draw(arial_36, arial_16);
 			}
 
 			for(int i = 0; i < ant_buttons; i++){ //Ritar knappar
