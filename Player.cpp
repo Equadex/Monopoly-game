@@ -5,6 +5,8 @@
 
 void Player::move_Player(int steg){
 	pos_ruta += steg;
+	if(pos_ruta / ant_rutor >= 1)
+		passed_go = true;
 	pos_ruta = pos_ruta % ant_rutor;
 	//update_Player(tomter, player_IDs, n_player_setoff);
 }

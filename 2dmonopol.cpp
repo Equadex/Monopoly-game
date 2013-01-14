@@ -273,9 +273,16 @@ int main(){
 								dice_sprite_1->set_curret_frame(max_tarning - (dice_2));
 
 								players[current_player]->move_Player(dice_1 + dice_2); //Flyttar spelare
-								temp_2 = players_on_property(players[current_player]->get_pos_ruta(), players, temp, n_players); //n_player på samma ruta samt deras id i temp2 array
+
+								if(players[current_player]->get_flag_passed_go()){ //if passed go
+									((Tax*)tomter[0])->pay(players[current_player], tomter);
+									players[current_player]->set_flag_passed_go(false); //Resets flags
+								}
+
+								temp_2 = players_on_property(players[current_player]->get_pos_ruta(), players, temp, n_players); //n_player på samma ruta samt deras id i temp array
 	
 								players[current_player]->update_Player(tomter, players, temp, temp_2); //Uppdaterar spelare
+								
 								if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == TOMT)){
 									if((tomter[players[current_player]->get_pos_ruta()]->get_Owner()) == 0){ //Om en tomt �r �gd av banken
 										buy_street_Q->set_active(true);
