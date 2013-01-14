@@ -22,13 +22,14 @@
 #include "Sprite.h"
 #include "Question.h"
 #include "Auction.h"
+#include "Tax.h"
 
 
 //Globala variabler lokala
 
 const int max_config_line_length = 128;
 const int max_name_length = 64;
-const int property_int_data_count = 18;
+const int property_int_data_count = 19;
 const int property_variable_count = property_int_data_count + 1;
 const int button_int_data_count = 5;
 const int button_variable_data_count = button_int_data_count + 1;
@@ -275,15 +276,20 @@ int main(){
 								temp_2 = players_on_property(players[current_player]->get_pos_ruta(), players, temp, n_players); //n_player på samma ruta samt deras id i temp2 array
 	
 								players[current_player]->update_Player(tomter, players, temp, temp_2); //Uppdaterar spelare
-								if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) == 0){ //Om en tomt �r �gd av banken
-									buy_street_Q->set_active(true);
-								}
-								else if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != players[current_player] && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != 0){ //Om tomten �r en gata och inte �r �gd av dig eller banken
-									if(players[current_player]->get_pos_ruta() == 12 || players[current_player]->get_pos_ruta() == 28){ //Om det är en utility(el och vatten)
-										(((Street*)tomter[players[current_player]->get_pos_ruta()])->pay_rent(players[current_player], tomter, dice_1 + dice_2));
+								if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == TOMT)){
+									if((tomter[players[current_player]->get_pos_ruta()]->get_Owner()) == 0){ //Om en tomt �r �gd av banken
+										buy_street_Q->set_active(true);
 									}
-									else									
-										((Street*)tomter[players[current_player]->get_pos_ruta()])->pay_rent(players[current_player], tomter);
+									else if((tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != players[current_player] && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != 0){ //Om tomten �r en gata och inte �r �gd av dig eller banken
+										if(players[current_player]->get_pos_ruta() == 12 || players[current_player]->get_pos_ruta() == 28){ //Om det är en utility(el och vatten)
+											(((Street*)tomter[players[current_player]->get_pos_ruta()])->pay_rent(players[current_player], tomter, dice_1 + dice_2));
+										}
+										else									
+											((Street*)tomter[players[current_player]->get_pos_ruta()])->pay_rent(players[current_player], tomter);
+									}
+								}
+								else if((tomter[players[current_player]->get_pos_ruta()])->get_typ() == SKATT){ //OM skatt
+									((Tax*)tomter[players[current_player]->get_pos_ruta()])->pay(players[current_player], tomter);
 								}
 								if(dice_1 != dice_2)
 									dice_used = true;
@@ -424,13 +430,16 @@ void read_Property_data(Property *tomter[]){
 				}
 			}
 			
-			if(intdata[5] == 0){
+			if(intdata[5] == TOMT){
 				int temp_rent_array[max_houses + 1];
 
 				for(int k = 0; k < (max_houses + 1); k++){
 					temp_rent_array[k] = intdata[8 + k];
 				}
-				tomter[i] = new Street(intdata[0], intdata[2], intdata[1], intdata[3], intdata[4], namn,intdata[5] , intdata[7], intdata[14],temp_rent_array , intdata[6], intdata[15],intdata[16],intdata[17]);
+				tomter[i] = new Street(intdata[0], intdata[2], intdata[1], intdata[3], intdata[4], namn,intdata[5] , intdata[7], intdata[14],temp_rent_array , intdata[6], intdata[16],intdata[17],intdata[18]);
+			}
+			else if(intdata[5] == SKATT){
+				tomter[i] = new Tax(intdata[0], intdata[2], intdata[1], intdata[3], intdata[4], namn, intdata[5], intdata[15]);
 			}
 			else{
 				tomter[i] = new Property(intdata[0], intdata[2], intdata[1], intdata[3], intdata[4], namn, intdata[5]); //Skapar tomt

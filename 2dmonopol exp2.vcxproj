@@ -86,6 +86,7 @@
     <ClInclude Include="Status_box.h" />
     <ClInclude Include="Street.h" />
     <ClInclude Include="Street_info.h" />
+    <ClInclude Include="Tax.h" />
     <ClInclude Include="Text_field.h" />
     <ClInclude Include="Window_list.h" />
   </ItemGroup>

@@ -1,7 +1,6 @@
 #ifndef PROPERTY_H
 #define PROPERTY_H
 
-//#include "Player.h" //Should not be here
 #include "Constants.h"
 #include <string>
 
