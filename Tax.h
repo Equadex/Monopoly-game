@@ -1,4 +1,5 @@
 #include "Property.h"
+#include "Street.h"
 #include "Player.h"
 #include "Question.h"
 #include "Button.h"
@@ -33,7 +34,25 @@ public:
 		choose->set_active(active);
 	}
 	void pay_fee(Player* visitor, Property** tomter){
+		int total_funds = 0, total_fee;
+		total_funds += (visitor->get_money());
 
+		for(int i = 0; i < ant_rutor; i++){ //Adding owned property
+			if(tomter[i]->get_Owner() == visitor && tomter[i]->get_typ() == TOMT){
+				if(((Street*)tomter[i])->get_mortaged()) //if mortaged, add mortaged value
+					total_funds += ((((Street*)tomter[i])->get_cost()) / 2);
+				else{
+					total_funds += (((Street*)tomter[i])->get_cost());
+					if(((Street*)tomter[i])->own_zone(tomter)){ //if zone is owned, check for houses and hotels
+						total_funds += ((Street*)tomter[i])->get_ant_houses() * ((Street*)tomter[i])->get_building_cost();
+					}
+				}
+			}
+		}
+		total_fee = total_funds / 10;
+		if(!visitor->pay(total_fee)) //Player pays, if player cannot, player is defeated
+			visitor->defeated(NULL, tomter);
+		
 	}
 private:
 	int fee;
