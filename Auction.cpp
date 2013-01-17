@@ -3,7 +3,7 @@
 
 
 Auction::Auction(int pos_x, int pos_y, Player** players, int n_players, ALLEGRO_BITMAP *image, ALLEGRO_BITMAP *button, ALLEGRO_BITMAP *box, ALLEGRO_FONT *title, ALLEGRO_FONT *normal_text, Street *property_on_sale,bool active) : pos_x(pos_x), pos_y(pos_y), players(players), n_players(n_players), image(image), ant_buttons(9), title(title), normal_text(normal_text), property_on_sale(property_on_sale), active(active), current_max_bid(0), c_player(0), current_bid(0){
-	const int ant_text_fields = 3;
+	const int ant_text_fields = 4;
 	Text_field** temp_text = new Text_field*[ant_text_fields];
 	
 	players_bids = new int[n_players];
@@ -30,6 +30,7 @@ Auction::Auction(int pos_x, int pos_y, Player** players, int n_players, ALLEGRO_
 	temp_text[0] = new Text_field(300, 240,"%s is on auction and the current bid is %i" , normal_text);
 	temp_text[1] = new Text_field(340, 380,"Your bid: %i", normal_text);
 	temp_text[2] = new Text_field(20, 175, "Player %i", normal_text);
+	temp_text[3] = new Text_field(20, 190, "Funds %i", normal_text); //Variables for text_fields will be added to the string in the update funtion in Auction_window
 
 	window = new Auction_window(pos_x, pos_y, buttons, ant_buttons, "Auction", "", image,temp_text, ant_text_fields, true);
 	player_bid_list = new Window_list(pos_x + 50, pos_y + 120, players_bids, players, n_players, 0, true);
@@ -66,7 +67,7 @@ void Auction::set_active(bool active_in){
 	if(active_in == true)
 		property_on_sale->get_namn(temp, 100);
 	window->set_active(active_in);
-	window->update(temp, current_max_bid, current_max_bid + 1, c_player);
+	window->update(temp, current_max_bid, current_max_bid + 1, c_player, players[c_player]->get_money());
 }
 
 void Auction::button_pressed(int mouse_x, int mouse_y){
@@ -121,7 +122,7 @@ void Auction::button_pressed(int mouse_x, int mouse_y){
 	
 	char temp[100];
 	property_on_sale->get_namn(temp, 100);
-	window->update(temp, current_max_bid, current_bid, c_player);
+	window->update(temp, current_max_bid, current_bid, c_player, players[c_player]->get_money());
 	
 	int folders = 0;
 	for(int i = 0; i < n_players; i++){

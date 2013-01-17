@@ -92,5 +92,8 @@
     <ClInclude Include="Street.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Tax.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

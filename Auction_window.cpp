@@ -19,7 +19,7 @@ void Auction_window::draw(ALLEGRO_FONT* Title, ALLEGRO_FONT* Text){
 	}
 }
 
-void Auction_window::update(char* name, int c_bid, int p_bid, int c_player){
+void Auction_window::update(char* name, int c_bid, int p_bid, int c_player, int c_player_funds){
 	char temp[256];
 	std::sprintf(temp, text_fields[0]->get_text_template(), name, c_bid);
 	text_fields[0]->set_text(temp);
@@ -27,4 +27,6 @@ void Auction_window::update(char* name, int c_bid, int p_bid, int c_player){
 	text_fields[1]->set_text(temp);
 	std::sprintf(temp, text_fields[2]->get_text_template(), c_player);
 	text_fields[2]->set_text(temp);
+	std::sprintf(temp, text_fields[3]->get_text_template(), c_player_funds);
+	text_fields[3]->set_text(temp);
 }

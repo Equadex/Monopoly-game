@@ -22,13 +22,14 @@
 #include "Sprite.h"
 #include "Question.h"
 #include "Auction.h"
+#include "Tax.h"
 
 
 //Globala variabler lokala
 
 const int max_config_line_length = 128;
 const int max_name_length = 64;
-const int property_int_data_count = 18;
+const int property_int_data_count = 19;
 const int property_variable_count = property_int_data_count + 1;
 const int button_int_data_count = 5;
 const int button_variable_data_count = button_int_data_count + 1;
@@ -143,7 +144,7 @@ int main(){
 
 	//Skapar och testar display
 	//al_set_new_display_flags(ALLEGRO_WINDOWED);
-	//al_set_new_display_flags(ALLEGRO_OPENGL);
+	al_set_new_display_flags(ALLEGRO_OPENGL);
 	display = al_create_display(scaleW, scaleH);
 	if(!display){
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Display" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
@@ -181,10 +182,10 @@ int main(){
 	ALLEGRO_FONT *arial_16 = al_load_ttf_font("arial.ttf", 16, 0);
 	ALLEGRO_FONT *arial_36 = al_load_ttf_font("arial.ttf", 36, 0);
 	ALLEGRO_FONT *arial_20 = al_load_ttf_font("arial.ttf", 20, 0);
-	ALLEGRO_FONT *arial_10 = al_load_ttf_font("arial.ttf", 12, 0);
+	ALLEGRO_FONT *arial_10 = al_load_ttf_font("arial.ttf", 12, 0); 
 
 	//Temp kod som inte borde se ut s�h�r
-
+	
 	//Street_info *test = new Street_info(0, 0, (Street*)tomter[0], street_info, false); //Test, ska tas bort
 	create_Street_info(tomter, street_info, street_info_railroad, street_info_el, street_info_water, arial_16, arial_20, arial_10);
 
@@ -197,6 +198,7 @@ int main(){
 	temp[1] = new Button(600 - 162 + 80, 275 + 250, 600, 275 + 250 + 25, 2, "Auction", button);
 	Question *buy_street_Q = new Question(165, 275, temp, 2, "Buy or auction?", "This property is owned by the bank and is for sale. Do you want to buy it or let it be sold by auction?", question);
 	Auction *auction = new Auction(0, 120, players, n_players, auction_image, button, box, arial_36, arial_16);
+	((Tax*)tomter[4])->create_income_tax_question(165, 275, button, question); //Skapar fråga till inkomst skatt ruta
 
 	//Skapar event_queue, registrerar k�llor och startar timer
 	event_queue = al_create_event_queue();
@@ -254,6 +256,21 @@ int main(){
 				else if(auction->get_active()){
 					auction->button_pressed(mouse_pos_x, mouse_pos_y);
 				}
+				else if(((Tax*)tomter[4])->get_question()->get_active()){ //Om inkomst skatt är aktiv
+					int ID_button_pressed_temp = ((Tax*)tomter[4])->get_question()->button_pressed(mouse_pos_x, mouse_pos_y);
+					
+					if(ID_button_pressed_temp != 0){
+						switch(ID_button_pressed_temp){
+							case 1:
+								((Tax*)tomter[4])->pay(players[current_player], tomter);
+								break;
+							case 2:
+								((Tax*)tomter[4])->pay_fee(players[current_player], tomter);
+								break;
+						}
+						((Tax*)tomter[4])->set_question_active(false);
+					}
+				}
 				else{
 					for(int i = 0; i < ant_buttons; i++){ //Kontrollerar vilken knapp som blivit klickad
 						if(buttons[i]->Button_pressed(mouse_pos_x, mouse_pos_y)){
@@ -272,14 +289,34 @@ int main(){
 								dice_sprite_1->set_curret_frame(max_tarning - (dice_2));
 
 								players[current_player]->move_Player(dice_1 + dice_2); //Flyttar spelare
-								temp_2 = players_on_property(players[current_player]->get_pos_ruta(), players, temp, n_players); //n_player på samma ruta samt deras id i temp2 array
+
+								if(players[current_player]->get_flag_passed_go()){ //if passed go
+									((Tax*)tomter[0])->pay(players[current_player], tomter);
+									players[current_player]->set_flag_passed_go(false); //Resets flags
+								}
+
+								temp_2 = players_on_property(players[current_player]->get_pos_ruta(), players, temp, n_players); //n_player på samma ruta samt deras id i temp array
 	
 								players[current_player]->update_Player(tomter, players, temp, temp_2); //Uppdaterar spelare
-								if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) == 0){ //Om en tomt �r �gd av banken
-									buy_street_Q->set_active(true);
+								
+								if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == TOMT)){
+									if((tomter[players[current_player]->get_pos_ruta()]->get_Owner()) == 0){ //Om en tomt �r �gd av banken
+										buy_street_Q->set_active(true);
+									}
+									else if((tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != players[current_player] && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != 0){ //Om tomten �r en gata och inte �r �gd av dig eller banken
+										if(players[current_player]->get_pos_ruta() == 12 || players[current_player]->get_pos_ruta() == 28){ //Om det är en utility(el och vatten)
+											(((Street*)tomter[players[current_player]->get_pos_ruta()])->pay_rent(players[current_player], tomter, dice_1 + dice_2));
+										}
+										else									
+											((Street*)tomter[players[current_player]->get_pos_ruta()])->pay_rent(players[current_player], tomter);
+									}
 								}
-								else if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0) && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != players[current_player] && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != 0){ //Om tomten �r en gata och inte �r �gd av dig eller banken
-									((Street*)tomter[players[current_player]->get_pos_ruta()])->pay_rent(players[current_player], tomter);
+								else if((tomter[players[current_player]->get_pos_ruta()])->get_typ() == SKATT){ //OM skatt
+									if(players[current_player]->get_pos_ruta() == 4){
+										((Tax*)tomter[players[current_player]->get_pos_ruta()])->set_question_active(true);
+									}
+									else
+										((Tax*)tomter[players[current_player]->get_pos_ruta()])->pay(players[current_player], tomter);
 								}
 								if(dice_1 != dice_2)
 									dice_used = true;
@@ -342,8 +379,11 @@ int main(){
 			dice_sprite_1->draw();
 			if(buy_street_Q->get_active()) //Ritar k�pfr�gan om den �r aktiv
 				buy_street_Q->draw(arial_36, arial_16);
-			else if(auction->get_active()){
+			else if(auction->get_active()){//Ritar auktionsfönstret
 				auction->draw();
+			}
+			else if((((Tax*)tomter[4])->get_question())->get_active()){ //Om inkomst skatt fråga är aktiv
+				(((Tax*)tomter[4])->get_question())->draw(arial_36, arial_16);
 			}
 
 			for(int i = 0; i < ant_buttons; i++){ //Ritar knappar
@@ -420,13 +460,16 @@ void read_Property_data(Property *tomter[]){
 				}
 			}
 			
-			if(intdata[5] == 0){
+			if(intdata[5] == TOMT){
 				int temp_rent_array[max_houses + 1];
 
 				for(int k = 0; k < (max_houses + 1); k++){
 					temp_rent_array[k] = intdata[8 + k];
 				}
-				tomter[i] = new Street(intdata[0], intdata[2], intdata[1], intdata[3], intdata[4], namn,intdata[5] , intdata[7], intdata[14],temp_rent_array , intdata[6], intdata[15],intdata[16],intdata[17]);
+				tomter[i] = new Street(intdata[0], intdata[2], intdata[1], intdata[3], intdata[4], namn,intdata[5] , intdata[7], intdata[14],temp_rent_array , intdata[6], intdata[16],intdata[17],intdata[18]);
+			}
+			else if(intdata[5] == SKATT){
+				tomter[i] = new Tax(intdata[0], intdata[2], intdata[1], intdata[3], intdata[4], namn, intdata[5], intdata[15]);
 			}
 			else{
 				tomter[i] = new Property(intdata[0], intdata[2], intdata[1], intdata[3], intdata[4], namn, intdata[5]); //Skapar tomt
