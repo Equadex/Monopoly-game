@@ -78,6 +78,8 @@
     <ClInclude Include="Auction.h" />
     <ClInclude Include="Auction_window.h" />
     <ClInclude Include="Button.h" />
+    <ClInclude Include="Card.h" />
+    <ClInclude Include="Chance.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Property.h" />

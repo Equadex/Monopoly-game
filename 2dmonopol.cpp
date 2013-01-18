@@ -23,17 +23,22 @@
 #include "Question.h"
 #include "Auction.h"
 #include "Tax.h"
+#include "Card.h"
 
 
 //Globala variabler lokala
 
 const int max_config_line_length = 128;
+const int max_config_extended_length = 350;
 const int max_name_length = 64;
 const int property_int_data_count = 19;
 const int property_variable_count = property_int_data_count + 1;
 const int button_int_data_count = 5;
 const int button_variable_data_count = button_int_data_count + 1;
 const int status_box_int_data_count = 5;
+const int cards_int_data_count = 2;
+const int cards_variable_count = cards_int_data_count + 1;
+
 const int startpengar = 1500;
 const int start_ruta = 0;
 const int max_tarning = 6;
@@ -53,6 +58,7 @@ void auction();
 int players_on_property(int pos_ruta, Player** players, int *players_IDs, int n_players);
 void color_to_comp_color(const int color[], int color_comp[]);
 void al_set_street_info_false(Property *tomter[], bool full = false); //Full = true resets all, false only the first
+void read_card_data(Card *cards[]);
 
 int main(){
 	//Konstanta variabler i main
@@ -85,6 +91,7 @@ int main(){
 	Property *tomter[ant_rutor]; //F�lt av tomter
 	Player *players[max_players]; //F�lt av spelare
 	Button *buttons[ant_buttons]; //F�lt av buttons
+	Card *cards[ant_cards]; //Fält av kort
 	Sprite *dice_sprite_0;
 	Sprite *dice_sprite_1;
 
@@ -92,6 +99,7 @@ int main(){
 	create_players(n_players, players, tomter); //Skapar spelare
 	read_Button_data(buttons); //L�ser in buttons koodinater och id
 	read_Status_box_data(tomter); //L�ser in status boxarnas positioner och gatunummer
+	read_card_data(cards); //Läser in kortdata
 
 	players[current_player]->get_color(c_player_color); //Färg för nuvarrande spelare
 
@@ -649,4 +657,49 @@ void al_set_street_info_false(Property *tomter[], bool full){
 			}
 		}
 	}
+}
+
+
+void read_card_data(Card *cards[]){
+	//�ppnar fil f�r data till klassen Property
+	std::ifstream file("cards_config.txt"); 
+	//Tillf�llig variabler f�r initiering av objekten
+	char namn[max_card_length];
+	namn[0] = '/0';
+	int intdata[cards_int_data_count];
+	char line[max_config_extended_length];
+	char line2[max_config_extended_length];
+	bool endfile = false;
+	
+	if(!file){  //Kontrollerar att filen �r �ppen
+		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize load Cards file config" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
+		exit(EXIT_FAILURE);
+	}
+
+	for(int i = 0; i < ant_cards; i++){
+			
+			file.getline(line, (max_config_extended_length-1));
+			while(line[0] == '#'){ //L�ser in ny rad om f�rsta tecknet �r kommentartecken
+				file.getline(line, (max_config_extended_length-1));
+			}
+			for(int j = 0, r_pos = 0; j < cards_variable_count; j++){
+				if(!endfile){ //Kontrollerar om nollf�rtecken tidigare hittats
+					getline_char(line, line2, max_config_line_length,max_config_line_length, ',', endfile, r_pos);
+				}
+				r_pos += strlen(line2) + 1; //R�knar hur m�nga tecken som har l�sts och anv�nds f�r att veta var n�sta inl�sning ska ske i str�ngen
+
+				if(j < cards_int_data_count){
+					intdata[j] = std::atoi(line2);
+				}
+				else{
+					strncpy(namn, line2, max_name_length-1);
+				}
+			}
+			
+			cards[i] = new Card(intdata[0], (!((bool)intdata[1])), namn);
+			
+
+			endfile = false;
+		
+		}
 }
