@@ -14,6 +14,53 @@ Question::Question(int pos_x, int pos_y, Button *buttons[],int n_buttons, char* 
 		message[i] = new char[max_question_length];
 	}
 
+	set_text(title_in, message_in);
+}
+
+Question::~Question(){
+	//Releasing memory
+	for(int i = 0; i < max_question_lines_title; i++){
+		delete[] title[i];
+	}
+	delete[] title;
+	for(int i = 0; i < max_question_lines; i++){
+		delete[] message[i];
+	}
+	delete[] message;
+}
+void Question::draw(ALLEGRO_FONT* Title, ALLEGRO_FONT* Text){
+	al_draw_bitmap(image, pos_x, pos_y, 0);
+	for(int i = 0; i < n_buttons; i++){
+		buttons[i]->draw(Text);
+	}
+
+	for(int i = 0; i < max_question_lines_title && n_title >= i; i++){
+		al_draw_text(Title, al_map_rgb(0, 0, 0), (pos_x + al_get_bitmap_width(image) / 2), (30 * i + pos_y + al_get_bitmap_height(image) / 10), ALLEGRO_ALIGN_CENTRE, title[i]);
+	}
+
+	for(int i = 0; i < max_question_lines && n_message >= i; i++){
+		al_draw_text(Text, al_map_rgb(0, 0, 0), (pos_x + al_get_bitmap_width(image) / 2), (15 * i + pos_y + 4 * (al_get_bitmap_height(image) / 10)), ALLEGRO_ALIGN_CENTRE, message[i]);
+	}
+
+	//al_draw_text(Title, al_map_rgb(0, 0, 0), (pos_x + al_get_bitmap_width(image) / 2), (pos_y + al_get_bitmap_height(image) / 10), ALLEGRO_ALIGN_CENTRE, "");
+	//al_draw_text(Text, al_map_rgb(0, 0, 0), (pos_x + al_get_bitmap_width(image) / 2), (pos_y + 4 * (al_get_bitmap_height(image) / 10)), ALLEGRO_ALIGN_CENTRE, "");
+}
+
+int Question::button_pressed(int mouse_pos_x, int mouse_pos_y){
+	if(active){
+		int button_id;
+		for(int i = 0; i < n_buttons; i++){
+			button_id = buttons[i]->Button_pressed(mouse_pos_x, mouse_pos_y);
+			if(button_id != 0){
+				return (button_id);
+			}
+		}
+		return (0);
+	}
+	return (0);
+}
+
+void Question::set_text(char *title_in, char* message_in){
 	//Delar upp texterna i flera texter
 	bool done = false;
 	int read_chars = 0;
@@ -78,47 +125,3 @@ Question::Question(int pos_x, int pos_y, Button *buttons[],int n_buttons, char* 
 		}
 	}
 }
-
-Question::~Question(){
-	//Releasing memory
-	for(int i = 0; i < max_question_lines_title; i++){
-		delete[] title[i];
-	}
-	delete[] title;
-	for(int i = 0; i < max_question_lines; i++){
-		delete[] message[i];
-	}
-	delete[] message;
-}
-void Question::draw(ALLEGRO_FONT* Title, ALLEGRO_FONT* Text){
-	al_draw_bitmap(image, pos_x, pos_y, 0);
-	for(int i = 0; i < n_buttons; i++){
-		buttons[i]->draw(Text);
-	}
-
-	for(int i = 0; i < max_question_lines_title && n_title >= i; i++){
-		al_draw_text(Title, al_map_rgb(0, 0, 0), (pos_x + al_get_bitmap_width(image) / 2), (30 * i + pos_y + al_get_bitmap_height(image) / 10), ALLEGRO_ALIGN_CENTRE, title[i]);
-	}
-
-	for(int i = 0; i < max_question_lines && n_message >= i; i++){
-		al_draw_text(Text, al_map_rgb(0, 0, 0), (pos_x + al_get_bitmap_width(image) / 2), (15 * i + pos_y + 4 * (al_get_bitmap_height(image) / 10)), ALLEGRO_ALIGN_CENTRE, message[i]);
-	}
-
-	//al_draw_text(Title, al_map_rgb(0, 0, 0), (pos_x + al_get_bitmap_width(image) / 2), (pos_y + al_get_bitmap_height(image) / 10), ALLEGRO_ALIGN_CENTRE, "");
-	//al_draw_text(Text, al_map_rgb(0, 0, 0), (pos_x + al_get_bitmap_width(image) / 2), (pos_y + 4 * (al_get_bitmap_height(image) / 10)), ALLEGRO_ALIGN_CENTRE, "");
-}
-
-int Question::button_pressed(int mouse_pos_x, int mouse_pos_y){
-	if(active){
-		int button_id;
-		for(int i = 0; i < n_buttons; i++){
-			button_id = buttons[i]->Button_pressed(mouse_pos_x, mouse_pos_y);
-			if(button_id != 0){
-				return (button_id);
-			}
-		}
-		return (0);
-	}
-	return (0);
-}
-

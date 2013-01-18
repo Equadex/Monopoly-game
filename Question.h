@@ -28,6 +28,7 @@ public:
 	bool get_active() const{return active;}
 	
 	void draw(ALLEGRO_FONT* Title, ALLEGRO_FONT* Text);
+	void set_text(char *title_in, char* message_in);
 	int button_pressed(int mouse_pos_x, int mouse_pos_y);
 
 protected:

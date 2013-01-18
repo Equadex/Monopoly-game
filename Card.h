@@ -20,6 +20,8 @@ public:
 	~Card(){
 		delete[] text;
 	}
+	char* get_text() const{return text;}
+	bool get_type() const{return chance;} //chance true if chance, otherwise community cheast
 private:
 	bool chance;
 	int id;

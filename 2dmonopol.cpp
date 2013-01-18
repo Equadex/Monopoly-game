@@ -24,6 +24,7 @@
 #include "Auction.h"
 #include "Tax.h"
 #include "Card.h"
+#include "Chance.h"
 
 
 //Globala variabler lokala
@@ -59,6 +60,7 @@ int players_on_property(int pos_ruta, Player** players, int *players_IDs, int n_
 void color_to_comp_color(const int color[], int color_comp[]);
 void al_set_street_info_false(Property *tomter[], bool full = false); //Full = true resets all, false only the first
 void read_card_data(Card *cards[]);
+void seperate_cards(Card** cards, Card** cards_1, Card** cards_2, int n1, int n2, int n);
 
 int main(){
 	//Konstanta variabler i main
@@ -91,15 +93,17 @@ int main(){
 	Property *tomter[ant_rutor]; //F�lt av tomter
 	Player *players[max_players]; //F�lt av spelare
 	Button *buttons[ant_buttons]; //F�lt av buttons
-	Card *cards[ant_cards]; //Fält av kort
+	Card *cards[ant_cards], *c_cards[ant_cards / 2], *a_cards[ant_cards / 2]; //Fält av kort
 	Sprite *dice_sprite_0;
 	Sprite *dice_sprite_1;
+	Chance *chans, *allmaning;
 
 	read_Property_data(tomter); //L�ser in data till tomter
 	create_players(n_players, players, tomter); //Skapar spelare
 	read_Button_data(buttons); //L�ser in buttons koodinater och id
 	read_Status_box_data(tomter); //L�ser in status boxarnas positioner och gatunummer
 	read_card_data(cards); //Läser in kortdata
+	seperate_cards(cards, c_cards, a_cards, ant_cards / 2, ant_cards / 2, ant_cards); //Delar upp korten i två korthögar till chans och allmäning
 
 	players[current_player]->get_color(c_player_color); //Färg för nuvarrande spelare
 
@@ -199,14 +203,17 @@ int main(){
 
 	dice_sprite_0 = new Sprite(1091, 6, 81, dice); 
 	dice_sprite_1 = new Sprite(1172, 6, 81, dice);
+	
+	chans = new Chance(c_cards, question, button);
+	allmaning = new Chance(a_cards, question, button);
 
 
 	Button *temp[2];
 	temp[0] = new Button(165 + 162, 275 + 250, 165 + 162 + 80, 275 + 250 + 25, 1, "Buy", button);
 	temp[1] = new Button(600 - 162 + 80, 275 + 250, 600, 275 + 250 + 25, 2, "Auction", button);
-	Question *buy_street_Q = new Question(165, 275, temp, 2, "Buy or auction?", "This property is owned by the bank and is for sale. Do you want to buy it or let it be sold by auction?", question);
+	Question *buy_street_Q = new Question(Question_pos_x_standard, Question_pos_y_standard, temp, 2, "Buy or auction?", "This property is owned by the bank and is for sale. Do you want to buy it or let it be sold by auction?", question);
 	Auction *auction = new Auction(0, 120, players, n_players, auction_image, button, box, arial_36, arial_16);
-	((Tax*)tomter[4])->create_income_tax_question(165, 275, button, question); //Skapar fråga till inkomst skatt ruta
+	((Tax*)tomter[4])->create_income_tax_question(Question_pos_x_standard, Question_pos_y_standard, button, question); //Skapar fråga till inkomst skatt ruta
 
 	//Skapar event_queue, registrerar k�llor och startar timer
 	event_queue = al_create_event_queue();
@@ -326,6 +333,12 @@ int main(){
 									else
 										((Tax*)tomter[players[current_player]->get_pos_ruta()])->pay(players[current_player], tomter);
 								}
+								else if((tomter[players[current_player]->get_pos_ruta()])->get_typ() == CHANS){
+									chans->pick_card();
+								}
+								else if((tomter[players[current_player]->get_pos_ruta()])->get_typ() == ALLMANING){
+									allmaning->pick_card();
+								}
 								if(dice_1 != dice_2)
 									dice_used = true;
 								else
@@ -393,6 +406,10 @@ int main(){
 			else if((((Tax*)tomter[4])->get_question())->get_active()){ //Om inkomst skatt fråga är aktiv
 				(((Tax*)tomter[4])->get_question())->draw(arial_36, arial_16);
 			}
+			else if((chans->get_window())->get_active()) //Om chans ruta är aktiv
+				(chans->get_window())->draw(arial_36, arial_16);
+			else if((allmaning->get_window())->get_active()) //Om allmäning ruta är aktiv
+				(allmaning->get_window())->draw(arial_36, arial_16);
 
 			for(int i = 0; i < ant_buttons; i++){ //Ritar knappar
 				buttons[i]->draw(arial_16);
@@ -659,7 +676,6 @@ void al_set_street_info_false(Property *tomter[], bool full){
 	}
 }
 
-
 void read_card_data(Card *cards[]){
 	//�ppnar fil f�r data till klassen Property
 	std::ifstream file("cards_config.txt"); 
@@ -702,4 +718,13 @@ void read_card_data(Card *cards[]){
 			endfile = false;
 		
 		}
+}
+
+void seperate_cards(Card** cards, Card** cards_1, Card** cards_2, int n1, int n2, int n){
+	for(int i = 0; i < n; i++){
+		if(i < n1)
+			cards_1[i] = cards[i];
+		else if((i - n1) < n2)
+			cards_2[i - n1] = cards[i];
+	}
 }
