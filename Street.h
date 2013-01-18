@@ -47,6 +47,7 @@ public:
 		if(info != 0 ){ //if pressed and not null pointer
 			return (status_owner->pressed(mouse_pos_x, mouse_pos_y));
 		}
+		return false;
 	}
 
 protected:
