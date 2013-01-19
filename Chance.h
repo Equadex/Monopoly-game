@@ -14,12 +14,13 @@ public:
 		ok_button = new Button*[1];
 		ok_button[0] = new Button(Question_pos_x_standard + (al_get_bitmap_width(image) / 2) - 40, Question_pos_y_standard + al_get_bitmap_height(image) - (al_get_bitmap_height(image) /6), Question_pos_x_standard + (al_get_bitmap_width(image) / 2) + 40, Question_pos_y_standard + al_get_bitmap_height(image) - (al_get_bitmap_height(image) /6) + 25, 1, "OK", button);
 		window = new Question(Question_pos_x_standard, Question_pos_y_standard, ok_button, 1, "", "", image);
+		srand(time(NULL));
 	}
 	void pick_card(){
 		char c[] = {"Chance"};
 		char a[] = {"Community Chest"};
-		srand(time(NULL));
-		Card* temp = cards[rand() % (ant_cards / 2)];
+		int random_number = rand() % (ant_cards / 2);
+		Card* temp = cards[random_number];
 
 		//Chaning text in window
 		if(temp->get_type())

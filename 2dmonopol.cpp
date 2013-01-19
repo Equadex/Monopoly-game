@@ -286,6 +286,12 @@ int main(){
 						((Tax*)tomter[4])->set_question_active(false);
 					}
 				}
+				else if(chans->get_window()->button_pressed(mouse_pos_x, mouse_pos_y)){
+					chans->get_window()->set_active(false);
+				}
+				else if(allmaning->get_window()->button_pressed(mouse_pos_x, mouse_pos_y)){
+					allmaning->get_window()->set_active(false);
+				}
 				else{
 					for(int i = 0; i < ant_buttons; i++){ //Kontrollerar vilken knapp som blivit klickad
 						if(buttons[i]->Button_pressed(mouse_pos_x, mouse_pos_y)){
@@ -383,7 +389,7 @@ int main(){
 		}
 
 		if(draw){
-
+			
 			//Drawing
 			al_set_target_bitmap(buffer);
 			al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -708,7 +714,7 @@ void read_card_data(Card *cards[]){
 					intdata[j] = std::atoi(line2);
 				}
 				else{
-					strncpy(namn, line2, max_name_length-1);
+					strncpy(namn, line2, max_card_length-1);
 				}
 			}
 			
