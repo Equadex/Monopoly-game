@@ -16,7 +16,7 @@ public:
 		window = new Question(Question_pos_x_standard, Question_pos_y_standard, ok_button, 1, "", "", image);
 		srand(time(NULL));
 	}
-	void pick_card(){
+	int pick_card(){ //Returns id of card
 		char c[] = {"Chance"};
 		char a[] = {"Community Chest"};
 		int random_number = rand() % (ant_cards / 2);
@@ -28,7 +28,11 @@ public:
 		else
 			window->set_text(a, (temp->get_text()));
 		window->set_active(true);
+
+		return(temp->get_id());
 	}
+	Card** get_cards(){return cards;}
+
 	Question* get_window() const{return window;}
 	
 private:

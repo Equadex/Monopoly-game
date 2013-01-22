@@ -85,7 +85,7 @@ int main(){
 	enum typ{TOMT, SKATT, CHANS, ALLMANING};
 	int n_players = 6, current_player = 0;
 	int dice_1, dice_2;
-	int ID_button_pressed;
+	int ID_button_pressed, ID_card;
 	int c_player_color[3];
 
 	bool dice_used = false;
@@ -303,22 +303,17 @@ int main(){
 						case 1: //Sl� t�rningarna
 							if(!dice_used){
 								int temp[max_players];
-								int temp_2;
 								roll_dice(dice_1); roll_dice(dice_2);
 								
 								dice_sprite_0->set_curret_frame(max_tarning - (dice_1)); //Byter bild p� t�rning
 								dice_sprite_1->set_curret_frame(max_tarning - (dice_2));
 
-								players[current_player]->move_Player(dice_1 + dice_2); //Flyttar spelare
+								players[current_player]->move_Player(dice_1 + dice_2, tomter, players, n_players); //Flyttar spelare
 
 								if(players[current_player]->get_flag_passed_go()){ //if passed go
 									((Tax*)tomter[0])->pay(players[current_player], tomter);
 									players[current_player]->set_flag_passed_go(false); //Resets flags
 								}
-
-								temp_2 = players_on_property(players[current_player]->get_pos_ruta(), players, temp, n_players); //n_player på samma ruta samt deras id i temp array
-	
-								players[current_player]->update_Player(tomter, players, temp, temp_2); //Uppdaterar spelare
 								
 								if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == TOMT)){
 									if((tomter[players[current_player]->get_pos_ruta()]->get_Owner()) == 0){ //Om en tomt �r �gd av banken
@@ -340,10 +335,10 @@ int main(){
 										((Tax*)tomter[players[current_player]->get_pos_ruta()])->pay(players[current_player], tomter);
 								}
 								else if((tomter[players[current_player]->get_pos_ruta()])->get_typ() == CHANS){
-									chans->pick_card();
+									ID_card = chans->pick_card();
 								}
 								else if((tomter[players[current_player]->get_pos_ruta()])->get_typ() == ALLMANING){
-									allmaning->pick_card();
+									ID_card = allmaning->pick_card();
 								}
 								if(dice_1 != dice_2)
 									dice_used = true;
@@ -561,13 +556,9 @@ void create_players(int n_players, Player *players[], Property *tomter[]){
 		players[i] = new Player(pos_x, pos_y, pos_ruta, i, startpengar, player_colors[(i * 3)], player_colors[(i * 3) + 1], player_colors[(i * 3) + 2]);
 	}
 	//Uppdaterar spelarnas positioner
-	int temp[max_players];
-	for(int i = 0; i < max_players; i++){
-		temp[i] = i;
-	}
 	
 	for(int i = 0; i < n_players; i++){
-		players[i]->update_Player(tomter, players, temp, n_players, true);
+		players[i]->update_Player(tomter, players, n_players, true);
 	}
 }
 
@@ -733,4 +724,57 @@ void seperate_cards(Card** cards, Card** cards_1, Card** cards_2, int n1, int n2
 		else if((i - n1) < n2)
 			cards_2[i - n1] = cards[i];
 	}
+}
+
+void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players, int n_players, Property **tomter){
+	int action, action_sum_1, action_sum_2;
+	Card** temp_cards = (card_pile->get_cards());
+	
+	for(int i = 0; i < (ant_cards / 2); i++){ //Search for right card and copy action_values
+		if(temp_cards[i]->get_id() == id_card){
+			action = temp_cards[i]->get_action();
+			action_sum_1 = temp_cards[i]->get_action_s1();
+			action_sum_2 = temp_cards[i]->get_action_s2();
+		}
+	}
+	int p_pos;
+
+	switch (action){
+		case 1: //Move player to position
+			c_player->set_pos_ruta(action_sum_1);
+			c_player->update_Player(tomter, players, n_players);
+			break;
+		case 2://Move a certain amount of positions forward or backwords
+			c_player->move_Player(action_sum_1, tomter, players, n_players);
+			break;
+		case 3: //Bank pays you or take a fee
+			c_player->recieve_money(action_sum_1);
+			break;
+		case 4: //Moved to neares uttility
+			p_pos = c_player->get_pos_ruta();
+				
+			for(int i = p_pos; i < ant_rutor; i++){
+				if(tomter[i]->get_typ() == TOMT){
+					if(((Street**)tomter)[i]->get_zon() == 5 ){ //OM tillhör grupp för uttility
+						c_player->set_pos_ruta(i);
+						c_player->update_Player(tomter, players, n_players);
+					}
+				}
+			}
+			break;
+		case 5: //Move to nearest railroad and pay double rent
+			p_pos = c_player->get_pos_ruta();
+
+			for(int i = p_pos; i < ant_rutor; i++){
+				if(tomter[i]->get_typ() == TOMT){
+					if(((Street**)tomter)[i]->get_zon() == 5 ){ //OM tillhör grupp för railroad
+						c_player->set_pos_ruta(i);
+						c_player->update_Player(tomter, players, n_players);
+					}
+				}
+			}
+			break;
+	}
+	
+
 }

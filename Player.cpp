@@ -3,12 +3,13 @@
 #include "Player.h"
 #include "Property.h"
 
-void Player::move_Player(int steg){
+void Player::move_Player(int steg, Property** tomter, Player** players, int n_players){
 	pos_ruta += steg;
 	if(pos_ruta / ant_rutor >= 1)
 		passed_go = true;
 	pos_ruta = pos_ruta % ant_rutor;
-	//update_Player(tomter, player_IDs, n_player_setoff);
+
+	update_Player(tomter, players, n_players);
 }
 
 void Player::get_pos(int &pos_x_in, int &pos_y_in) const{
@@ -20,7 +21,10 @@ void Player::draw_player() const  {
 	al_draw_filled_rectangle(pos_x, pos_y, pos_x + square_size, pos_y + square_size, al_map_rgb(color_r, color_g, color_b));	
 }
 
-void Player::update_Player(Property *tomter[], Player **players, int *player_IDs, int n_player_setoff, bool first_update){ 
+void Player::update_Player(Property *tomter[], Player **players, int n_players, bool first_update){ 
+	int player_IDs[max_players];
+	int n_player_setoff = players_on_property(pos_ruta, players, player_IDs, n_players);
+	
 	int new_pos_x, new_pos_y;
 	int temp_pos_x, temp_pos_y;
 	int displacement_factor;
@@ -117,4 +121,20 @@ void Player::defeated(Player *winner, Property* tomter[]){
 			tomter[i]->set_Owner(winner);
 		}
 	}
+}
+
+void Player::set_pos_ruta(int pos_ruta_in){
+	pos_ruta = pos_ruta_in;
+}
+
+int Player::players_on_property(int pos_ruta, Player** players, int *players_IDs, int n_players){
+	int player_on_pos_ruta = 0;
+	for(int i = 0, j = 0; i < n_players; i++){
+		if(players[i]->get_pos_ruta() == pos_ruta){
+			player_on_pos_ruta++;
+			players_IDs[j] = players[i]->get_id();
+			j++;
+		}
+	}
+	return(player_on_pos_ruta);
 }
