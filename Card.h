@@ -5,7 +5,7 @@
 
 class Card{
 public:
-	Card(int id, bool chance, char* text_in) : id(id), chance(chance){
+	Card(int id, bool chance, int action, int action_sum_1, int action_sum_2, char* text_in) : id(id), chance(chance), action(action), action_sum_1(action_sum_1), action_sum_2(action_sum_2){
 		text = new char[max_card_length];
 		
 		//Copy text_input to internal char array

@@ -37,7 +37,7 @@ const int property_variable_count = property_int_data_count + 1;
 const int button_int_data_count = 5;
 const int button_variable_data_count = button_int_data_count + 1;
 const int status_box_int_data_count = 5;
-const int cards_int_data_count = 2;
+const int cards_int_data_count = 5;
 const int cards_variable_count = cards_int_data_count + 1;
 
 const int startpengar = 1500;
@@ -61,6 +61,8 @@ void color_to_comp_color(const int color[], int color_comp[]);
 void al_set_street_info_false(Property *tomter[], bool full = false); //Full = true resets all, false only the first
 void read_card_data(Card *cards[]);
 void seperate_cards(Card** cards, Card** cards_1, Card** cards_2, int n1, int n2, int n);
+void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players, int n_players, Property **tomter, Question *buy_street_Q, int &ID_card, Chance* chans, Chance* allmaning, int dice_1, int dice_2);
+void after_movement(Player* c_player, Question* buy_street_Q, Property **tomter, int dice_1, int dice_2, int &ID_card, Chance *chans, Chance *allmaning);
 
 int main(){
 	//Konstanta variabler i main
@@ -288,9 +290,11 @@ int main(){
 				}
 				else if(chans->get_window()->button_pressed(mouse_pos_x, mouse_pos_y)){
 					chans->get_window()->set_active(false);
+					do_action(chans, ID_card, players[current_player], players, n_players, tomter, buy_street_Q, ID_card, chans, allmaning, dice_1, dice_2);
 				}
 				else if(allmaning->get_window()->button_pressed(mouse_pos_x, mouse_pos_y)){
 					allmaning->get_window()->set_active(false);
+					do_action(allmaning, ID_card, players[current_player], players, n_players, tomter, buy_street_Q, ID_card, chans, allmaning, dice_1, dice_2);
 				}
 				else{
 					for(int i = 0; i < ant_buttons; i++){ //Kontrollerar vilken knapp som blivit klickad
@@ -310,36 +314,8 @@ int main(){
 
 								players[current_player]->move_Player(dice_1 + dice_2, tomter, players, n_players); //Flyttar spelare
 
-								if(players[current_player]->get_flag_passed_go()){ //if passed go
-									((Tax*)tomter[0])->pay(players[current_player], tomter);
-									players[current_player]->set_flag_passed_go(false); //Resets flags
-								}
-								
-								if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == TOMT)){
-									if((tomter[players[current_player]->get_pos_ruta()]->get_Owner()) == 0){ //Om en tomt �r �gd av banken
-										buy_street_Q->set_active(true);
-									}
-									else if((tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != players[current_player] && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != 0){ //Om tomten �r en gata och inte �r �gd av dig eller banken
-										if(players[current_player]->get_pos_ruta() == 12 || players[current_player]->get_pos_ruta() == 28){ //Om det är en utility(el och vatten)
-											(((Street*)tomter[players[current_player]->get_pos_ruta()])->pay_rent(players[current_player], tomter, dice_1 + dice_2));
-										}
-										else									
-											((Street*)tomter[players[current_player]->get_pos_ruta()])->pay_rent(players[current_player], tomter);
-									}
-								}
-								else if((tomter[players[current_player]->get_pos_ruta()])->get_typ() == SKATT){ //OM skatt
-									if(players[current_player]->get_pos_ruta() == 4){
-										((Tax*)tomter[players[current_player]->get_pos_ruta()])->set_question_active(true);
-									}
-									else
-										((Tax*)tomter[players[current_player]->get_pos_ruta()])->pay(players[current_player], tomter);
-								}
-								else if((tomter[players[current_player]->get_pos_ruta()])->get_typ() == CHANS){
-									ID_card = chans->pick_card();
-								}
-								else if((tomter[players[current_player]->get_pos_ruta()])->get_typ() == ALLMANING){
-									ID_card = allmaning->pick_card();
-								}
+								after_movement(players[current_player], buy_street_Q, tomter, dice_1, dice_2, ID_card, chans, allmaning);
+
 								if(dice_1 != dice_2)
 									dice_used = true;
 								else
@@ -709,7 +685,7 @@ void read_card_data(Card *cards[]){
 				}
 			}
 			
-			cards[i] = new Card(intdata[0], (!((bool)intdata[1])), namn);
+			cards[i] = new Card(intdata[0], (!((bool)intdata[1])),intdata[2], intdata[3], intdata[4], namn);
 			
 
 			endfile = false;
@@ -726,7 +702,7 @@ void seperate_cards(Card** cards, Card** cards_1, Card** cards_2, int n1, int n2
 	}
 }
 
-void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players, int n_players, Property **tomter){
+void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players, int n_players, Property **tomter, Question *buy_street_Q, int &ID_card, Chance* chans, Chance* allmaning, int dice_1, int dice_2){
 	int action, action_sum_1, action_sum_2;
 	Card** temp_cards = (card_pile->get_cards());
 	
@@ -743,9 +719,11 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 		case 1: //Move player to position
 			c_player->set_pos_ruta(action_sum_1);
 			c_player->update_Player(tomter, players, n_players);
+			after_movement(c_player, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning);
 			break;
 		case 2://Move a certain amount of positions forward or backwords
 			c_player->move_Player(action_sum_1, tomter, players, n_players);
+			after_movement(c_player, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning);
 			break;
 		case 3: //Bank pays you or take a fee
 			c_player->recieve_money(action_sum_1);
@@ -755,9 +733,10 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 				
 			for(int i = p_pos; i < ant_rutor; i++){
 				if(tomter[i]->get_typ() == TOMT){
-					if(((Street**)tomter)[i]->get_zon() == 5 ){ //OM tillhör grupp för uttility
+					if(((Street**)tomter)[i]->get_zon() == 5 ){ //IF belonges to group for uttility
 						c_player->set_pos_ruta(i);
 						c_player->update_Player(tomter, players, n_players);
+						after_movement(c_player, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning);
 					}
 				}
 			}
@@ -767,14 +746,54 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 
 			for(int i = p_pos; i < ant_rutor; i++){
 				if(tomter[i]->get_typ() == TOMT){
-					if(((Street**)tomter)[i]->get_zon() == 5 ){ //OM tillhör grupp för railroad
+					if(((Street**)tomter)[i]->get_zon() == 5 ){ //IF belonges to group for railroad
 						c_player->set_pos_ruta(i);
 						c_player->update_Player(tomter, players, n_players);
+						if((((Street**)tomter)[i])->get_Owner() != c_player && (((Street**)tomter)[i])->get_Owner() != 0){ //Pay rent for railroad, will pay again later(thereby doubling the rent)
+							(((Street**)tomter)[i])->pay_rent(c_player, tomter);
+						}
+						after_movement(c_player, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning);
 					}
 				}
 			}
 			break;
+		case 6:
+
+			break;
 	}
 	
 
+}
+
+void after_movement(Player* c_player, Question* buy_street_Q, Property **tomter, int dice_1, int dice_2, int &ID_card, Chance *chans, Chance *allmaning){
+	if(c_player->get_flag_passed_go()){ //if passed go
+		((Tax*)tomter[0])->pay(c_player, tomter);
+		c_player->set_flag_passed_go(false); //Resets flags
+	}
+						
+	if((tomter[c_player->get_pos_ruta()]->get_typ() == TOMT)){
+		if((tomter[c_player->get_pos_ruta()]->get_Owner()) == 0){ //Om en tomt �r �gd av banken
+			buy_street_Q->set_active(true);
+		}
+		else if((tomter[c_player->get_pos_ruta()]->get_Owner()) != c_player && (tomter[c_player->get_pos_ruta()]->get_Owner()) != 0){ //Om tomten �r en gata och inte �r �gd av dig eller banken
+			if(c_player->get_pos_ruta() == 12 || c_player->get_pos_ruta() == 28){ //Om det är en utility(el och vatten)
+				(((Street*)tomter[c_player->get_pos_ruta()])->pay_rent(c_player, tomter, dice_1 + dice_2));
+			}
+			else									
+				((Street*)tomter[c_player->get_pos_ruta()])->pay_rent(c_player, tomter);
+		}
+	}
+	else if((tomter[c_player->get_pos_ruta()])->get_typ() == SKATT){ //OM skatt
+		if(c_player->get_pos_ruta() == 4){
+			((Tax*)tomter[c_player->get_pos_ruta()])->set_question_active(true);
+		}
+		else
+			((Tax*)tomter[c_player->get_pos_ruta()])->pay(c_player, tomter);
+	}
+	else if((tomter[c_player->get_pos_ruta()])->get_typ() == CHANS){
+		ID_card = chans->pick_card();
+	}
+	else if((tomter[c_player->get_pos_ruta()])->get_typ() == ALLMANING){
+		ID_card = allmaning->pick_card();
+	}
 }
