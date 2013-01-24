@@ -144,7 +144,7 @@ int main(){
 
 	//Skapar och testar display
 	//al_set_new_display_flags(ALLEGRO_WINDOWED);
-	al_set_new_display_flags(ALLEGRO_OPENGL);
+	//al_set_new_display_flags(ALLEGRO_OPENGL);
 	display = al_create_display(scaleW, scaleH);
 	if(!display){
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Display" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
