@@ -13,37 +13,8 @@ Question::Question(int pos_x, int pos_y, Button *buttons[],int n_buttons, char* 
 	for(int i = 0; i < max_question_lines; i++){
 		message[i] = new char[max_question_length];
 	}
-	//Delar upp texterna i flera texter
-	bool done = false;
-	for(int i = 0; i < max_question_lines_title && !done; i++){
-		for(int j = 0; j < max_question_length && !done; j++){
-			
-			//getline_char(title_in, title[i], max_question_length, max_question_length, '\0', , j);
-			if(title_in[j + i * max_question_length] == '\0'){
-				done = true;
-				title[i][j] = title_in[j + i * max_question_length];
-				n_title = i;
-			}
-			else if(j == (max_question_length - 1))
-				title[i][j] = '\0';
-			else
-				title[i][j] = title_in[j + i * (max_question_length - 1)];
-		}
-	}
-		done = false;
-		for(int i = 0; !done && i < max_question_lines; i++){
-		for(int j = 0; j < max_question_length && !done; j++){
-			if(message_in[j + i * max_question_length] == '\0'){
-				done = true;
-				message[i][j] = message_in[j + i * max_question_length];
-				n_message = i;
-			}
-			else if(j == (max_question_length - 1))
-				message[i][j] = '\0';
-			else
-				message[i][j] = message_in[j + i * (max_question_length - 1)];
-		}
-	}
+
+	set_text(title_in, message_in);
 }
 
 Question::~Question(){
@@ -89,3 +60,68 @@ int Question::button_pressed(int mouse_pos_x, int mouse_pos_y){
 	return (0);
 }
 
+void Question::set_text(char *title_in, char* message_in){
+	//Delar upp texterna i flera texter
+	bool done = false;
+	int read_chars = 0;
+	int total_chars = strlen(title_in);
+
+	for(int i = 0; i < max_question_lines_title && !done; i++){
+		int word_compensator = 0;
+
+		if(max_question_length < total_chars && total_chars != 0) //If there it's in a middle of a world(not space)
+				while(title_in[0 - word_compensator + (i + 1) * (max_question_length - 1)] != ' ')//Back of until there is a space
+					word_compensator++;
+
+		for(int j = 0, temp_read_chars = 0; j < max_question_length && !done; j++){
+			//getline_char(title_in, title[i], max_question_length, max_question_length, '\0', , j);
+
+			if(max_question_length > (j + word_compensator) && (j + read_chars) < total_chars){
+				title[i][j] = title_in[j + read_chars];
+				temp_read_chars++;
+			}
+			else if((j + read_chars) >= total_chars){ //if all characters are read
+				title[i][j] = '\0';
+				read_chars = temp_read_chars;
+				n_title = i;
+				done = true;
+			}
+			else{ //if need a new line
+				title[i][j] = '\0';
+				read_chars = temp_read_chars;
+				n_title = i;
+				break;
+			}
+			
+		}
+	}
+	done = false;
+	read_chars = 0;
+	total_chars = strlen(message_in);
+
+	for(int i = 0; !done && i < max_question_lines; i++){
+		int word_compensator = 0;
+
+		if(max_question_length < (total_chars - read_chars) && total_chars != 0) //If there it's in a middle of a world(not space)
+				while(message_in[0 - word_compensator + (i + 1) * (max_question_length - 1)] != ' ')//Back of until there is a space
+					word_compensator++;
+
+		for(int j = 0, temp_read_chars = 0; j < max_question_length && !done; j++){
+			if(max_question_length > (j + word_compensator) && (j + read_chars) < total_chars){
+				message[i][j] = message_in[j + read_chars];
+				temp_read_chars++;
+			}
+			else if((j + read_chars) >= total_chars){ //if all characters are read
+				message[i][j] = '\0';
+				read_chars = temp_read_chars;
+				n_message = i;
+				done = true;
+			}
+			else{
+				message[i][j] = '\0';
+				read_chars = temp_read_chars;
+				break;
+			}
+		}
+	}
+}

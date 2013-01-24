@@ -23,17 +23,23 @@
 #include "Question.h"
 #include "Auction.h"
 #include "Tax.h"
+#include "Card.h"
+#include "Chance.h"
 
 
 //Globala variabler lokala
 
 const int max_config_line_length = 128;
+const int max_config_extended_length = 350;
 const int max_name_length = 64;
 const int property_int_data_count = 19;
 const int property_variable_count = property_int_data_count + 1;
 const int button_int_data_count = 5;
 const int button_variable_data_count = button_int_data_count + 1;
 const int status_box_int_data_count = 5;
+const int cards_int_data_count = 5;
+const int cards_variable_count = cards_int_data_count + 1;
+
 const int startpengar = 1500;
 const int start_ruta = 0;
 const int max_tarning = 6;
@@ -53,6 +59,10 @@ void auction();
 int players_on_property(int pos_ruta, Player** players, int *players_IDs, int n_players);
 void color_to_comp_color(const int color[], int color_comp[]);
 void al_set_street_info_false(Property *tomter[], bool full = false); //Full = true resets all, false only the first
+void read_card_data(Card *cards[]);
+void seperate_cards(Card** cards, Card** cards_1, Card** cards_2, int n1, int n2, int n);
+void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players, int n_players, Property **tomter, Question *buy_street_Q, int &ID_card, Chance* chans, Chance* allmaning, int dice_1, int dice_2);
+void after_movement(Player* c_player, Question* buy_street_Q, Property **tomter, int dice_1, int dice_2, int &ID_card, Chance *chans, Chance *allmaning);
 
 int main(){
 	//Konstanta variabler i main
@@ -77,7 +87,7 @@ int main(){
 	enum typ{TOMT, SKATT, CHANS, ALLMANING};
 	int n_players = 6, current_player = 0;
 	int dice_1, dice_2;
-	int ID_button_pressed;
+	int ID_button_pressed, ID_card;
 	int c_player_color[3];
 
 	bool dice_used = false;
@@ -85,13 +95,17 @@ int main(){
 	Property *tomter[ant_rutor]; //F�lt av tomter
 	Player *players[max_players]; //F�lt av spelare
 	Button *buttons[ant_buttons]; //F�lt av buttons
+	Card *cards[ant_cards], *c_cards[ant_cards / 2], *a_cards[ant_cards / 2]; //Fält av kort
 	Sprite *dice_sprite_0;
 	Sprite *dice_sprite_1;
+	Chance *chans, *allmaning;
 
 	read_Property_data(tomter); //L�ser in data till tomter
 	create_players(n_players, players, tomter); //Skapar spelare
 	read_Button_data(buttons); //L�ser in buttons koodinater och id
 	read_Status_box_data(tomter); //L�ser in status boxarnas positioner och gatunummer
+	read_card_data(cards); //Läser in kortdata
+	seperate_cards(cards, c_cards, a_cards, ant_cards / 2, ant_cards / 2, ant_cards); //Delar upp korten i två korthögar till chans och allmäning
 
 	players[current_player]->get_color(c_player_color); //Färg för nuvarrande spelare
 
@@ -191,14 +205,17 @@ int main(){
 
 	dice_sprite_0 = new Sprite(1091, 6, 81, dice); 
 	dice_sprite_1 = new Sprite(1172, 6, 81, dice);
+	
+	chans = new Chance(c_cards, question, button);
+	allmaning = new Chance(a_cards, question, button);
 
 
 	Button *temp[2];
 	temp[0] = new Button(165 + 162, 275 + 250, 165 + 162 + 80, 275 + 250 + 25, 1, "Buy", button);
 	temp[1] = new Button(600 - 162 + 80, 275 + 250, 600, 275 + 250 + 25, 2, "Auction", button);
-	Question *buy_street_Q = new Question(165, 275, temp, 2, "Buy or auction?", "This property is owned by the bank and is for sale. Do you want to buy it or let it be sold by auction?", question);
+	Question *buy_street_Q = new Question(Question_pos_x_standard, Question_pos_y_standard, temp, 2, "Buy or auction?", "This property is owned by the bank and is for sale. Do you want to buy it or let it be sold by auction?", question);
 	Auction *auction = new Auction(0, 120, players, n_players, auction_image, button, box, arial_36, arial_16);
-	((Tax*)tomter[4])->create_income_tax_question(165, 275, button, question); //Skapar fråga till inkomst skatt ruta
+	((Tax*)tomter[4])->create_income_tax_question(Question_pos_x_standard, Question_pos_y_standard, button, question); //Skapar fråga till inkomst skatt ruta
 
 	//Skapar event_queue, registrerar k�llor och startar timer
 	event_queue = al_create_event_queue();
@@ -271,6 +288,14 @@ int main(){
 						((Tax*)tomter[4])->set_question_active(false);
 					}
 				}
+				else if(chans->get_window()->button_pressed(mouse_pos_x, mouse_pos_y)){
+					chans->get_window()->set_active(false);
+					do_action(chans, ID_card, players[current_player], players, n_players, tomter, buy_street_Q, ID_card, chans, allmaning, dice_1, dice_2);
+				}
+				else if(allmaning->get_window()->button_pressed(mouse_pos_x, mouse_pos_y)){
+					allmaning->get_window()->set_active(false);
+					do_action(allmaning, ID_card, players[current_player], players, n_players, tomter, buy_street_Q, ID_card, chans, allmaning, dice_1, dice_2);
+				}
 				else{
 					for(int i = 0; i < ant_buttons; i++){ //Kontrollerar vilken knapp som blivit klickad
 						if(buttons[i]->Button_pressed(mouse_pos_x, mouse_pos_y)){
@@ -282,42 +307,15 @@ int main(){
 						case 1: //Sl� t�rningarna
 							if(!dice_used){
 								int temp[max_players];
-								int temp_2;
 								roll_dice(dice_1); roll_dice(dice_2);
 								
 								dice_sprite_0->set_curret_frame(max_tarning - (dice_1)); //Byter bild p� t�rning
 								dice_sprite_1->set_curret_frame(max_tarning - (dice_2));
 
-								players[current_player]->move_Player(dice_1 + dice_2); //Flyttar spelare
+								players[current_player]->move_Player(dice_1 + dice_2, tomter, players, n_players); //Flyttar spelare
 
-								if(players[current_player]->get_flag_passed_go()){ //if passed go
-									((Tax*)tomter[0])->pay(players[current_player], tomter);
-									players[current_player]->set_flag_passed_go(false); //Resets flags
-								}
+								after_movement(players[current_player], buy_street_Q, tomter, dice_1, dice_2, ID_card, chans, allmaning);
 
-								temp_2 = players_on_property(players[current_player]->get_pos_ruta(), players, temp, n_players); //n_player på samma ruta samt deras id i temp array
-	
-								players[current_player]->update_Player(tomter, players, temp, temp_2); //Uppdaterar spelare
-								
-								if((tomter[players[current_player]->get_pos_ruta()]->get_typ() == TOMT)){
-									if((tomter[players[current_player]->get_pos_ruta()]->get_Owner()) == 0){ //Om en tomt �r �gd av banken
-										buy_street_Q->set_active(true);
-									}
-									else if((tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != players[current_player] && (tomter[players[current_player]->get_pos_ruta()]->get_Owner()) != 0){ //Om tomten �r en gata och inte �r �gd av dig eller banken
-										if(players[current_player]->get_pos_ruta() == 12 || players[current_player]->get_pos_ruta() == 28){ //Om det är en utility(el och vatten)
-											(((Street*)tomter[players[current_player]->get_pos_ruta()])->pay_rent(players[current_player], tomter, dice_1 + dice_2));
-										}
-										else									
-											((Street*)tomter[players[current_player]->get_pos_ruta()])->pay_rent(players[current_player], tomter);
-									}
-								}
-								else if((tomter[players[current_player]->get_pos_ruta()])->get_typ() == SKATT){ //OM skatt
-									if(players[current_player]->get_pos_ruta() == 4){
-										((Tax*)tomter[players[current_player]->get_pos_ruta()])->set_question_active(true);
-									}
-									else
-										((Tax*)tomter[players[current_player]->get_pos_ruta()])->pay(players[current_player], tomter);
-								}
 								if(dice_1 != dice_2)
 									dice_used = true;
 								else
@@ -362,7 +360,7 @@ int main(){
 		}
 
 		if(draw){
-
+			
 			//Drawing
 			al_set_target_bitmap(buffer);
 			al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -385,6 +383,10 @@ int main(){
 			else if((((Tax*)tomter[4])->get_question())->get_active()){ //Om inkomst skatt fråga är aktiv
 				(((Tax*)tomter[4])->get_question())->draw(arial_36, arial_16);
 			}
+			else if((chans->get_window())->get_active()) //Om chans ruta är aktiv
+				(chans->get_window())->draw(arial_36, arial_16);
+			else if((allmaning->get_window())->get_active()) //Om allmäning ruta är aktiv
+				(allmaning->get_window())->draw(arial_36, arial_16);
 
 			for(int i = 0; i < ant_buttons; i++){ //Ritar knappar
 				buttons[i]->draw(arial_16);
@@ -530,13 +532,9 @@ void create_players(int n_players, Player *players[], Property *tomter[]){
 		players[i] = new Player(pos_x, pos_y, pos_ruta, i, startpengar, player_colors[(i * 3)], player_colors[(i * 3) + 1], player_colors[(i * 3) + 2]);
 	}
 	//Uppdaterar spelarnas positioner
-	int temp[max_players];
-	for(int i = 0; i < max_players; i++){
-		temp[i] = i;
-	}
 	
 	for(int i = 0; i < n_players; i++){
-		players[i]->update_Player(tomter, players, temp, n_players, true);
+		players[i]->update_Player(tomter, players, n_players, true);
 	}
 }
 
@@ -648,5 +646,154 @@ void al_set_street_info_false(Property *tomter[], bool full){
 					break;
 			}
 		}
+	}
+}
+
+void read_card_data(Card *cards[]){
+	//�ppnar fil f�r data till klassen Property
+	std::ifstream file("cards_config.txt"); 
+	//Tillf�llig variabler f�r initiering av objekten
+	char namn[max_card_length];
+	namn[0] = '/0';
+	int intdata[cards_int_data_count];
+	char line[max_config_extended_length];
+	char line2[max_config_extended_length];
+	bool endfile = false;
+	
+	if(!file){  //Kontrollerar att filen �r �ppen
+		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize load Cards file config" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
+		exit(EXIT_FAILURE);
+	}
+
+	for(int i = 0; i < ant_cards; i++){
+			
+			file.getline(line, (max_config_extended_length-1));
+			while(line[0] == '#'){ //L�ser in ny rad om f�rsta tecknet �r kommentartecken
+				file.getline(line, (max_config_extended_length-1));
+			}
+			for(int j = 0, r_pos = 0; j < cards_variable_count; j++){
+				if(!endfile){ //Kontrollerar om nollf�rtecken tidigare hittats
+					getline_char(line, line2, max_config_line_length,max_config_line_length, ',', endfile, r_pos);
+				}
+				r_pos += strlen(line2) + 1; //R�knar hur m�nga tecken som har l�sts och anv�nds f�r att veta var n�sta inl�sning ska ske i str�ngen
+
+				if(j < cards_int_data_count){
+					intdata[j] = std::atoi(line2);
+				}
+				else{
+					strncpy(namn, line2, max_card_length-1);
+				}
+			}
+			
+			cards[i] = new Card(intdata[0], (!((bool)intdata[1])),intdata[2], intdata[3], intdata[4], namn);
+			
+
+			endfile = false;
+		
+		}
+}
+
+void seperate_cards(Card** cards, Card** cards_1, Card** cards_2, int n1, int n2, int n){
+	for(int i = 0; i < n; i++){
+		if(i < n1)
+			cards_1[i] = cards[i];
+		else if((i - n1) < n2)
+			cards_2[i - n1] = cards[i];
+	}
+}
+
+void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players, int n_players, Property **tomter, Question *buy_street_Q, int &ID_card, Chance* chans, Chance* allmaning, int dice_1, int dice_2){
+	int action, action_sum_1, action_sum_2;
+	Card** temp_cards = (card_pile->get_cards());
+	
+	for(int i = 0; i < (ant_cards / 2); i++){ //Search for right card and copy action_values
+		if(temp_cards[i]->get_id() == id_card){
+			action = temp_cards[i]->get_action();
+			action_sum_1 = temp_cards[i]->get_action_s1();
+			action_sum_2 = temp_cards[i]->get_action_s2();
+		}
+	}
+	int p_pos;
+
+	switch (action){
+		case 1: //Move player to position
+			c_player->set_pos_ruta(action_sum_1);
+			c_player->update_Player(tomter, players, n_players);
+			after_movement(c_player, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning);
+			break;
+		case 2://Move a certain amount of positions forward or backwords
+			c_player->move_Player(action_sum_1, tomter, players, n_players);
+			after_movement(c_player, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning);
+			break;
+		case 3: //Bank pays you or take a fee
+			c_player->recieve_money(action_sum_1);
+			break;
+		case 4: //Moved to neares uttility
+			p_pos = c_player->get_pos_ruta();
+				
+			for(int i = p_pos; i < ant_rutor; i++){
+				if(tomter[i]->get_typ() == TOMT){
+					if(((Street**)tomter)[i]->get_zon() == 5 ){ //IF belonges to group for uttility
+						c_player->set_pos_ruta(i);
+						c_player->update_Player(tomter, players, n_players);
+						after_movement(c_player, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning);
+					}
+				}
+			}
+			break;
+		case 5: //Move to nearest railroad and pay double rent
+			p_pos = c_player->get_pos_ruta();
+
+			for(int i = p_pos; i < ant_rutor; i++){
+				if(tomter[i]->get_typ() == TOMT){
+					if(((Street**)tomter)[i]->get_zon() == 5 ){ //IF belonges to group for railroad
+						c_player->set_pos_ruta(i);
+						c_player->update_Player(tomter, players, n_players);
+						if((((Street**)tomter)[i])->get_Owner() != c_player && (((Street**)tomter)[i])->get_Owner() != 0){ //Pay rent for railroad, will pay again later(thereby doubling the rent)
+							(((Street**)tomter)[i])->pay_rent(c_player, tomter);
+						}
+						after_movement(c_player, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning);
+					}
+				}
+			}
+			break;
+		case 6:
+
+			break;
+	}
+	
+
+}
+
+void after_movement(Player* c_player, Question* buy_street_Q, Property **tomter, int dice_1, int dice_2, int &ID_card, Chance *chans, Chance *allmaning){
+	if(c_player->get_flag_passed_go()){ //if passed go
+		((Tax*)tomter[0])->pay(c_player, tomter);
+		c_player->set_flag_passed_go(false); //Resets flags
+	}
+						
+	if((tomter[c_player->get_pos_ruta()]->get_typ() == TOMT)){
+		if((tomter[c_player->get_pos_ruta()]->get_Owner()) == 0){ //Om en tomt �r �gd av banken
+			buy_street_Q->set_active(true);
+		}
+		else if((tomter[c_player->get_pos_ruta()]->get_Owner()) != c_player && (tomter[c_player->get_pos_ruta()]->get_Owner()) != 0){ //Om tomten �r en gata och inte �r �gd av dig eller banken
+			if(c_player->get_pos_ruta() == 12 || c_player->get_pos_ruta() == 28){ //Om det är en utility(el och vatten)
+				(((Street*)tomter[c_player->get_pos_ruta()])->pay_rent(c_player, tomter, dice_1 + dice_2));
+			}
+			else									
+				((Street*)tomter[c_player->get_pos_ruta()])->pay_rent(c_player, tomter);
+		}
+	}
+	else if((tomter[c_player->get_pos_ruta()])->get_typ() == SKATT){ //OM skatt
+		if(c_player->get_pos_ruta() == 4){
+			((Tax*)tomter[c_player->get_pos_ruta()])->set_question_active(true);
+		}
+		else
+			((Tax*)tomter[c_player->get_pos_ruta()])->pay(c_player, tomter);
+	}
+	else if((tomter[c_player->get_pos_ruta()])->get_typ() == CHANS){
+		ID_card = chans->pick_card();
+	}
+	else if((tomter[c_player->get_pos_ruta()])->get_typ() == ALLMANING){
+		ID_card = allmaning->pick_card();
 	}
 }

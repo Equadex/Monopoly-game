@@ -44,7 +44,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>allegro-5.0.7-monolith-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>allegro-5.0.8-monolith-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -78,6 +78,8 @@
     <ClInclude Include="Auction.h" />
     <ClInclude Include="Auction_window.h" />
     <ClInclude Include="Button.h" />
+    <ClInclude Include="Card.h" />
+    <ClInclude Include="Chance.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Property.h" />
