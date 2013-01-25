@@ -43,7 +43,7 @@ const int cards_variable_count = cards_int_data_count + 1;
 const int startpengar = 1500;
 const int start_ruta = 0;
 const int max_tarning = 6;
-const int ant_buttons = 4;
+const int ant_buttons = 8;
 const int ant_status_box = 28;
 
 //Funktionsdeklartioner
@@ -64,7 +64,7 @@ void seperate_cards(Card** cards, Card** cards_1, Card** cards_2, int n1, int n2
 void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players, int n_players, Property **tomter, Question *buy_street_Q, int &ID_card, Chance* chans, Chance* allmaning, int dice_1, int dice_2);
 void after_movement(Player* c_player, Question* buy_street_Q, Property **tomter, int dice_1, int dice_2, int &ID_card, Chance *chans, Chance *allmaning);
 
-int main(){
+int main(int argc, char *argv[]){
 	//Konstanta variabler i main
 
 	//Variabler som beh�vs f�r hantera allegro
@@ -89,8 +89,21 @@ int main(){
 	int dice_1, dice_2;
 	int ID_button_pressed, ID_card;
 	int c_player_color[3];
+	int tot_free_ant_houses = 32;
+	int tot_free_ant_hotels = 12;
 
 	bool dice_used = false;
+
+	if(argc > 1){
+		for(int i = 0; i < argc; i++){
+			if(strcmp(argv[i], "players") == 0){
+				if(i + 1 < argc){
+					n_players = std::atoi(argv[i + 1]);
+				}
+			}
+			
+		}
+	}
 
 	Property *tomter[ant_rutor]; //F�lt av tomter
 	Player *players[max_players]; //F�lt av spelare
@@ -322,9 +335,9 @@ int main(){
 									dice_used = false;
 							}
 							break;
-						case 2: //K�per tomt
+						case 2: //Sälja gata
 							if(tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0){
-								((Street*)tomter[players[current_player]->get_pos_ruta()])->buy_Street(players[current_player]);
+								((Street*)tomter[players[current_player]->get_pos_ruta()])->sell_Street(players[current_player]);
 							}
 							break;
 						case 3:
@@ -335,9 +348,7 @@ int main(){
 							}
 							break;
 						case 4: //S�lja gata
-							if(tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0){
-								((Street*)tomter[players[current_player]->get_pos_ruta()])->sell_Street(players[current_player]);
-							}
+							
 							break;
 					}
 					ID_button_pressed = 0;
@@ -711,12 +722,14 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 			action = temp_cards[i]->get_action();
 			action_sum_1 = temp_cards[i]->get_action_s1();
 			action_sum_2 = temp_cards[i]->get_action_s2();
+			break;
 		}
 	}
 	int p_pos;
 
 	switch (action){
 		case 1: //Move player to position
+			c_player->passing_go_check(action_sum_1);
 			c_player->set_pos_ruta(action_sum_1);
 			c_player->update_Player(tomter, players, n_players);
 			after_movement(c_player, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning);
@@ -758,7 +771,9 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 			}
 			break;
 		case 6:
-
+			for(int i = 0; i < n_players; i++){
+				players[i]->pay_player(c_player, action_sum_1, tomter);
+			}
 			break;
 	}
 	

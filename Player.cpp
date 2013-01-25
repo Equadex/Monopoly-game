@@ -5,9 +5,7 @@
 
 void Player::move_Player(int steg, Property** tomter, Player** players, int n_players){
 	pos_ruta += steg;
-	if(pos_ruta / ant_rutor >= 1)
-		passed_go = true;
-	pos_ruta = pos_ruta % ant_rutor;
+	passed_go_check();
 
 	update_Player(tomter, players, n_players);
 }
@@ -99,9 +97,22 @@ bool Player::pay(int sum_to_pay){
 		return (false);
 	}
 }
+void Player::pay_player(Player* receiver, int sum_to_pay, Property** tomter){
+	if(pay(sum_to_pay)){ //If i can pay/get money
+		if(!receiver->recieve_money(sum_to_pay)) //If reviever can take the money(or pay them)
+			receiver->defeated(this, tomter);
+	}
+	else
+		defeated(receiver, tomter);
+}
 
-void Player::recieve_money(int sum_to_get){
-	pengar += sum_to_get;
+bool Player::recieve_money(int sum_to_get){
+	if((pengar + sum_to_get) >= 0){
+		pengar += sum_to_get;
+		return true;
+	}
+	else
+		return false;
 }
 
 int Player::get_money() const{
@@ -137,4 +148,14 @@ int Player::players_on_property(int pos_ruta, Player** players, int *players_IDs
 		}
 	}
 	return(player_on_pos_ruta);
+}
+
+void Player::passed_go_check(){
+	if(pos_ruta / ant_rutor >= 1)
+		passed_go = true;
+}
+
+void Player::passing_go_check(int steg){
+	if((pos_ruta + steg) / ant_rutor >= 1)
+		passed_go = true;
 }
