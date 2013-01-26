@@ -1,26 +1,9 @@
-﻿Build started 1/25/2013 8:20:54 PM.
+﻿Build started 1/26/2013 1:35:31 AM.
      1>Project "C:\Users\Anders\Documents\Visual Studio 2010\SKOLProjects\2dmonopol exp2\2dmonopol exp2\2dmonopol exp2.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\2dmonopol exp2.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt 2dmonopol.cpp
-         2dmonopol.cpp
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\property.h(20): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\property.h(24): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\button.h(16): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(322): warning C4101: 'temp' : unreferenced local variable
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(444): warning C4309: '=' : truncation of constant value
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(472): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(497): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(500): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(586): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(668): warning C4309: '=' : truncation of constant value
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(695): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
+         All outputs are up-to-date.
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Anders\Documents\Visual Studio 2010\SKOLProjects\2dmonopol exp2\Debug\2dmonopol exp2.exe" /NOLOGO "allegro-5.0.8-monolith-md.lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\2dmonopol exp2.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\Anders\Documents\Visual Studio 2010\SKOLProjects\2dmonopol exp2\Debug\2dmonopol exp2.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Anders\Documents\Visual Studio 2010\SKOLProjects\2dmonopol exp2\Debug\2dmonopol exp2.lib" /MACHINE:X86 Debug\2dmonopol.obj
          Debug\Auction.obj
@@ -45,4 +28,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.84
+Time Elapsed 00:00:00.19

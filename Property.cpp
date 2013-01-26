@@ -22,3 +22,9 @@ int Property::get_typ() const{
 	return (typ);
 }
 
+bool Property::property_button_pressed(int mouse_pos_x, int mouse_pos_y){
+	if(button->Button_pressed(mouse_pos_x, mouse_pos_y) != 0)
+		return true;
+	else
+		return false;
+}

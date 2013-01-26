@@ -87,10 +87,12 @@ int Street::get_rent(int houses){
 	return rent[houses];
 }
 
-bool Street::own_zone(Property* tomter[]){
+bool Street::own_zone(Property* tomter[], Player* Owner_in){
+	if(Owner_in == 0)
+		Owner_in = Owner;
 	for(int i = 0; i < ant_rutor; i++){
 		if(tomter[i]->get_typ() == 0 && ((Street*)tomter[i])->get_zon() == get_zon()){ //Om det är en gata och är i samma zon
-			if(tomter[i]->get_Owner() != Owner){ //Om denna gata inte ägs av samma ägare
+			if(tomter[i]->get_Owner() != Owner_in){ //Om denna gata inte ägs av samma ägare
 				return (false);
 			}
 		}
@@ -108,4 +110,35 @@ int Street::n_street_in_zone(Property* tomter[]){
 		}
 	}
 	return (n_owned);
+}
+
+void Street::draw(bool mark){
+	int temp_color[3];
+	if(Owner!= 0)
+		Owner->get_color(temp_color);
+	
+	
+	if(Owner!= 0 && mark){
+		al_draw_line(pos_x_1, pos_y_1, pos_x_1, pos_y_2, al_map_rgb(temp_color[0], temp_color[1], temp_color[2]), 5);
+		al_draw_line(pos_x_1, pos_y_1, pos_x_2, pos_y_1, al_map_rgb(temp_color[0], temp_color[1], temp_color[2]), 5);
+		al_draw_line(pos_x_1, pos_y_2, pos_x_2, pos_y_2, al_map_rgb(temp_color[0], temp_color[1], temp_color[2]), 5);
+		al_draw_line(pos_x_2, pos_y_1, pos_x_2, pos_y_2, al_map_rgb(temp_color[0], temp_color[1], temp_color[2]), 5);
+	}
+
+	for(int i = 0; i < houses; i++){
+		if(i >= max_houses - 1)
+			al_draw_filled_rectangle(pos_x_1, pos_y_1, pos_x_1 + 10, pos_y_1 + 10, al_map_rgb(255, 0, 0));
+		else
+			al_draw_filled_rectangle(pos_x_1, pos_y_1, pos_x_1 + 10, pos_y_1 + 10, al_map_rgb(0, 255, 0));
+	}
+}
+
+void Street::buy_house(Player* buyer, Property **tomter, int &tot_free_ant_houses, int &tot_free_ant_hotels){
+	if(buyer == Owner && own_zone(tomter) && houses < max_houses && buyer->pay(building_cost)) {
+		houses++;
+		if(houses == max_houses)
+			tot_free_ant_hotels--;
+		else
+			tot_free_ant_houses--;
+	}
 }

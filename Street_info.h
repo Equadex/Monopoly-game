@@ -64,7 +64,7 @@ public:
 				al_draw_text(normal_text, al_map_rgb(0, 0, 0), pos_x + 20, pos_y + 120, 0, "         - with 3 houses");
 				al_draw_text(normal_text, al_map_rgb(0, 0, 0), pos_x + 20, pos_y + 140, 0, "         - with 4 houses");
 				al_draw_text(normal_text, al_map_rgb(0, 0, 0), pos_x + 20, pos_y + 160, 0, "Rent with hotel");
-				for(int i = 0; i < max_houses; i++){ //Draws rents
+				for(int i = 0; i < max_houses + 1; i++){ //Draws rents
 					al_draw_textf(normal_text, al_map_rgb(0, 0, 0), pos_x + al_get_bitmap_width(image) - 20, pos_y + 60 + i * 20, ALLEGRO_ALIGN_RIGHT, "%i", streat->get_rent(i));
 				}
 
