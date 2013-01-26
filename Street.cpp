@@ -125,11 +125,11 @@ void Street::draw(bool mark){
 		al_draw_line(pos_x_2, pos_y_1, pos_x_2, pos_y_2, al_map_rgb(temp_color[0], temp_color[1], temp_color[2]), 5);
 	}
 
-	for(int i = 0; i < houses; i++){
-		if(i >= max_houses - 1)
-			al_draw_filled_rectangle(pos_x_1, pos_y_1, pos_x_1 + 10, pos_y_1 + 10, al_map_rgb(255, 0, 0));
-		else
-			al_draw_filled_rectangle(pos_x_1, pos_y_1, pos_x_1 + 10, pos_y_1 + 10, al_map_rgb(0, 255, 0));
+	for(int i = 0; i < houses && houses < max_houses; i++){
+		al_draw_filled_rectangle( pos_x_1 + 18 * i + 3, pos_y_1 + 5, pos_x_1 + 18 * i + 15, pos_y_1 + 20, al_map_rgb(0, 255, 0));
+	}
+	if(houses == max_houses){
+		al_draw_filled_rectangle(pos_x_1 + (pos_x_2 - pos_x_1) / 2 - 10, pos_y_1 + 5, pos_x_1 + (pos_x_2 - pos_x_1) / 2 + 10, pos_y_1 + 20, al_map_rgb(255, 0, 0));
 	}
 }
 
