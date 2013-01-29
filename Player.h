@@ -22,7 +22,8 @@ public:
 	void draw_player() const;
 
 	bool pay(int sum_to_pay);
-	void recieve_money(int sum_to_get);
+	void pay_player(Player* receiver, int sum_to_pay, Property** tomter);
+	bool recieve_money(int sum_to_get);
 	void get_color(int *color_out){
 		color_out[0] = color_r; color_out[1] = color_g; color_out[2] = color_b;
 	}
@@ -30,6 +31,7 @@ public:
 	void get_color(int *array_in) const;
 
 	void defeated(Player *winner, Property* tomter[]);
+	void passing_go_check(int steg);
 private:
 	int pos_x;
 	int pos_y;
@@ -43,5 +45,6 @@ private:
 	bool passed_go; //Flags
 
 	int players_on_property(int pos_ruta, Player** players, int *players_IDs, int n_players);
+	void passed_go_check();
 };
 #endif

@@ -43,7 +43,7 @@ const int cards_variable_count = cards_int_data_count + 1;
 const int startpengar = 1500;
 const int start_ruta = 0;
 const int max_tarning = 6;
-const int ant_buttons = 4;
+const int ant_buttons = 8;
 const int ant_status_box = 28;
 
 //Funktionsdeklartioner
@@ -63,8 +63,10 @@ void read_card_data(Card *cards[]);
 void seperate_cards(Card** cards, Card** cards_1, Card** cards_2, int n1, int n2, int n);
 void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players, int n_players, Property **tomter, Question *buy_street_Q, int &ID_card, Chance* chans, Chance* allmaning, int dice_1, int dice_2);
 void after_movement(Player* c_player, Question* buy_street_Q, Property **tomter, int dice_1, int dice_2, int &ID_card, Chance *chans, Chance *allmaning);
+void show_streets_zones();
 
-int main(){
+
+int main(int argc, char *argv[]){
 	//Konstanta variabler i main
 
 	//Variabler som beh�vs f�r hantera allegro
@@ -72,7 +74,7 @@ int main(){
 	int	window_height;
 	int width = 1280;
 	int height = 1000;
-	double FPS = 4;
+	double FPS = 120;
 	float mouse_pos_x = 0;
 	float mouse_pos_y = 0;
 	int frames = 0, gameFPS = 0;
@@ -81,6 +83,7 @@ int main(){
 
 	bool done = false;
 	bool draw = false;
+	bool OpenGL = false;
 
 	//Variabler n�dv�ndiga f�r spelet
 
@@ -89,8 +92,35 @@ int main(){
 	int dice_1, dice_2;
 	int ID_button_pressed, ID_card;
 	int c_player_color[3];
+	int tot_free_ant_houses = 32;
+	int tot_free_ant_hotels = 12;
 
 	bool dice_used = false;
+	bool house_buy = false, draw_street_active = false;
+	int draw_street[ant_rutor];
+	int n_draw_street;
+
+	//Read command line options
+
+	if(argc > 1){
+		for(int i = 0; i < argc; i++){
+			if(strcmp(argv[i], "-players") == 0){
+				if(i + 1 < argc){
+					n_players = std::atoi(argv[i + 1]);
+				}
+			}
+			else if(strcmp(argv[i], "-FPS") == 0){
+				if(i + 1 < argc){
+					FPS = std::atoi(argv[i + 1]);
+				}
+			}
+			else if(strcmp(argv[i], "-OpenGL") == 0){
+				if(i + 1 < argc){
+					OpenGL = std::atoi(argv[i + 1]);
+				}
+			}
+		}
+	}
 
 	Property *tomter[ant_rutor]; //F�lt av tomter
 	Player *players[max_players]; //F�lt av spelare
@@ -158,7 +188,8 @@ int main(){
 
 	//Skapar och testar display
 	//al_set_new_display_flags(ALLEGRO_WINDOWED);
-	//al_set_new_display_flags(ALLEGRO_OPENGL);
+	if(OpenGL)
+		al_set_new_display_flags(ALLEGRO_OPENGL);
 	display = al_create_display(scaleW, scaleH);
 	if(!display){
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Display" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
@@ -302,6 +333,13 @@ int main(){
 							ID_button_pressed = buttons[i]->get_ID();
 						}
 					}
+					for(int i = 0; i < ant_rutor; i++){
+						if(tomter[i]->property_button_pressed(mouse_pos_x, mouse_pos_y)){ //Kontrollerar om några gator blivit klickade
+							if(tomter[i]->get_typ() == TOMT && house_buy){ //OM husköp
+								((Street*)tomter[i])->buy_house(players[current_player], tomter, tot_free_ant_houses, tot_free_ant_hotels);
+							}
+						}
+					}
 				
 					switch(ID_button_pressed){
 						case 1: //Sl� t�rningarna
@@ -322,9 +360,9 @@ int main(){
 									dice_used = false;
 							}
 							break;
-						case 2: //K�per tomt
+						case 2: //Sälja gata
 							if(tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0){
-								((Street*)tomter[players[current_player]->get_pos_ruta()])->buy_Street(players[current_player]);
+								((Street*)tomter[players[current_player]->get_pos_ruta()])->sell_Street(players[current_player]);
 							}
 							break;
 						case 3:
@@ -334,10 +372,16 @@ int main(){
 								players[current_player]->get_color(c_player_color); //Färg för nuvarrande spelare
 							}
 							break;
-						case 4: //S�lja gata
-							if(tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0){
-								((Street*)tomter[players[current_player]->get_pos_ruta()])->sell_Street(players[current_player]);
+						case 4: //Köpa hus
+							if(!house_buy){
+								draw_street_active = true;
+								house_buy = true;
 							}
+							else{
+								draw_street_active = false;
+								house_buy = false;
+							}
+
 							break;
 					}
 					ID_button_pressed = 0;
@@ -360,7 +404,8 @@ int main(){
 		}
 
 		if(draw){
-			
+			n_draw_street = 0;
+
 			//Drawing
 			al_set_target_bitmap(buffer);
 			al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -391,10 +436,37 @@ int main(){
 			for(int i = 0; i < ant_buttons; i++){ //Ritar knappar
 				buttons[i]->draw(arial_16);
 			}
-			for(int i = 0; i < ant_rutor; i++){ //Ritar Street_info
+
+			for(int i = 0; i < ant_rutor && draw_street_active; i++){//Kontrollerar vilka zoner som ägs av nuvarande spelare
+				if(tomter[i]->get_typ() == TOMT && ((Street*)tomter[i])->own_zone(tomter, players[current_player])){
+					draw_street[n_draw_street] = ((Street*)tomter[i])->get_pos_ruta();
+					n_draw_street++;
+				}
+			}
+
+			for(int i = 0, j = 0; i < ant_rutor; i++){ //Ritar Street_info
 				if(tomter[i]->get_typ()  == TOMT){
 					if((((Street*)tomter[i])->get_Street_info())->get_active())
 						(((Street*)tomter[i])->get_Street_info())->draw();
+
+					if(j < n_draw_street && ((Street*)tomter[i])->get_pos_ruta() == draw_street[j]){
+						if(house_buy && ((Street*)tomter[i])->get_zon() != 1 && ((Street*)tomter[i])->get_zon() != 5 || !house_buy){ //om köpa hus, inte visa järnväg eller uttilies, om inte köpa hus, rita allt
+							((Street*)tomter[i])->draw(true); //Ritar gata
+							j++;
+						}
+					}
+					else{
+						((Street*)tomter[i])->draw(); //Ritar gata
+					}
+
+					for(int j = 0; j < n_draw_street && draw_street_active; j++){ //Kontrollerar om gatan är med i en zon som ska ritas
+						if(((Street*)tomter[i])->get_pos_ruta() == draw_street[j]){
+							if(house_buy && ((Street*)tomter[i])->get_zon() != 1 && ((Street*)tomter[i])->get_zon() != 5 || !house_buy) //om köpa hus, inte visa järnväg eller uttilies, om inte köpa hus, rita allt
+								((Street*)tomter[i])->draw(true); //Ritar gata
+						}
+					}
+
+					
 				}
 			}
 
@@ -403,7 +475,7 @@ int main(){
 			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 100, 940, 0, "Funds: %i", (players[current_player])->get_money());
 			//al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 20, 0, "Mouse_x: %lf Mouse_y: %lf", mouse_pos_x, mouse_pos_y);
 
-			//Skalar om bilden och ritar till backbuffern. V�nder sedan p� buffern
+			//Skalar om bilden och ritar till backbuffern. Vänder sedan på buffern
 
 			al_set_target_backbuffer(display);
 			al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -711,12 +783,14 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 			action = temp_cards[i]->get_action();
 			action_sum_1 = temp_cards[i]->get_action_s1();
 			action_sum_2 = temp_cards[i]->get_action_s2();
+			break;
 		}
 	}
 	int p_pos;
 
 	switch (action){
 		case 1: //Move player to position
+			c_player->passing_go_check(action_sum_1);
 			c_player->set_pos_ruta(action_sum_1);
 			c_player->update_Player(tomter, players, n_players);
 			after_movement(c_player, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning);
@@ -758,7 +832,9 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 			}
 			break;
 		case 6:
-
+			for(int i = 0; i < n_players; i++){
+				players[i]->pay_player(c_player, action_sum_1, tomter);
+			}
 			break;
 	}
 	

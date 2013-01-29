@@ -1,7 +1,11 @@
 #pos_x_1,pos_y_1,pos_x_2,pos_y_2, id, label
 #
 948,32,1035,62,1,Roll dices
-370,930,470,999,2,DO NOT USE
+370,930,470,999,2,Sell street
 1010,850,1270,892,3,End turn
-470,930,570,999,4,Sell
+470,930,570,999,4,Buy house
+570,930,670,999,5,Sell house
+670,930,770,999,6,Mortgage
+770,930,900,999,7,Unmortgage
+1010,930,1270,999,8,Trade
 #Reserving button id 10-38 for street status_boxes

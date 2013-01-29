@@ -3,6 +3,9 @@
 
 class Street_info;
 
+#include <allegro5\allegro.h>
+#include <allegro5\allegro_primitives.h>
+
 #include "Property.h" //Base class
 #include "Status_box.h" //Needed for updating status_box with info about owner and such
 #include "Player.h" //Needed to make pay and other things
@@ -36,19 +39,21 @@ public:
 
 	void buy_Street(Player* buyer, bool trade = false, int cost_in = 0);
 	void sell_Street(Player* seller);
+	void buy_house(Player* buyer, Property **tomter, int &tot_free_ant_houses, int &tot_free_ant_hotels);
 	void create_status_box(Status_box* status_box);
 	void create_street_info(Street_info* street_in_info){
 		info = street_in_info;
 	}
 	void draw_status();
 	void pay_rent(Player *guest, Property* tomter[], int dice = 0);
-	bool own_zone(Property* tomter[]);
+	bool own_zone(Property* tomter[], Player* Owner_in = 0);
 	bool button_pressed(int mouse_pos_x, int mouse_pos_y){
 		if(info != 0 ){ //if pressed and not null pointer
 			return (status_owner->pressed(mouse_pos_x, mouse_pos_y));
 		}
 		return false;
 	}
+	void draw(bool mark = false);
 
 protected:
 	int cost;
