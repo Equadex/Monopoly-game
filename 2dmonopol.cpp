@@ -97,6 +97,11 @@ int main(int argc, char *argv[]){
 
 	bool dice_used = false;
 	bool house_buy = false, draw_street_active = false;
+	bool house_sell = false;
+	bool sell_street = false;
+	bool mortage_street = false;
+	bool un_mortage_street = false;
+	bool dice_manual_input = false;
 	int draw_street[ant_rutor];
 	int n_draw_street;
 
@@ -203,6 +208,7 @@ int main(int argc, char *argv[]){
 	//init addons
 	al_init_image_addon();
 	al_install_mouse();
+	al_install_keyboard();
 	al_init_primitives_addon();
 	al_init_font_addon();
 	al_init_ttf_addon();
@@ -253,6 +259,7 @@ int main(int argc, char *argv[]){
 	al_register_event_source(event_queue, al_get_display_event_source(display));
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
 	al_register_event_source(event_queue, al_get_mouse_event_source());
+	al_register_event_source(event_queue, al_get_keyboard_event_source());
 	al_start_timer(timer);
 	gameTime = al_get_time();
 
@@ -338,6 +345,18 @@ int main(int argc, char *argv[]){
 							if(tomter[i]->get_typ() == TOMT && house_buy){ //OM husköp
 								((Street*)tomter[i])->buy_house(players[current_player], tomter, tot_free_ant_houses, tot_free_ant_hotels);
 							}
+							else if(tomter[i]->get_typ() == TOMT && house_sell){ //OM husköp
+								((Street*)tomter[i])->sell_house(players[current_player], tomter, tot_free_ant_houses, tot_free_ant_hotels);
+							}
+							else if(tomter[i]->get_typ() == TOMT && sell_street){ //OM sälj gata
+								((Street*)tomter[i])->sell_Street(players[current_player], tomter, tot_free_ant_houses, tot_free_ant_hotels);
+							}
+							else if(tomter[i]->get_typ() == TOMT && mortage_street){//OM inteckna gata
+								((Street*)tomter[i])->mortage_street(true, tomter, tot_free_ant_houses, tot_free_ant_hotels);
+							}
+							else if(tomter[i]->get_typ() == TOMT && un_mortage_street){
+								((Street*)tomter[i])->mortage_street(false, tomter, tot_free_ant_houses, tot_free_ant_hotels);
+							}
 						}
 					}
 				
@@ -345,7 +364,14 @@ int main(int argc, char *argv[]){
 						case 1: //Sl� t�rningarna
 							if(!dice_used){
 								int temp[max_players];
-								roll_dice(dice_1); roll_dice(dice_2);
+
+								if(!dice_manual_input){
+									roll_dice(dice_1); roll_dice(dice_2);
+								}
+								else
+									dice_manual_input = false;
+
+								
 								
 								dice_sprite_0->set_curret_frame(max_tarning - (dice_1)); //Byter bild p� t�rning
 								dice_sprite_1->set_curret_frame(max_tarning - (dice_2));
@@ -361,19 +387,28 @@ int main(int argc, char *argv[]){
 							}
 							break;
 						case 2: //Sälja gata
-							if(tomter[players[current_player]->get_pos_ruta()]->get_typ() == 0){
-								((Street*)tomter[players[current_player]->get_pos_ruta()])->sell_Street(players[current_player]);
-							}
+							if(!sell_street)
+								sell_street = true;
+							else
+								sell_street = false;
+							
 							break;
 						case 3:
 							if(dice_used){
 								current_player = (current_player + 1) % n_players; //N�sta spelare
 								dice_used = false;
+								draw_street_active = false;
+								house_sell = false;
+								house_buy = false;
+								mortage_street = false;
+								un_mortage_street = false;
+								sell_street = false;
+
 								players[current_player]->get_color(c_player_color); //Färg för nuvarrande spelare
 							}
 							break;
 						case 4: //Köpa hus
-							if(!house_buy){
+							if(!house_buy && !house_sell){
 								draw_street_active = true;
 								house_buy = true;
 							}
@@ -381,11 +416,46 @@ int main(int argc, char *argv[]){
 								draw_street_active = false;
 								house_buy = false;
 							}
-
 							break;
+						case 5: //Sälj hus
+							if(!house_sell && !house_buy){
+								draw_street_active = true;
+								house_sell = true;
+							}
+							else{
+								draw_street_active = false;
+								house_sell = false;
+							}
+							break;
+						case 6:
+							if(!mortage_street && !un_mortage_street)
+								mortage_street = true;
+							else
+								mortage_street = false;
+							break;
+						case 7:
+							if(!un_mortage_street && !mortage_street)
+								un_mortage_street = true;
+							else
+								un_mortage_street = false;
 					}
 					ID_button_pressed = 0;
 				}
+			}
+		}
+		else if(ev.type == ALLEGRO_EVENT_KEY_DOWN){
+			switch(ev.keyboard.keycode){
+				case ALLEGRO_KEY_ESCAPE:
+					done = true;
+					break;
+			}
+			if(ev.keyboard.keycode >= ALLEGRO_KEY_0 && ev.keyboard.keycode <= ALLEGRO_KEY_9){
+				if(!dice_manual_input)
+					dice_1 = ev.keyboard.keycode - ALLEGRO_KEY_0;
+				else
+					dice_2 = ev.keyboard.keycode - ALLEGRO_KEY_0;
+				dice_manual_input = true;
+				
 			}
 		}
 		else if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
@@ -444,28 +514,36 @@ int main(int argc, char *argv[]){
 				}
 			}
 
-			for(int i = 0, j = 0; i < ant_rutor; i++){ //Ritar Street_info
+			for(int i = 0, j = 0; i < ant_rutor; i++){ //Ritar Street_info och markerar gator för köp/sälj
 				if(tomter[i]->get_typ()  == TOMT){
+					//Ritar street_info
 					if((((Street*)tomter[i])->get_Street_info())->get_active())
 						(((Street*)tomter[i])->get_Street_info())->draw();
 
-					if(j < n_draw_street && ((Street*)tomter[i])->get_pos_ruta() == draw_street[j]){
-						if(house_buy && ((Street*)tomter[i])->get_zon() != 1 && ((Street*)tomter[i])->get_zon() != 5 || !house_buy){ //om köpa hus, inte visa järnväg eller uttilies, om inte köpa hus, rita allt
-							((Street*)tomter[i])->draw(true); //Ritar gata
-							j++;
-						}
+					//Ritar eventuella markeringar
+
+					if(sell_street && ((Street*)tomter[i])->get_Owner() == players[current_player] && ((Street*)tomter[i])->get_mortaged() == false && ((Street*)tomter[i])->undeveloped_zone(tomter)){
+						((Street*)tomter[i])->draw(true);
 					}
-					else{
-						((Street*)tomter[i])->draw(); //Ritar gata
+					else if(mortage_street && ((Street*)tomter[i])->get_Owner() == players[current_player] && ((Street*)tomter[i])->get_mortaged() == false){
+						((Street*)tomter[i])->draw(true);
+					}
+					else if(un_mortage_street && ((Street*)tomter[i])->get_Owner() == players[current_player] && ((Street*)tomter[i])->get_mortaged() == true){
+						((Street*)tomter[i])->draw(true);
 					}
 
 					for(int j = 0; j < n_draw_street && draw_street_active; j++){ //Kontrollerar om gatan är med i en zon som ska ritas
 						if(((Street*)tomter[i])->get_pos_ruta() == draw_street[j]){
-							if(house_buy && ((Street*)tomter[i])->get_zon() != 1 && ((Street*)tomter[i])->get_zon() != 5 || !house_buy) //om köpa hus, inte visa järnväg eller uttilies, om inte köpa hus, rita allt
+							if(house_buy && ((Street*)tomter[i])->get_zon() != 1 && ((Street*)tomter[i])->get_zon() != 5) //om köpa hus, inte visa järnväg eller uttilies
 								((Street*)tomter[i])->draw(true); //Ritar gata
+							else if(house_sell && ((Street*)tomter[i])->get_zon() != 1 && ((Street*)tomter[i])->get_zon() != 5 && ((Street*)tomter[i])->get_ant_houses() > 0){
+								((Street*)tomter[i])->draw(true); //Ritar gata
+							}
+							else //, om inte köpa hus, rita allt
+								((Street*)tomter[i])->draw(false);
 						}
 					}
-
+					((Street*)tomter[i])->draw(false);
 					
 				}
 			}
