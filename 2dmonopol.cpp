@@ -914,6 +914,19 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 				players[i]->pay_player(c_player, action_sum_1, tomter);
 			}
 			break;
+		case 7:
+			int houses_to_pay = 0, hotels_to_pay = 0;
+			for(int i = 0; i < ant_rutor; i++){ //Finds out how many hotels and houses a player has
+				if(tomter[i]->get_typ() == TOMT && tomter[i]->get_Owner() == c_player){
+					if(((Street*)tomter[i])->get_ant_houses() == max_houses)
+						hotels_to_pay++;
+					else if(((Street*)tomter[i])->get_ant_houses() < max_houses - 1 && ((Street*)tomter[i])->get_ant_houses() > 0)
+						houses_to_pay += ((Street*)tomter[i])->get_ant_houses();
+				}
+			}
+			if(!(c_player->pay(houses_to_pay * action_sum_1 + hotels_to_pay * action_sum_2)))
+					c_player->defeated(0, tomter);
+			break;
 	}
 	
 
