@@ -74,7 +74,7 @@ int main(int argc, char *argv[]){
 	int	window_height;
 	int width = 1280;
 	int height = 1000;
-	double FPS = 120;
+	double FPS = 4;
 	float mouse_pos_x = 0;
 	float mouse_pos_y = 0;
 	int frames = 0, gameFPS = 0;
@@ -96,7 +96,7 @@ int main(int argc, char *argv[]){
 	int tot_free_ant_hotels = 12;
 
 	bool dice_used = false;
-	bool house_buy = false, draw_street_active = false;
+	bool house_buy = false, house_sell, draw_street_active = false;
 	int draw_street[ant_rutor];
 	int n_draw_street;
 
@@ -334,9 +334,12 @@ int main(int argc, char *argv[]){
 						}
 					}
 					for(int i = 0; i < ant_rutor; i++){
-						if(tomter[i]->property_button_pressed(mouse_pos_x, mouse_pos_y)){ //Kontrollerar om några gator blivit klickade
-							if(tomter[i]->get_typ() == TOMT && house_buy){ //OM husköp
+						if(tomter[i]->get_typ() == TOMT && tomter[i]->property_button_pressed(mouse_pos_x, mouse_pos_y)){ //Kontrollerar om några gator blivit klickade
+							if(house_buy){ //OM husköp
 								((Street*)tomter[i])->buy_house(players[current_player], tomter, tot_free_ant_houses, tot_free_ant_hotels);
+							}
+							else if(house_sell){ //OM hus säljs
+								;
 							}
 						}
 					}
