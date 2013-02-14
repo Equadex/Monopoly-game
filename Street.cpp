@@ -31,10 +31,13 @@ void Street::buy_Street(Player* buyer, bool trade, int cost_in){
 	}
 }
 
-void Street::sell_Street(Player* seller){
-	seller->recieve_money(cost / 2);
-	Owner = 0;
-	status_owner->set_active(false);
+void Street::sell_Street(Player* seller, Property **tomter, int &tot_free_ant_houses, int &tot_free_ant_hotels){
+	if(!mortaged && seller == Owner && undeveloped_zone(tomter)){ //Can't sell street if it's mortaged
+	
+		seller->recieve_money(cost / 2);
+		Owner = 0;
+		status_owner->set_active(false);
+	}
 }
 
 void Street::create_status_box(Status_box* status_box){
@@ -91,13 +94,23 @@ bool Street::own_zone(Property* tomter[], Player* Owner_in){
 	if(Owner_in == 0)
 		Owner_in = Owner;
 	for(int i = 0; i < ant_rutor; i++){
-		if(tomter[i]->get_typ() == 0 && ((Street*)tomter[i])->get_zon() == get_zon()){ //Om det är en gata och är i samma zon
+		if(tomter[i]->get_typ() == TOMT && ((Street*)tomter[i])->get_zon() == get_zon()){ //Om det är en gata och är i samma zon
 			if(tomter[i]->get_Owner() != Owner_in){ //Om denna gata inte ägs av samma ägare
 				return (false);
 			}
 		}
 	}
 	return (true);
+}
+
+bool Street::undeveloped_zone(Property* tomter[]){
+	for(int i = 0; i < ant_rutor; i++){
+		if(tomter[i]->get_typ() == TOMT && ((Street*)tomter[i])->get_zon() == get_zon()){ //Om det är en gata och är i samma zon
+			if(((Street*)tomter[i])->get_ant_houses() > 0)
+				return false;
+		}
+	}
+	return true;
 }
 
 int Street::n_street_in_zone(Property* tomter[]){
@@ -140,5 +153,32 @@ void Street::buy_house(Player* buyer, Property **tomter, int &tot_free_ant_house
 			tot_free_ant_hotels--;
 		else
 			tot_free_ant_houses--;
+	}
+}
+
+void Street::sell_house(Player* seller, Property **tomter, int &tot_free_ant_houses, int &tot_free_ant_hotels){
+	if(seller == Owner && own_zone(tomter) && houses > 0){
+		if(houses == max_houses)
+			tot_free_ant_hotels++;
+		else
+			tot_free_ant_houses++;
+		houses--;
+		seller->recieve_money(building_cost / 2);
+	}
+}
+
+void Street::mortage_street(bool mortage_in, Property **tomter, int &tot_free_ant_houses, int &tot_free_ant_hotels){
+	if(mortage_in == true && !mortaged){
+		while(houses > 0){
+			sell_house(Owner, tomter, tot_free_ant_houses, tot_free_ant_hotels);
+		}
+		Owner->recieve_money(building_cost / 2);
+		mortaged = true;
+	}
+	else if(mortage_in == false && mortaged){
+		int temp = (cost / 2) * 1.1;
+		if(Owner->pay(temp)){
+			mortaged = false;
+		}
 	}
 }

@@ -8,4 +8,4 @@
 670,930,770,999,6,Mortgage
 770,930,900,999,7,Unmortgage
 1010,930,1270,999,8,Trade
-#Reserving button id 10-38 for street status_boxes
+#Reserving button id 10-50 for street status_boxes

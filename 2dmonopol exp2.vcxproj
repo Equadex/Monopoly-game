@@ -82,6 +82,7 @@
     <ClInclude Include="Chance.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Prison.h" />
     <ClInclude Include="Property.h" />
     <ClInclude Include="Question.h" />
     <ClInclude Include="Sprite.h" />
