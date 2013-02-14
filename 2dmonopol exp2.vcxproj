@@ -91,6 +91,8 @@
     <ClInclude Include="Street_info.h" />
     <ClInclude Include="Tax.h" />
     <ClInclude Include="Text_field.h" />
+    <ClInclude Include="Trade.h" />
+    <ClInclude Include="Trade_window.h" />
     <ClInclude Include="Window_list.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

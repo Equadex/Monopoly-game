@@ -67,56 +67,62 @@ void Auction::set_active(bool active_in){
 	if(active_in == true)
 		property_on_sale->get_namn(temp, 100);
 	window->set_active(active_in);
-	window->update(temp, current_max_bid, current_max_bid + 1, c_player, players[c_player]->get_money());
+	window->update(temp, current_max_bid, current_max_bid, c_player, players[c_player]->get_money());
 }
 
-void Auction::button_pressed(int mouse_x, int mouse_y){
+void Auction::button_pressed(int mouse_x, int mouse_y, bool right_click){
 	int button_pressed = window->button_pressed(mouse_x, mouse_y);
+	int sign_constant;
 	if(current_bid == 0)
-		current_bid = current_max_bid + 1;
+		current_bid = current_max_bid;
+	if(right_click)
+		sign_constant = -1;
+	else
+		sign_constant = 1;
 
 	switch(button_pressed){
 		case 1:
 			no_bid[c_player] = true;
 			player_bid_list->update_status(false, players[c_player]);
-			current_bid = current_max_bid + 1;
+			current_bid = current_max_bid;
 			c_player = (c_player + 1) % n_players;
 			break;
 		case 2:
-			no_bid[c_player] = false;
-			players_bids[c_player] = current_bid;
-			player_bid_list->update_status(true, players[c_player]);
-			current_max_bid = current_bid;
-			current_bid = current_max_bid + 1;
-			c_player = (c_player + 1) % n_players;
+			if(current_bid > current_max_bid){
+				no_bid[c_player] = false;
+				players_bids[c_player] = current_bid;
+				player_bid_list->update_status(true, players[c_player]);
+				current_max_bid = current_bid;
+				c_player = (c_player + 1) % n_players;
+			}
 			break;
 		case 3:
 			if((current_bid + 1) < players[c_player]->get_money())
-				current_bid++;
+				current_bid += sign_constant;
 			break;
 		case 4:
 			if((current_bid + 5) < players[c_player]->get_money())
-				current_bid = current_bid + 5;
+				current_bid = current_bid + 5 * sign_constant;
 			break;
 		case 5:
 			if((current_bid + 10) < players[c_player]->get_money())
-				current_bid = current_bid + 10;
+				current_bid = current_bid + 10 * sign_constant;
 			break;
 		case 6:
 			if((current_bid + 50) < players[c_player]->get_money())
-				current_bid = current_bid + 50;
+				current_bid = current_bid + 50 * sign_constant;
 			break;
 		case 7:
 			if((current_bid + 100) < players[c_player]->get_money())
-				current_bid = current_bid + 100;
+				current_bid = current_bid + 100 * sign_constant;
 			break;
 		case 8:
 			if((current_bid + 500) < players[c_player]->get_money())
-				current_bid = current_bid + 500;
+				current_bid = current_bid + 500 * sign_constant;
 			break;
 		case 9:
 			if((current_bid + 1000) < players[c_player]->get_money())
-				current_bid = current_bid + 1000;
+				current_bid = current_bid + 1000 * sign_constant;
 			break;
 	}
 	

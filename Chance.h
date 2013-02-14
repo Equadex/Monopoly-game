@@ -21,7 +21,7 @@ public:
 		char a[] = {"Community Chest"};
 		if(picked_cards > (ant_cards / 2))
 			suffle_cards();
-		Card* temp = cards[picked_cards];
+		Card* temp = cards[picked_cards++];
 		while(temp->get_disabled())
 			temp = cards[++picked_cards];
 

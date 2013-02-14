@@ -88,6 +88,11 @@ int main(int argc, char *argv[]){
 	bool draw = false;
 	bool OpenGL = false;
 
+	//Keys
+
+	bool roll_dice_key = false;
+	bool end_turn_key = false;
+
 	//Variabler n�dv�ndiga f�r spelet
 
 	enum typ{TOMT, SKATT, CHANS, ALLMANING};
@@ -277,8 +282,8 @@ int main(int argc, char *argv[]){
 			mouse_pos_y = (ev.mouse.y * 1 ) / (double)scale;
 
 		}
-		else if(ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){ //N�r musknapp �r nedtryckt
-			if(ev.mouse.button == 1){ //V�nster musknapp
+		else if(ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN || roll_dice_key || end_turn_key){ //N�r musknapp �r nedtryckt
+			if(ev.mouse.button == 1 || roll_dice_key || end_turn_key){ //V�nster musknapp
 				
 				for(int i = 0; i < ant_rutor; i++){
 					if(tomter[i]->get_typ()  == TOMT && ((Street*)tomter[i])->button_pressed(mouse_pos_x, mouse_pos_y)){ // Om tomten är av gatutyp OCH Om knapp nedtryckt(statusboxen till den gatan)
@@ -409,6 +414,14 @@ int main(int argc, char *argv[]){
 							}
 						}
 					}
+					if(roll_dice_key){
+						roll_dice_key = false;
+						ID_button_pressed = 1;
+					}
+					else if(end_turn_key){
+						end_turn_key = false;
+						ID_button_pressed = 3;
+					}
 				
 					switch(ID_button_pressed){
 						case 1: //Sl� t�rningarna
@@ -495,12 +508,21 @@ int main(int argc, char *argv[]){
 					ID_button_pressed = 0;
 				}
 			}
+			else if(ev.mouse.button == 2){
+				if(auction->get_active())
+					auction->button_pressed(mouse_pos_x, mouse_pos_y, true);
+			}
 		}
 		else if(ev.type == ALLEGRO_EVENT_KEY_DOWN){
 			switch(ev.keyboard.keycode){
 				case ALLEGRO_KEY_ESCAPE:
 					done = true;
 					break;
+				case ALLEGRO_KEY_R:
+					roll_dice_key = true;
+					break;
+				case ALLEGRO_KEY_E:
+					end_turn_key = true;
 			}
 			if(ev.keyboard.keycode >= ALLEGRO_KEY_0 && ev.keyboard.keycode <= ALLEGRO_KEY_9){
 				if(!dice_manual_input)
