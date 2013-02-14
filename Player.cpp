@@ -4,10 +4,10 @@
 #include "Property.h"
 
 void Player::move_Player(int steg, Property** tomter, Player** players, int n_players){
-	pos_ruta += steg;
-	passed_go_check();
-
-	update_Player(tomter, players, n_players);
+		pos_ruta += steg;
+		passed_go_check();
+		pos_ruta = pos_ruta % ant_rutor;
+		update_Player(tomter, players, n_players);
 }
 
 void Player::get_pos(int &pos_x_in, int &pos_y_in) const{
@@ -16,7 +16,9 @@ void Player::get_pos(int &pos_x_in, int &pos_y_in) const{
 }
 
 void Player::draw_player() const  {
-	al_draw_filled_rectangle(pos_x, pos_y, pos_x + square_size, pos_y + square_size, al_map_rgb(color_r, color_g, color_b));	
+	al_draw_filled_rectangle(pos_x, pos_y, pos_x + square_size, pos_y + square_size, al_map_rgb(color_r, color_g, color_b));
+	if(prisoned)
+		al_draw_rectangle(pos_x, pos_y, pos_x + square_size, pos_y + square_size, al_map_rgb(128, 128, 128), 5);
 }
 
 void Player::update_Player(Property *tomter[], Player **players, int n_players, bool first_update){ 
@@ -119,7 +121,7 @@ int Player::get_money() const{
 	return (pengar);
 }
 
-void Player::get_color(int *array_in) const{
+void Player::get_color(int *array_in){
 	array_in[0] = color_r;
 	array_in[1] = color_g;
 	array_in[2] = color_b;

@@ -25,6 +25,7 @@
 #include "Tax.h"
 #include "Card.h"
 #include "Chance.h"
+#include "Prison.h"
 
 
 //Globala variabler lokala
@@ -43,6 +44,7 @@ const int cards_variable_count = cards_int_data_count + 1;
 const int startpengar = 1500;
 const int start_ruta = 0;
 const int max_tarning = 6;
+const int max_rolled_in_row_dices = 3;
 const int ant_buttons = 8;
 const int ant_status_box = 28;
 
@@ -61,9 +63,10 @@ void color_to_comp_color(const int color[], int color_comp[]);
 void al_set_street_info_false(Property *tomter[], bool full = false); //Full = true resets all, false only the first
 void read_card_data(Card *cards[]);
 void seperate_cards(Card** cards, Card** cards_1, Card** cards_2, int n1, int n2, int n);
-void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players, int n_players, Property **tomter, Question *buy_street_Q, int &ID_card, Chance* chans, Chance* allmaning, int dice_1, int dice_2);
-void after_movement(Player* c_player, Question* buy_street_Q, Property **tomter, int dice_1, int dice_2, int &ID_card, Chance *chans, Chance *allmaning);
+void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players, int n_players, Property **tomter, Question *buy_street_Q, int &ID_card, Chance* chans, Chance* allmaning, int dice_1, int dice_2, Prison* prison, bool &dice_used);
+void after_movement(Player* c_player, Player** players, int n_players, Question* buy_street_Q, Property **tomter, int dice_1, int dice_2, int &ID_card, Chance *chans, Chance *allmaning, Prison *prison, bool &dice_used);
 void show_streets_zones();
+void roll_dices(int &dice_1, int &dice_2, Sprite *dice_sprite_0,Sprite *dice_sprite_1);
 
 
 int main(int argc, char *argv[]){
@@ -134,6 +137,7 @@ int main(int argc, char *argv[]){
 	Sprite *dice_sprite_0;
 	Sprite *dice_sprite_1;
 	Chance *chans, *allmaning;
+	Prison *prison;
 
 	read_Property_data(tomter); //L�ser in data till tomter
 	create_players(n_players, players, tomter); //Skapar spelare
@@ -253,6 +257,7 @@ int main(int argc, char *argv[]){
 	Question *buy_street_Q = new Question(Question_pos_x_standard, Question_pos_y_standard, temp, 2, "Buy or auction?", "This property is owned by the bank and is for sale. Do you want to buy it or let it be sold by auction?", question);
 	Auction *auction = new Auction(0, 120, players, n_players, auction_image, button, box, arial_36, arial_16);
 	((Tax*)tomter[4])->create_income_tax_question(Question_pos_x_standard, Question_pos_y_standard, button, question); //Skapar fråga till inkomst skatt ruta
+	prison = new Prison(button, question);
 
 	//Skapar event_queue, registrerar k�llor och startar timer
 	event_queue = al_create_event_queue();
@@ -328,11 +333,56 @@ int main(int argc, char *argv[]){
 				}
 				else if(chans->get_window()->button_pressed(mouse_pos_x, mouse_pos_y)){
 					chans->get_window()->set_active(false);
-					do_action(chans, ID_card, players[current_player], players, n_players, tomter, buy_street_Q, ID_card, chans, allmaning, dice_1, dice_2);
+					do_action(chans, ID_card, players[current_player], players, n_players, tomter, buy_street_Q, ID_card, chans, allmaning, dice_1, dice_2, prison, dice_used);
 				}
 				else if(allmaning->get_window()->button_pressed(mouse_pos_x, mouse_pos_y)){
 					allmaning->get_window()->set_active(false);
-					do_action(allmaning, ID_card, players[current_player], players, n_players, tomter, buy_street_Q, ID_card, chans, allmaning, dice_1, dice_2);
+					do_action(allmaning, ID_card, players[current_player], players, n_players, tomter, buy_street_Q, ID_card, chans, allmaning, dice_1, dice_2, prison, dice_used);
+				}
+				else if(prison->window_activated()){
+					int button_id = prison->button_pressed(mouse_pos_x, mouse_pos_y);
+					if(button_id != 0){
+						switch(button_id){
+						case 1:
+							if(prison->get_players_dice_tries(players[current_player]->get_id()) < max_rolled_in_row_dices){ //OM spelaren har slått mindre än 3 slag
+								roll_dices(dice_1, dice_2, dice_sprite_0, dice_sprite_1);
+								dice_used = true;
+								prison->register_dice_try(players[current_player]->get_id());
+								prison->activate_window(false);
+
+								if(dice_1 == dice_2){
+									prison->release_player(players[current_player]);
+									players[current_player]->move_Player(dice_1 + dice_2, tomter, players, n_players);
+									dice_used = false;
+								}
+							}
+							else{
+								prison->out_of_dice_tries();//meddelande om att måste välja något annat
+							}
+							break;
+						case 2:
+							if(!players[current_player]->pay(prison_fee) && prison->get_players_dice_tries(players[current_player]->get_id()) >= max_rolled_in_row_dices && (players[current_player]->get_flag_c_jail_card() || players[current_player]->get_flag_a_jail_card())){ //Pay fee, if can't and can't thow dices or use card, defeat
+								players[current_player]->defeated(0, tomter);
+							}
+							else{
+								prison->release_player(players[current_player]);
+							}
+							break;
+						case 3:
+							if(players[current_player]->get_flag_c_jail_card() || players[current_player]->get_flag_a_jail_card()){
+								if(players[current_player]->get_flag_c_jail_card()){
+									players[current_player]->set_flag_c_jail_card(false);
+									chans->return_chance_card();
+								}
+								else{
+									players[current_player]->set_flag_a_jail_card(false);
+									allmaning->return_chance_card();
+								}
+								prison->release_player(players[current_player]);
+							}
+							break;
+						}
+					}
 				}
 				else{
 					for(int i = 0; i < ant_buttons; i++){ //Kontrollerar vilken knapp som blivit klickad
@@ -366,24 +416,24 @@ int main(int argc, char *argv[]){
 								int temp[max_players];
 
 								if(!dice_manual_input){
-									roll_dice(dice_1); roll_dice(dice_2);
+									roll_dices(dice_1, dice_2, dice_sprite_0, dice_sprite_1);
 								}
-								else
+								else{
 									dice_manual_input = false;
-
-								
-								
-								dice_sprite_0->set_curret_frame(max_tarning - (dice_1)); //Byter bild p� t�rning
-								dice_sprite_1->set_curret_frame(max_tarning - (dice_2));
+									dice_sprite_0->set_curret_frame(max_tarning - (dice_1)); //Byter bild p� t�rning
+									dice_sprite_1->set_curret_frame(max_tarning - (dice_2));
+								}
 
 								players[current_player]->move_Player(dice_1 + dice_2, tomter, players, n_players); //Flyttar spelare
-
-								after_movement(players[current_player], buy_street_Q, tomter, dice_1, dice_2, ID_card, chans, allmaning);
 
 								if(dice_1 != dice_2)
 									dice_used = true;
 								else
 									dice_used = false;
+
+								after_movement(players[current_player], players, n_players, buy_street_Q, tomter, dice_1, dice_2, ID_card, chans, allmaning, prison, dice_used);
+								
+
 							}
 							break;
 						case 2: //Sälja gata
@@ -405,6 +455,9 @@ int main(int argc, char *argv[]){
 								sell_street = false;
 
 								players[current_player]->get_color(c_player_color); //Färg för nuvarrande spelare
+								if(players[current_player]->get_flag_prisoned()){
+									prison->activate_window(true);
+								}
 							}
 							break;
 						case 4: //Köpa hus
@@ -502,6 +555,9 @@ int main(int argc, char *argv[]){
 				(chans->get_window())->draw(arial_36, arial_16);
 			else if((allmaning->get_window())->get_active()) //Om allmäning ruta är aktiv
 				(allmaning->get_window())->draw(arial_36, arial_16);
+			else if(prison->window_activated()){
+				prison->draw_window(arial_36, arial_16);
+			}
 
 			for(int i = 0; i < ant_buttons; i++){ //Ritar knappar
 				buttons[i]->draw(arial_16);
@@ -852,7 +908,7 @@ void seperate_cards(Card** cards, Card** cards_1, Card** cards_2, int n1, int n2
 	}
 }
 
-void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players, int n_players, Property **tomter, Question *buy_street_Q, int &ID_card, Chance* chans, Chance* allmaning, int dice_1, int dice_2){
+void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players, int n_players, Property **tomter, Question *buy_street_Q, int &ID_card, Chance* chans, Chance* allmaning, int dice_1, int dice_2, Prison* prison, bool &dice_used){
 	int action, action_sum_1, action_sum_2;
 	Card** temp_cards = (card_pile->get_cards());
 	
@@ -871,11 +927,11 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 			c_player->passing_go_check(action_sum_1);
 			c_player->set_pos_ruta(action_sum_1);
 			c_player->update_Player(tomter, players, n_players);
-			after_movement(c_player, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning);
+			after_movement(c_player, players, n_players, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning, prison, dice_used);
 			break;
 		case 2://Move a certain amount of positions forward or backwords
 			c_player->move_Player(action_sum_1, tomter, players, n_players);
-			after_movement(c_player, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning);
+			after_movement(c_player, players, n_players, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning, prison, dice_used);
 			break;
 		case 3: //Bank pays you or take a fee
 			c_player->recieve_money(action_sum_1);
@@ -888,7 +944,7 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 					if(((Street**)tomter)[i]->get_zon() == 5 ){ //IF belonges to group for uttility
 						c_player->set_pos_ruta(i);
 						c_player->update_Player(tomter, players, n_players);
-						after_movement(c_player, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning);
+						after_movement(c_player, players, n_players, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning, prison, dice_used);
 					}
 				}
 			}
@@ -904,7 +960,7 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 						if((((Street**)tomter)[i])->get_Owner() != c_player && (((Street**)tomter)[i])->get_Owner() != 0){ //Pay rent for railroad, will pay again later(thereby doubling the rent)
 							(((Street**)tomter)[i])->pay_rent(c_player, tomter);
 						}
-						after_movement(c_player, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning);
+						after_movement(c_player, players, n_players, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning, prison, dice_used);
 					}
 				}
 			}
@@ -915,7 +971,7 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 			}
 			break;
 		case 7:
-			int houses_to_pay = 0, hotels_to_pay = 0;
+			{int houses_to_pay = 0, hotels_to_pay = 0;
 			for(int i = 0; i < ant_rutor; i++){ //Finds out how many hotels and houses a player has
 				if(tomter[i]->get_typ() == TOMT && tomter[i]->get_Owner() == c_player){
 					if(((Street*)tomter[i])->get_ant_houses() == max_houses)
@@ -925,14 +981,25 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 				}
 			}
 			if(!(c_player->pay(houses_to_pay * action_sum_1 + hotels_to_pay * action_sum_2)))
-					c_player->defeated(0, tomter);
+				c_player->defeated(0, tomter);
+			break;}
+		case 8:
+			prison->send_to_prison(c_player);
+			c_player->update_Player(tomter, players, n_players);
+			dice_used = true;
+			break;
+		case 9:
+			c_player->set_flag_c_jail_card(true);
+			break;
+		case 10:
+			c_player->set_flag_a_jail_card(true);
 			break;
 	}
 	
 
 }
 
-void after_movement(Player* c_player, Question* buy_street_Q, Property **tomter, int dice_1, int dice_2, int &ID_card, Chance *chans, Chance *allmaning){
+void after_movement(Player* c_player, Player** players, int n_players, Question* buy_street_Q, Property **tomter, int dice_1, int dice_2, int &ID_card, Chance *chans, Chance *allmaning, Prison *prison, bool &dice_used){
 	if(c_player->get_flag_passed_go()){ //if passed go
 		((Tax*)tomter[0])->pay(c_player, tomter);
 		c_player->set_flag_passed_go(false); //Resets flags
@@ -963,4 +1030,16 @@ void after_movement(Player* c_player, Question* buy_street_Q, Property **tomter,
 	else if((tomter[c_player->get_pos_ruta()])->get_typ() == ALLMANING){
 		ID_card = allmaning->pick_card();
 	}
+	else if((tomter[c_player->get_pos_ruta()])->get_typ() == GA_TILL_FANGELSE){
+		prison->send_to_prison(c_player);
+		dice_used = true;
+		c_player->update_Player(tomter, players, n_players);
+	}
+}
+
+void roll_dices(int &dice_1, int &dice_2, Sprite *dice_sprite_0,Sprite *dice_sprite_1){
+	roll_dice(dice_1);
+	roll_dice(dice_2);
+	dice_sprite_0->set_curret_frame(max_tarning - (dice_1)); //Byter bild p� t�rning
+	dice_sprite_1->set_curret_frame(max_tarning - (dice_2));
 }

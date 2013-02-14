@@ -5,7 +5,7 @@
 
 class Card{
 public:
-	Card(int id, bool chance, int action, int action_sum_1, int action_sum_2, char* text_in) : id(id), chance(chance), action(action), action_sum_1(action_sum_1), action_sum_2(action_sum_2){
+	Card(int id, bool chance, int action, int action_sum_1, int action_sum_2, char* text_in) : id(id), chance(chance), action(action), action_sum_1(action_sum_1), action_sum_2(action_sum_2), disabled(false){
 		text = new char[max_card_length];
 		
 		//Copy text_input to internal char array
@@ -26,8 +26,11 @@ public:
 	int get_action() const{return action;}
 	int get_action_s1() const{return action_sum_1;}
 	int get_action_s2() const{return action_sum_2;}
+	bool get_disabled() const{return disabled;}
+	void set_disabled(bool value){disabled = value;}
 private:
 	bool chance;
+	bool disabled;
 	int id;
 	char *text;
 	int action, action_sum_1, action_sum_2;
