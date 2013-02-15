@@ -13,8 +13,10 @@ public:
 		for(int i = 0; i < max_card_length; i++){
 			if(text_in[i] != '\0')
 				text[i] = text_in[i];
-			else
+			else{
 				text[i] = '\0';
+				break;
+			}
 		}
 	}
 	~Card(){

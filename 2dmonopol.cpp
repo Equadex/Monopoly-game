@@ -66,6 +66,7 @@ void seperate_cards(Card** cards, Card** cards_1, Card** cards_2, int n1, int n2
 void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players, int n_players, Property **tomter, Question *buy_street_Q, int &ID_card, Chance* chans, Chance* allmaning, int dice_1, int dice_2, Prison* prison, bool &dice_used);
 void after_movement(Player* c_player, Player** players, int n_players, Question* buy_street_Q, Property **tomter, int dice_1, int dice_2, int &ID_card, Chance *chans, Chance *allmaning, Prison *prison, bool &dice_used);
 void show_streets_zones();
+void show_error_message(char* message);
 void roll_dices(int &dice_1, int &dice_2, Sprite *dice_sprite_0,Sprite *dice_sprite_1);
 
 
@@ -713,6 +714,7 @@ void getline_char(char line_in[],char line_out[],int out_length, int max_read, c
 	bool size_ok = true;
 	if(out_length < (strlen(line_in))){
 		size_ok = false;
+		show_error_message("Function getline_char has been called with a too big incoming array. Please debug program to fix this. It's recommended to terminate the program but you can continue on your own risk");
 	}
 	for(int i = start, j = 0; i < max_read+start && size_ok && start < strlen(line_in); i++, j++){
 		if(line_in[i] == stop){
@@ -901,7 +903,7 @@ void read_card_data(Card *cards[]){
 			}
 			for(int j = 0, r_pos = 0; j < cards_variable_count; j++){
 				if(!endfile){ //Kontrollerar om nollf�rtecken tidigare hittats
-					getline_char(line, line2, max_config_line_length,max_config_line_length, ',', endfile, r_pos);
+					getline_char(line, line2, max_config_extended_length,max_config_extended_length, ',', endfile, r_pos);
 				}
 				r_pos += strlen(line2) + 1; //R�knar hur m�nga tecken som har l�sts och anv�nds f�r att veta var n�sta inl�sning ska ske i str�ngen
 
@@ -1064,4 +1066,8 @@ void roll_dices(int &dice_1, int &dice_2, Sprite *dice_sprite_0,Sprite *dice_spr
 	roll_dice(dice_2);
 	dice_sprite_0->set_curret_frame(max_tarning - (dice_1)); //Byter bild p� t�rning
 	dice_sprite_1->set_curret_frame(max_tarning - (dice_2));
+}
+
+void show_error_message(char* message){
+	al_show_native_message_box(NULL, "ERROR", "ERROR", message, NULL, ALLEGRO_MESSAGEBOX_ERROR);
 }
