@@ -948,7 +948,8 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 
 	switch (action){
 		case 1: //Move player to position
-			c_player->passing_go_check(action_sum_1);
+			if(c_player->get_pos_ruta() > action_sum_1)
+				c_player->passing_go_check(ant_rutor + 1);
 			c_player->set_pos_ruta(action_sum_1);
 			c_player->update_Player(tomter, players, n_players);
 			after_movement(c_player, players, n_players, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning, prison, dice_used);
@@ -960,35 +961,47 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 		case 3: //Bank pays you or take a fee
 			c_player->recieve_money(action_sum_1);
 			break;
-		case 4: //Moved to neares uttility
+		case 4: //Moved to nearest uttility
+			{
 			p_pos = c_player->get_pos_ruta();
-				
-			for(int i = p_pos; i < ant_rutor; i++){
+			bool loop_done = false;
+			for(int i = p_pos; !loop_done; i++){
 				if(tomter[i]->get_typ() == TOMT){
+					if(i >= ant_rutor)
+						i = 0;
 					if(((Street**)tomter)[i]->get_zon() == 5 ){ //IF belonges to group for uttility
 						c_player->set_pos_ruta(i);
 						c_player->update_Player(tomter, players, n_players);
 						after_movement(c_player, players, n_players, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning, prison, dice_used);
+						loop_done = true;
 					}
 				}
 			}
 			break;
+			}
+			
 		case 5: //Move to nearest railroad and pay double rent
+			{
 			p_pos = c_player->get_pos_ruta();
 
-			for(int i = p_pos; i < ant_rutor; i++){
+			bool loop_done = false;
+			for(int i = p_pos; !loop_done; i++){
+				if(i >= ant_rutor)
+					i = 0;
 				if(tomter[i]->get_typ() == TOMT){
-					if(((Street**)tomter)[i]->get_zon() == 5 ){ //IF belonges to group for railroad
+					if(((Street**)tomter)[i]->get_zon() == 1 ){ //IF belonges to group for railroad
 						c_player->set_pos_ruta(i);
 						c_player->update_Player(tomter, players, n_players);
 						if((((Street**)tomter)[i])->get_Owner() != c_player && (((Street**)tomter)[i])->get_Owner() != 0){ //Pay rent for railroad, will pay again later(thereby doubling the rent)
 							(((Street**)tomter)[i])->pay_rent(c_player, tomter);
 						}
 						after_movement(c_player, players, n_players, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning, prison, dice_used);
+						loop_done = true;
 					}
 				}
 			}
 			break;
+			}
 		case 6:
 			for(int i = 0; i < n_players; i++){
 				players[i]->pay_player(c_player, action_sum_1, tomter);

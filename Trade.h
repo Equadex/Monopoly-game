@@ -3,7 +3,7 @@
 
 class Trade{
 public:
-
+	
 private:
 
 };
