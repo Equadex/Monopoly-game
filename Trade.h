@@ -10,7 +10,7 @@
 
 class Trade{
 public:
-	Trade(int pos_x, int pos_y, Property **tomter, ALLEGRO_FONT *button_text, ALLEGRO_FONT *title_font, ALLEGRO_BITMAP *trade_prop_image, ALLEGRO_BITMAP *button_image, ALLEGRO_BITMAP *box_image): player_draw_y_distance(35) {
+	Trade(int pos_x, int pos_y, Property **tomter, ALLEGRO_FONT *button_text, ALLEGRO_FONT *title_font, ALLEGRO_BITMAP *trade_prop_image, ALLEGRO_BITMAP *button_image, ALLEGRO_BITMAP *box_image): stage_1(false), stage_2(false), stage_3(false), player_draw_y_distance(35) {
 		const int n_buttons_created = 11 + max_players;
 
 		buttons = new Button*[n_buttons_created];
@@ -51,6 +51,30 @@ public:
 		return (window_proposition->get_active());
 	}
 	void pressed(int mouse_pos_x, int mouse_pos_y){
+		int button_id = window_proposition->button_pressed(mouse_pos_x, mouse_pos_y);
+
+		if(button_id == -3){
+			stage_1 = true;
+		}
+		else if(button_id == -2){
+			if(stage_1){
+				stage_2 = true;
+			}
+		}
+		else if(button_id == -1){
+			if(stage_2){
+				stage_3 = true;
+			}
+		}
+		else if(button_id == 0){
+			if(stage_3){
+				;
+			}
+		}
+		else if(button_id >= 11 && button_id <= (11 + max_players)){
+			;
+		}
+
 
 	}
 private:
