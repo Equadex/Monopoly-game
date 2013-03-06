@@ -11,7 +11,7 @@
 
 class Trade{
 public:
-	Trade(int pos_x, int pos_y, Property **tomter, ALLEGRO_FONT *button_text, ALLEGRO_FONT *title_font, ALLEGRO_BITMAP *trade_prop_image, ALLEGRO_BITMAP *button_image, ALLEGRO_BITMAP *box_image): stage_1(false), stage_2(false), stage_3(false), player_draw_y_distance(35) {
+	Trade(int pos_x, int pos_y, Property **tomter, ALLEGRO_FONT *button_text, ALLEGRO_FONT *title_font, ALLEGRO_BITMAP *trade_prop_image, ALLEGRO_BITMAP *button_image, ALLEGRO_BITMAP *box_image): stage_1(false), stage_2(false), stage_3(false), player_draw_y_distance(35), seller(0), buyer(0), sum_seller(0), sum_buyer(0) {
 		const int n_buttons_created = 11 + max_players;
 
 		buttons = new Button*[n_buttons_created];
@@ -51,6 +51,7 @@ public:
 	void set_draw_proposition(bool value_in, int current_players){
 		window_proposition->set_n_buttons(window_proposition->get_n_buttons() - max_players + current_players);
 		window_proposition->set_active(value_in);
+		window_proposition->update(sum_seller, sum_buyer);
 	}
 	bool get_active(){
 		return (window_proposition->get_active());
@@ -58,7 +59,7 @@ public:
 	void set_buyer(Player *buyer_in){
 		buyer = buyer_in;
 	}
-	void pressed(int mouse_pos_x, int mouse_pos_y, Player **players){
+	void pressed(int mouse_pos_x, int mouse_pos_y, Player **players, bool rightclick = false){
 		int button_id = window_proposition->button_pressed(mouse_pos_x, mouse_pos_y);
 
 		if(button_id == -3){
@@ -85,12 +86,48 @@ public:
 				;
 			}
 		}
+		else if(button_id == 2 && stage_2){
+			if(!rightclick)
+				sum_seller++;
+			else
+				sum_seller--;
+		}
+		else if(button_id == 3 && stage_2){
+			if(!rightclick)
+				sum_seller += 10;
+			else
+				sum_seller -= 10;
+		}
+		else if(button_id == 4 && stage_2){
+			if(!rightclick)
+				sum_seller += 100;
+			else
+				sum_seller -= 100;
+		}
+		else if(button_id == 5 && stage_3){
+			if(!rightclick)
+				sum_buyer++;
+			else
+				sum_buyer--;
+		}
+		else if(button_id == 6 && stage_3){
+			if(!rightclick)
+				sum_buyer+= 10;
+			else
+				sum_buyer-= 10;
+		}
+		else if(button_id == 7 && stage_3){
+			if(!rightclick)
+				sum_buyer+= 100;
+			else
+				sum_buyer-= 100;
+		}
 		else if(button_id >= 11 && button_id <= (11 + max_players) && stage_1){
 			int index = button_id - 11;
 			if(index >= 0 && index < max_players)
 				seller = players[button_id - 11];
 		}
-
+		window_proposition->update(sum_seller, sum_buyer);
 
 	}
 private:
@@ -100,6 +137,7 @@ private:
 	int player_draw_y_distance;
 	Player *buyer;
 	Player *seller;
+	int sum_seller, sum_buyer;
 
 	bool stage_1, stage_2, stage_3;
 };

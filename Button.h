@@ -21,6 +21,8 @@ public:
 	void draw(ALLEGRO_FONT *font = 0);
 	int get_pos_x_1(){return pos_x_1;}
 	int get_pos_y_1(){return pos_y_1;}
+	int get_pos_x_2(){return pos_x_2;}
+	int get_pos_y_2(){return pos_y_2;}
 private:
 	int pos_x_1, pos_x_2;
 	int pos_y_1, pos_y_2;
