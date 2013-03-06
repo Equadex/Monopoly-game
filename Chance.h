@@ -45,6 +45,8 @@ public:
 			int random_number = i + rand() % ((ant_cards / 2) - i);
 
 			temp1 = cards[i];
+			if(temp1->get_action() == 0)
+				temp1 = cards[0];
 			cards[i] = cards[random_number];
 			cards[random_number] = temp1;
 		}

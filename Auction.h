@@ -17,7 +17,7 @@ public:
 	void set_property(Street *property_on_sale_in){property_on_sale = property_on_sale_in;}
 	void set_active(bool active_in);
 	bool get_active(){return active;}
-	void button_pressed(int mouse_x, int mouse_y);
+	void button_pressed(int mouse_x, int mouse_y, bool right_click = false);
 private:
 	ALLEGRO_BITMAP *image;
 	ALLEGRO_FONT *title, *normal_text;

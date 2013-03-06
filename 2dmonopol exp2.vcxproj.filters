@@ -104,5 +104,11 @@
     <ClInclude Include="Prison.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Trade.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Trade_window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

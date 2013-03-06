@@ -26,6 +26,7 @@
 #include "Card.h"
 #include "Chance.h"
 #include "Prison.h"
+#include "Trade.h"
 
 
 //Globala variabler lokala
@@ -66,6 +67,7 @@ void seperate_cards(Card** cards, Card** cards_1, Card** cards_2, int n1, int n2
 void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players, int n_players, Property **tomter, Question *buy_street_Q, int &ID_card, Chance* chans, Chance* allmaning, int dice_1, int dice_2, Prison* prison, bool &dice_used);
 void after_movement(Player* c_player, Player** players, int n_players, Question* buy_street_Q, Property **tomter, int dice_1, int dice_2, int &ID_card, Chance *chans, Chance *allmaning, Prison *prison, bool &dice_used);
 void show_streets_zones();
+void show_error_message(char* message);
 void roll_dices(int &dice_1, int &dice_2, Sprite *dice_sprite_0,Sprite *dice_sprite_1);
 
 
@@ -77,7 +79,7 @@ int main(int argc, char *argv[]){
 	int	window_height;
 	int width = 1280;
 	int height = 1000;
-	double FPS = 120;
+	double FPS = 60;
 	float mouse_pos_x = 0;
 	float mouse_pos_y = 0;
 	int frames = 0, gameFPS = 0;
@@ -87,6 +89,11 @@ int main(int argc, char *argv[]){
 	bool done = false;
 	bool draw = false;
 	bool OpenGL = false;
+
+	//Keys
+
+	bool roll_dice_key = false;
+	bool end_turn_key = false;
 
 	//Variabler n�dv�ndiga f�r spelet
 
@@ -138,6 +145,7 @@ int main(int argc, char *argv[]){
 	Sprite *dice_sprite_1;
 	Chance *chans, *allmaning;
 	Prison *prison;
+	Trade *trade;
 
 	read_Property_data(tomter); //L�ser in data till tomter
 	create_players(n_players, players, tomter); //Skapar spelare
@@ -170,6 +178,7 @@ int main(int argc, char *argv[]){
 	ALLEGRO_BITMAP *street_info_railroad = NULL;
 	ALLEGRO_BITMAP *street_info_el = NULL;
 	ALLEGRO_BITMAP *street_info_water = NULL;
+	ALLEGRO_BITMAP *trade_proposal = NULL;
 
 	if(!al_init()){ //Initierar allegro bibloteket
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Allegro" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
@@ -232,6 +241,7 @@ int main(int argc, char *argv[]){
 	street_info_railroad = al_load_bitmap("street_info_railroad.bmp");
 	street_info_el = al_load_bitmap("street_info_el.bmp");
 	street_info_water = al_load_bitmap("street_info_water.bmp");
+	trade_proposal = al_load_bitmap("monopoly_trade_concept.png");
 	//Skapar fonts
 
 	ALLEGRO_FONT *arial_16 = al_load_ttf_font("arial.ttf", 16, 0);
@@ -258,6 +268,7 @@ int main(int argc, char *argv[]){
 	Auction *auction = new Auction(0, 120, players, n_players, auction_image, button, box, arial_36, arial_16);
 	((Tax*)tomter[4])->create_income_tax_question(Question_pos_x_standard, Question_pos_y_standard, button, question); //Skapar fråga till inkomst skatt ruta
 	prison = new Prison(button, question);
+	trade = new Trade(0, 120, tomter, arial_16, arial_36, trade_proposal, button, box);
 
 	//Skapar event_queue, registrerar k�llor och startar timer
 	event_queue = al_create_event_queue();
@@ -277,8 +288,8 @@ int main(int argc, char *argv[]){
 			mouse_pos_y = (ev.mouse.y * 1 ) / (double)scale;
 
 		}
-		else if(ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){ //N�r musknapp �r nedtryckt
-			if(ev.mouse.button == 1){ //V�nster musknapp
+		else if(ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN || roll_dice_key || end_turn_key){ //N�r musknapp �r nedtryckt
+			if(ev.mouse.button == 1 || roll_dice_key || end_turn_key){ //V�nster musknapp
 				
 				for(int i = 0; i < ant_rutor; i++){
 					if(tomter[i]->get_typ()  == TOMT && ((Street*)tomter[i])->button_pressed(mouse_pos_x, mouse_pos_y)){ // Om tomten är av gatutyp OCH Om knapp nedtryckt(statusboxen till den gatan)
@@ -409,6 +420,14 @@ int main(int argc, char *argv[]){
 							}
 						}
 					}
+					if(roll_dice_key){
+						roll_dice_key = false;
+						ID_button_pressed = 1;
+					}
+					else if(end_turn_key){
+						end_turn_key = false;
+						ID_button_pressed = 3;
+					}
 				
 					switch(ID_button_pressed){
 						case 1: //Sl� t�rningarna
@@ -491,9 +510,18 @@ int main(int argc, char *argv[]){
 								un_mortage_street = true;
 							else
 								un_mortage_street = false;
+						case 8:
+							if(!(trade->get_active()))
+								trade->set_draw_proposition(true);
+							else
+								trade->set_draw_proposition(false);
 					}
 					ID_button_pressed = 0;
 				}
+			}
+			else if(ev.mouse.button == 2){
+				if(auction->get_active())
+					auction->button_pressed(mouse_pos_x, mouse_pos_y, true);
 			}
 		}
 		else if(ev.type == ALLEGRO_EVENT_KEY_DOWN){
@@ -501,6 +529,11 @@ int main(int argc, char *argv[]){
 				case ALLEGRO_KEY_ESCAPE:
 					done = true;
 					break;
+				case ALLEGRO_KEY_R:
+					roll_dice_key = true;
+					break;
+				case ALLEGRO_KEY_E:
+					end_turn_key = true;
 			}
 			if(ev.keyboard.keycode >= ALLEGRO_KEY_0 && ev.keyboard.keycode <= ALLEGRO_KEY_9){
 				if(!dice_manual_input)
@@ -557,6 +590,9 @@ int main(int argc, char *argv[]){
 				(allmaning->get_window())->draw(arial_36, arial_16);
 			else if(prison->window_activated()){
 				prison->draw_window(arial_36, arial_16);
+			}
+			else{
+				trade->draw();
 			}
 
 			for(int i = 0; i < ant_buttons; i++){ //Ritar knappar
@@ -691,6 +727,7 @@ void getline_char(char line_in[],char line_out[],int out_length, int max_read, c
 	bool size_ok = true;
 	if(out_length < (strlen(line_in))){
 		size_ok = false;
+		show_error_message("Function getline_char has been called with a too big incoming array. Please debug program to fix this. It's recommended to terminate the program but you can continue on your own risk");
 	}
 	for(int i = start, j = 0; i < max_read+start && size_ok && start < strlen(line_in); i++, j++){
 		if(line_in[i] == stop){
@@ -879,7 +916,7 @@ void read_card_data(Card *cards[]){
 			}
 			for(int j = 0, r_pos = 0; j < cards_variable_count; j++){
 				if(!endfile){ //Kontrollerar om nollf�rtecken tidigare hittats
-					getline_char(line, line2, max_config_line_length,max_config_line_length, ',', endfile, r_pos);
+					getline_char(line, line2, max_config_extended_length,max_config_extended_length, ',', endfile, r_pos);
 				}
 				r_pos += strlen(line2) + 1; //R�knar hur m�nga tecken som har l�sts och anv�nds f�r att veta var n�sta inl�sning ska ske i str�ngen
 
@@ -924,7 +961,8 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 
 	switch (action){
 		case 1: //Move player to position
-			c_player->passing_go_check(action_sum_1);
+			if(c_player->get_pos_ruta() > action_sum_1)
+				c_player->passing_go_check(ant_rutor + 1);
 			c_player->set_pos_ruta(action_sum_1);
 			c_player->update_Player(tomter, players, n_players);
 			after_movement(c_player, players, n_players, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning, prison, dice_used);
@@ -936,35 +974,47 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 		case 3: //Bank pays you or take a fee
 			c_player->recieve_money(action_sum_1);
 			break;
-		case 4: //Moved to neares uttility
+		case 4: //Moved to nearest uttility
+			{
 			p_pos = c_player->get_pos_ruta();
-				
-			for(int i = p_pos; i < ant_rutor; i++){
+			bool loop_done = false;
+			for(int i = p_pos; !loop_done; i++){
 				if(tomter[i]->get_typ() == TOMT){
+					if(i >= ant_rutor)
+						i = 0;
 					if(((Street**)tomter)[i]->get_zon() == 5 ){ //IF belonges to group for uttility
 						c_player->set_pos_ruta(i);
 						c_player->update_Player(tomter, players, n_players);
 						after_movement(c_player, players, n_players, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning, prison, dice_used);
+						loop_done = true;
 					}
 				}
 			}
 			break;
+			}
+			
 		case 5: //Move to nearest railroad and pay double rent
+			{
 			p_pos = c_player->get_pos_ruta();
 
-			for(int i = p_pos; i < ant_rutor; i++){
+			bool loop_done = false;
+			for(int i = p_pos; !loop_done; i++){
+				if(i >= ant_rutor)
+					i = 0;
 				if(tomter[i]->get_typ() == TOMT){
-					if(((Street**)tomter)[i]->get_zon() == 5 ){ //IF belonges to group for railroad
+					if(((Street**)tomter)[i]->get_zon() == 1 ){ //IF belonges to group for railroad
 						c_player->set_pos_ruta(i);
 						c_player->update_Player(tomter, players, n_players);
 						if((((Street**)tomter)[i])->get_Owner() != c_player && (((Street**)tomter)[i])->get_Owner() != 0){ //Pay rent for railroad, will pay again later(thereby doubling the rent)
 							(((Street**)tomter)[i])->pay_rent(c_player, tomter);
 						}
 						after_movement(c_player, players, n_players, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning, prison, dice_used);
+						loop_done = true;
 					}
 				}
 			}
 			break;
+			}
 		case 6:
 			for(int i = 0; i < n_players; i++){
 				players[i]->pay_player(c_player, action_sum_1, tomter);
@@ -1042,4 +1092,8 @@ void roll_dices(int &dice_1, int &dice_2, Sprite *dice_sprite_0,Sprite *dice_spr
 	roll_dice(dice_2);
 	dice_sprite_0->set_curret_frame(max_tarning - (dice_1)); //Byter bild p� t�rning
 	dice_sprite_1->set_curret_frame(max_tarning - (dice_2));
+}
+
+void show_error_message(char* message){
+	al_show_native_message_box(NULL, "ERROR", "ERROR", message, NULL, ALLEGRO_MESSAGEBOX_ERROR);
 }
