@@ -26,6 +26,7 @@
 #include "Card.h"
 #include "Chance.h"
 #include "Prison.h"
+#include "Trade.h"
 
 
 //Globala variabler lokala
@@ -78,7 +79,7 @@ int main(int argc, char *argv[]){
 	int	window_height;
 	int width = 1280;
 	int height = 1000;
-	double FPS = 120;
+	double FPS = 60;
 	float mouse_pos_x = 0;
 	float mouse_pos_y = 0;
 	int frames = 0, gameFPS = 0;
@@ -144,6 +145,7 @@ int main(int argc, char *argv[]){
 	Sprite *dice_sprite_1;
 	Chance *chans, *allmaning;
 	Prison *prison;
+	Trade *trade;
 
 	read_Property_data(tomter); //L�ser in data till tomter
 	create_players(n_players, players, tomter); //Skapar spelare
@@ -176,6 +178,7 @@ int main(int argc, char *argv[]){
 	ALLEGRO_BITMAP *street_info_railroad = NULL;
 	ALLEGRO_BITMAP *street_info_el = NULL;
 	ALLEGRO_BITMAP *street_info_water = NULL;
+	ALLEGRO_BITMAP *trade_proposal = NULL;
 
 	if(!al_init()){ //Initierar allegro bibloteket
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Allegro" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
@@ -238,6 +241,7 @@ int main(int argc, char *argv[]){
 	street_info_railroad = al_load_bitmap("street_info_railroad.bmp");
 	street_info_el = al_load_bitmap("street_info_el.bmp");
 	street_info_water = al_load_bitmap("street_info_water.bmp");
+	trade_proposal = al_load_bitmap("monopoly_trade_concept.png");
 	//Skapar fonts
 
 	ALLEGRO_FONT *arial_16 = al_load_ttf_font("arial.ttf", 16, 0);
@@ -264,6 +268,7 @@ int main(int argc, char *argv[]){
 	Auction *auction = new Auction(0, 120, players, n_players, auction_image, button, box, arial_36, arial_16);
 	((Tax*)tomter[4])->create_income_tax_question(Question_pos_x_standard, Question_pos_y_standard, button, question); //Skapar fråga till inkomst skatt ruta
 	prison = new Prison(button, question);
+	trade = new Trade(0, 120, tomter, arial_16, arial_36, trade_proposal, button, box);
 
 	//Skapar event_queue, registrerar k�llor och startar timer
 	event_queue = al_create_event_queue();
@@ -505,6 +510,11 @@ int main(int argc, char *argv[]){
 								un_mortage_street = true;
 							else
 								un_mortage_street = false;
+						case 8:
+							if(!(trade->get_active()))
+								trade->set_draw_proposition(true);
+							else
+								trade->set_draw_proposition(false);
 					}
 					ID_button_pressed = 0;
 				}
@@ -580,6 +590,9 @@ int main(int argc, char *argv[]){
 				(allmaning->get_window())->draw(arial_36, arial_16);
 			else if(prison->window_activated()){
 				prison->draw_window(arial_36, arial_16);
+			}
+			else{
+				trade->draw();
 			}
 
 			for(int i = 0; i < ant_buttons; i++){ //Ritar knappar
