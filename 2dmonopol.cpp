@@ -79,7 +79,7 @@ int main(int argc, char *argv[]){
 	int	window_height;
 	int width = 1280;
 	int height = 1000;
-	double FPS = 60;
+	double FPS = 2;
 	float mouse_pos_x = 0;
 	float mouse_pos_y = 0;
 	int frames = 0, gameFPS = 0;
@@ -395,6 +395,8 @@ int main(int argc, char *argv[]){
 						}
 					}
 				}
+				else if(trade->get_active())
+					trade->pressed(mouse_pos_x, mouse_pos_y, players);
 				else{
 					for(int i = 0; i < ant_buttons; i++){ //Kontrollerar vilken knapp som blivit klickad
 						if(buttons[i]->Button_pressed(mouse_pos_x, mouse_pos_y)){
@@ -511,10 +513,12 @@ int main(int argc, char *argv[]){
 							else
 								un_mortage_street = false;
 						case 8:
-							if(!(trade->get_active()))
-								trade->set_draw_proposition(true);
+							if(!(trade->get_active())){
+								trade->set_draw_proposition(true, n_players);
+								trade->set_buyer(players[current_player]);
+							}
 							else
-								trade->set_draw_proposition(false);
+								trade->set_draw_proposition(false, n_players);
 					}
 					ID_button_pressed = 0;
 				}

@@ -6,6 +6,7 @@
 
 #include "Trade_window.h"
 #include "Button.h"
+#include "Player.h"
 
 
 class Trade{
@@ -31,7 +32,7 @@ public:
 		for(int i = 0; i < max_players; i++){
 			char temp_char[100];
 			sprintf(temp_char, "Player %i", i);
-			buttons[11 + i] = new Button(pos_x + 40, pos_y + 180 + player_draw_y_distance * i, pos_x + 220, pos_y + 180 + player_draw_y_distance * (i + 1), 8 + i, temp_char);
+			buttons[11 + i] = new Button(pos_x + 40, pos_y + 180 + player_draw_y_distance * i, pos_x + 220, pos_y + 180 + player_draw_y_distance * (i + 1), 11 + i, temp_char);
 		}
 
 
@@ -40,29 +41,42 @@ public:
 
 	void draw(){
 		if(window_proposition->get_active())
-			window_proposition->draw();
+			if(seller != NULL)
+				window_proposition->draw(stage_1, stage_2, stage_3, seller->get_id());
+			else
+				window_proposition->draw(stage_1, stage_2, stage_3, -1);
 		/*else if(window_approval->get_active())
 			window_approval->draw();*/
 	}
-	void set_draw_proposition(bool value_in){
+	void set_draw_proposition(bool value_in, int current_players){
+		window_proposition->set_n_buttons(window_proposition->get_n_buttons() - max_players + current_players);
 		window_proposition->set_active(value_in);
 	}
 	bool get_active(){
 		return (window_proposition->get_active());
 	}
-	void pressed(int mouse_pos_x, int mouse_pos_y){
+	void set_buyer(Player *buyer_in){
+		buyer = buyer_in;
+	}
+	void pressed(int mouse_pos_x, int mouse_pos_y, Player **players){
 		int button_id = window_proposition->button_pressed(mouse_pos_x, mouse_pos_y);
 
 		if(button_id == -3){
 			stage_1 = true;
+			stage_2 = false;
+			stage_3 = false;
 		}
 		else if(button_id == -2){
 			if(stage_1){
+				stage_1 = false;
 				stage_2 = true;
+				stage_3 = false;
 			}
 		}
 		else if(button_id == -1){
 			if(stage_2){
+				stage_1 = false;
+				stage_2 = false;
 				stage_3 = true;
 			}
 		}
@@ -71,8 +85,10 @@ public:
 				;
 			}
 		}
-		else if(button_id >= 11 && button_id <= (11 + max_players)){
-			;
+		else if(button_id >= 11 && button_id <= (11 + max_players) && stage_1){
+			int index = button_id - 11;
+			if(index >= 0 && index < max_players)
+				seller = players[button_id - 11];
 		}
 
 
@@ -82,6 +98,8 @@ private:
 	Trade_window *window_approval;
 	Button **buttons;
 	int player_draw_y_distance;
+	Player *buyer;
+	Player *seller;
 
 	bool stage_1, stage_2, stage_3;
 };

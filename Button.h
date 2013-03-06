@@ -19,6 +19,8 @@ public:
 	int Button_pressed(int pos_x, int pos_y) const;
 	int get_ID() const;
 	void draw(ALLEGRO_FONT *font = 0);
+	int get_pos_x_1(){return pos_x_1;}
+	int get_pos_y_1(){return pos_y_1;}
 private:
 	int pos_x_1, pos_x_2;
 	int pos_y_1, pos_y_2;

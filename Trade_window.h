@@ -2,6 +2,7 @@
 #define TRADE_WINDOW_H
 
 #include <allegro5\allegro.h>
+#include <allegro5\allegro_primitives.h>
 #include <allegro5\allegro_font.h>
 
 #include "Question.h"
@@ -12,13 +13,30 @@ public:
 	Trade_window(int pos_x, int pos_y, Button **buttons, int n_buttons, char *title_in, char *message_in, ALLEGRO_FONT *button_text, ALLEGRO_FONT *title_font, ALLEGRO_BITMAP *image_in, Property **tomter_in) : tomter(tomter_in), button_text(button_text), title_font(title_font), Question(pos_x, pos_y, buttons, n_buttons, title_in, message_in, image_in){
 
 	}
-	void draw(){
+	int get_n_buttons(){return n_buttons;}
+	void set_n_buttons(int n_buttons_in){n_buttons = n_buttons_in;}
+	void draw(bool stage_1, bool stage_2, bool stage_3, int player_id_selected){
 		if(active){
 			al_draw_bitmap(image, pos_x, pos_y, 0);
 			for(int i = 0; i < n_buttons; i++){
 				buttons[i]->draw(button_text);
 			}
 			al_draw_text(title_font, al_map_rgb(0, 0, 0), pos_x + 430, pos_y + 40, ALLEGRO_ALIGN_CENTRE, title[0]);
+
+			
+			if(stage_1)
+				al_draw_rectangle(pos_x + 15, pos_y + 115, pos_x + 260, pos_y + 440, al_map_rgb(0, 255, 0), 2);
+			if(stage_2)
+				al_draw_rectangle(pos_x + 280, pos_y + 115, pos_x + 570, pos_y + 440, al_map_rgb(0, 255, 0), 2);
+			if(stage_3)
+				al_draw_rectangle(pos_x + 610, pos_y + 115, pos_x + 895, pos_y + 440, al_map_rgb(0, 255, 0), 2);
+
+			for(int i = 0; i < n_buttons; i++){
+				if(buttons[i]->get_ID() == 11 + player_id_selected){
+					al_draw_filled_rectangle(buttons[i]->get_pos_x_1() - 10, buttons[i]->get_pos_y_1(), buttons[i]->get_pos_x_1() - 5, buttons[i]->get_pos_y_1() + 5, al_map_rgb(0, 255, 0));
+				}
+			}
+
 		}
 	}
 private:
