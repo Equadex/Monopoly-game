@@ -5,7 +5,8 @@ class Trade{
 public:
 	
 private:
-
+	int money_give;
+	int money_take;
 };
 
 #endif
