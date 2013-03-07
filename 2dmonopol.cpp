@@ -520,6 +520,13 @@ int main(int argc, char *argv[]){
 							else
 								trade->set_draw_proposition(false, n_players);
 					}
+
+					//Check if a status box has been pressed
+
+					for(int i = 0; i < ant_rutor; i++){
+
+					}
+
 					ID_button_pressed = 0;
 				}
 			}

@@ -7,11 +7,13 @@
 #include "Trade_window.h"
 #include "Button.h"
 #include "Player.h"
+#include "Status_box.h"
+#include "Street_info.h"
 
 
 class Trade{
 public:
-	Trade(int pos_x, int pos_y, Property **tomter, ALLEGRO_FONT *button_text, ALLEGRO_FONT *title_font, ALLEGRO_BITMAP *trade_prop_image, ALLEGRO_BITMAP *button_image, ALLEGRO_BITMAP *box_image): stage_1(false), stage_2(false), stage_3(false), player_draw_y_distance(35), seller(0), buyer(0), sum_seller(0), sum_buyer(0) {
+	Trade(int pos_x, int pos_y, Property **tomter, ALLEGRO_FONT *button_text, ALLEGRO_FONT *title_font, ALLEGRO_BITMAP *trade_prop_image, ALLEGRO_BITMAP *button_image, ALLEGRO_BITMAP *box_image): stage_1(false), stage_2(false), stage_3(false), player_draw_y_distance(35), seller(0), buyer(0), sum_seller(0), sum_buyer(0),tomter(tomter), n_seller_streets(0), n_buyer_streets(0) {
 		const int n_buttons_created = 11 + max_players;
 
 		buttons = new Button*[n_buttons_created];
@@ -37,21 +39,25 @@ public:
 
 
 		window_proposition = new Trade_window(pos_x, pos_y, buttons, n_buttons_created, "Trade proposal", "", button_text, title_font, trade_prop_image, tomter);
+
+		seller_streets = new Street*[ant_rutor];
+		buyer_streets = new Street*[ant_rutor];
+
  	}
 
 	void draw(){
 		if(window_proposition->get_active())
 			if(seller != NULL)
-				window_proposition->draw(stage_1, stage_2, stage_3, seller->get_id());
+				window_proposition->draw(stage_1, stage_2, stage_3, seller->get_id(), seller_streets, buyer_streets, n_seller_streets, n_buyer_streets);
 			else
-				window_proposition->draw(stage_1, stage_2, stage_3, -1);
+				window_proposition->draw(stage_1, stage_2, stage_3, -1, seller_streets, buyer_streets, n_seller_streets, n_buyer_streets);
 		/*else if(window_approval->get_active())
 			window_approval->draw();*/
 	}
 	void set_draw_proposition(bool value_in, int current_players){
 		window_proposition->set_n_buttons(window_proposition->get_n_buttons() - max_players + current_players);
 		window_proposition->set_active(value_in);
-		window_proposition->update(sum_seller, sum_buyer);
+		window_proposition->update(sum_seller, sum_buyer, seller_streets, buyer_streets, n_seller_streets, n_buyer_streets);
 	}
 	bool get_active(){
 		return (window_proposition->get_active());
@@ -63,12 +69,11 @@ public:
 		int button_id = window_proposition->button_pressed(mouse_pos_x, mouse_pos_y);
 
 		if(button_id == -3){
+			if(!stage_2 && !stage_3)
 			stage_1 = true;
-			stage_2 = false;
-			stage_3 = false;
 		}
 		else if(button_id == -2){
-			if(stage_1){
+			if(stage_1 || stage_3){
 				stage_1 = false;
 				stage_2 = true;
 				stage_3 = false;
@@ -127,19 +132,88 @@ public:
 			if(index >= 0 && index < max_players)
 				seller = players[button_id - 11];
 		}
-		window_proposition->update(sum_seller, sum_buyer);
+
+		//Checks if any status_boxes was pressed
+		
+		for(int i = 0; i < ant_rutor; i++){
+			if(tomter[i]->get_typ() == TOMT){
+				if(((Street*)tomter[i])->button_pressed(mouse_pos_x, mouse_pos_y)){
+					bool already_added = false;
+					for(int j = 0; j < n_seller_streets; j++){
+						if(seller_streets[j]->get_pos_ruta() == ((Street*)tomter[i])->get_pos_ruta())
+							already_added = true;
+					}
+					if(stage_2 && !already_added){
+						if(((Street*)tomter[i])->get_Owner() == seller && ((Street*)tomter[i])->get_Owner() != 0)
+							seller_streets[n_seller_streets++] = ((Street*)tomter[i]);
+					}
+					else if(stage_3 && !already_added)
+						if(((Street*)tomter[i])->get_Owner() == buyer)
+							buyer_streets[n_buyer_streets++] = ((Street*)tomter[i]);
+				}
+			}
+		}
+
+		//Checks if any of windows status_boxes was pressed
+
+		for(int i = 0; i < n_buyer_streets; i++){
+			Status_box *temp = window_proposition->get_status_buyer_boxes();
+
+			if(temp[i].pressed(mouse_pos_x, mouse_pos_y)){
+				if(((temp[i].get_street())->get_Street_info())->get_active())
+					((temp[i].get_street())->get_Street_info())->set_active(false);
+				else{
+					al_set_street_info_false(tomter);
+					((temp[i].get_street())->get_Street_info())->set_active(true);
+				}
+			}
+
+			
+		}
+
+		for(int i = 0; i < n_seller_streets; i++){
+			Status_box *temp = window_proposition->get_status_seller_boxes();
+
+			if(temp[i].pressed(mouse_pos_x, mouse_pos_y)){
+				if(((temp[i].get_street())->get_Street_info())->get_active())
+					((temp[i].get_street())->get_Street_info())->set_active(false);
+				else{
+					al_set_street_info_false(tomter);
+					((temp[i].get_street())->get_Street_info())->set_active(true);
+				}
+			}
+		}
+
+		window_proposition->update(sum_seller, sum_buyer, seller_streets, buyer_streets, n_seller_streets, n_buyer_streets);
 
 	}
 private:
 	Trade_window *window_proposition;
 	Trade_window *window_approval;
 	Button **buttons;
+	Property **tomter;
+	Street **seller_streets;
+	Street **buyer_streets;
+	int n_seller_streets, n_buyer_streets;
 	int player_draw_y_distance;
 	Player *buyer;
 	Player *seller;
 	int sum_seller, sum_buyer;
 
 	bool stage_1, stage_2, stage_3;
+
+	void al_set_street_info_false(Property *tomter[], bool full = false){ //Full = true resets all, false only the first
+		for(int i = 0; i < ant_rutor; i++){
+			if(tomter[i]->get_typ()  == TOMT){ // Om tomten är av gatutyp
+				if((((Street*)tomter[i])->get_Street_info())->get_active()){
+					(((Street*)tomter[i])->get_Street_info())->set_active(false);
+					if(!full)
+						break;
+				}
+			}
+		}
+	}
+
 };
 
 #endif
