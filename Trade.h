@@ -143,6 +143,10 @@ public:
 						if(seller_streets[j]->get_pos_ruta() == ((Street*)tomter[i])->get_pos_ruta())
 							already_added = true;
 					}
+					for(int j = 0; j < n_buyer_streets; j++){
+						if(buyer_streets[j]->get_pos_ruta() == ((Street*)tomter[i])->get_pos_ruta())
+							already_added = true;
+					}
 					if(stage_2 && !already_added){
 						if(((Street*)tomter[i])->get_Owner() == seller && ((Street*)tomter[i])->get_Owner() != 0)
 							seller_streets[n_seller_streets++] = ((Street*)tomter[i]);
