@@ -1,7 +1,7 @@
 #ifndef TRADE_H
 #define TRADE_H
 
-#include <allegro5\allegro.h>
+#include <allegro5/allegro.h>
 //#include <allegro5\allegro_image.h>
 
 #include "Trade_window.h"

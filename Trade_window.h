@@ -1,9 +1,9 @@
 #ifndef TRADE_WINDOW_H
 #define TRADE_WINDOW_H
 
-#include <allegro5\allegro.h>
-#include <allegro5\allegro_primitives.h>
-#include <allegro5\allegro_font.h>
+#include <allegro5/allegro.h>
+#include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_font.h>
 
 #include "Question.h"
 #include "Street.h"

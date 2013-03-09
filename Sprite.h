@@ -1,8 +1,8 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
-#include <allegro5\allegro.h>
-#include <allegro5\allegro_image.h>
+#include <allegro5/allegro.h>
+#include <allegro5/allegro_image.h>
 
 class Sprite{
 public:

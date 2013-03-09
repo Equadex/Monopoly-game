@@ -1,8 +1,8 @@
 #ifndef TEXT_FIELD_H
 #define TEXT_FIELD_H
 
-#include <allegro5\allegro.h>
-#include <allegro5\allegro_font.h>
+#include <allegro5/allegro.h>
+#include <allegro5/allegro_font.h>
 #include <string>
 
 class Text_field{

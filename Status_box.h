@@ -1,7 +1,7 @@
 #ifndef STATUS_BOX_H
 #define STATUS_BOX_H
-#include <allegro5\allegro5.h>
-#include <allegro5\allegro_primitives.h>
+#include <allegro5/allegro5.h>
+#include <allegro5/allegro_primitives.h>
 
 class Street;
 

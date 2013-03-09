@@ -3,8 +3,8 @@
 
 class Street_info;
 
-#include <allegro5\allegro.h>
-#include <allegro5\allegro_primitives.h>
+#include <allegro5/allegro.h>
+#include <allegro5/allegro_primitives.h>
 
 #include "Property.h" //Base class
 #include "Status_box.h" //Needed for updating status_box with info about owner and such
