@@ -1,102 +1,69 @@
-﻿Build started 3/9/2013 4:16:58 PM.
-     1>Project "C:\Users\Anders\Documents\Visual Studio 2010\SKOLProjects\2dmonopol exp2\2dmonopol exp2\2dmonopol exp2.vcxproj" on node 2 (rebuild target(s)).
-     1>_PrepareForClean:
-         Deleting file "Debug\2dmonopol exp2.lastbuildstate".
-       InitializeBuildStatus:
-         Creating "Debug\2dmonopol exp2.unsuccessfulbuild" because "AlwaysCreate" was specified.
+﻿Build started 3/10/2013 6:28:09 AM.
+     1>Project "C:\Users\Anders\Documents\Visual Studio 2010\SKOLProjects\2dmonopol exp2\2dmonopol exp2\2dmonopol exp2.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Touching "Debug\2dmonopol exp2.unsuccessfulbuild".
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt 2dmonopol.cpp Auction.cpp Auction_window.cpp Button.cpp Player.cpp Property.cpp Question.cpp Sprite.cpp Status_box.cpp Street.cpp Text_field.cpp Trade.cpp Window_list.cpp
-         Window_list.cpp
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\button.h(16): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\property.h(24): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\property.h(28): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\window_list.cpp(38): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\window_list.cpp(70): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : see declaration of 'sprintf'
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt 2dmonopol.cpp Trade.cpp
          Trade.cpp
      1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\button.h(16): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
      1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\property.h(24): warning C4018: '<' : signed/unsigned mismatch
      1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\property.h(28): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(27): warning C4101: 'temp_colors' : unreferenced local variable
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(64): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(31): warning C4101: 'temp_colors' : unreferenced local variable
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(76): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : see declaration of 'sprintf'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(66): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(78): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : see declaration of 'sprintf'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade.h(36): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(82): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : see declaration of 'sprintf'
-         Text_field.cpp
-         Street.cpp
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\button.h(16): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\property.h(24): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\property.h(28): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
-         Status_box.cpp
-         Sprite.cpp
-         Question.cpp
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\button.h(16): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
-         Property.cpp
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\button.h(16): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\property.h(24): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\property.h(28): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
-         Player.cpp
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\button.h(16): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\property.h(24): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\property.h(28): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\player.cpp(30): warning C4101: 'displacement_factor' : unreferenced local variable
-         Button.cpp
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\button.h(16): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
-         Auction_window.cpp
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\button.h(16): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\auction_window.cpp(24): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(84): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : see declaration of 'sprintf'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\auction_window.cpp(26): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(86): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : see declaration of 'sprintf'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\auction_window.cpp(28): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(88): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : see declaration of 'sprintf'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\auction_window.cpp(30): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(92): warning C4101: 'y' : unreferenced local variable
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(92): warning C4101: 'x' : unreferenced local variable
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade.h(43): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : see declaration of 'sprintf'
-         Auction.cpp
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\button.h(16): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\property.h(24): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\property.h(28): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade.h(110): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : see declaration of 'sprintf'
          2dmonopol.cpp
      1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\button.h(16): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
      1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\property.h(24): warning C4018: '<' : signed/unsigned mismatch
      1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\property.h(28): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(27): warning C4101: 'temp_colors' : unreferenced local variable
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(64): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(31): warning C4101: 'temp_colors' : unreferenced local variable
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(76): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : see declaration of 'sprintf'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(66): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(78): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : see declaration of 'sprintf'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade.h(36): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(82): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : see declaration of 'sprintf'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(437): warning C4101: 'temp' : unreferenced local variable
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(688): warning C4309: '=' : truncation of constant value
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(716): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(84): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : see declaration of 'sprintf'
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(86): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : see declaration of 'sprintf'
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(88): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : see declaration of 'sprintf'
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(92): warning C4101: 'y' : unreferenced local variable
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade_window.h(92): warning C4101: 'x' : unreferenced local variable
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade.h(43): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : see declaration of 'sprintf'
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\trade.h(110): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : see declaration of 'sprintf'
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(440): warning C4101: 'temp' : unreferenced local variable
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(690): warning C4309: '=' : truncation of constant value
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(718): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(741): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(745): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(831): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(743): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(747): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(833): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(913): warning C4309: '=' : truncation of constant value
-     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(940): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(915): warning C4309: '=' : truncation of constant value
+     1>c:\users\anders\documents\visual studio 2010\skolprojects\2dmonopol exp2\2dmonopol exp2\2dmonopol.cpp(942): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(188) : see declaration of 'strncpy'
          Generating Code...
        Link:
@@ -113,14 +80,15 @@
          Debug\Text_field.obj
          Debug\Trade.obj
          Debug\Window_list.obj
+         LINK : C:\Users\Anders\Documents\Visual Studio 2010\SKOLProjects\2dmonopol exp2\Debug\2dmonopol exp2.exe not found or not built by the last incremental link; performing full link
          2dmonopol exp2.vcxproj -> C:\Users\Anders\Documents\Visual Studio 2010\SKOLProjects\2dmonopol exp2\Debug\2dmonopol exp2.exe
        Manifest:
          C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"C:\Users\Anders\Documents\Visual Studio 2010\SKOLProjects\2dmonopol exp2\Debug\2dmonopol exp2.exe;#1" /manifest "Debug\2dmonopol exp2.exe.intermediate.manifest"
        FinalizeBuildStatus:
          Deleting file "Debug\2dmonopol exp2.unsuccessfulbuild".
          Touching "Debug\2dmonopol exp2.lastbuildstate".
-     1>Done Building Project "C:\Users\Anders\Documents\Visual Studio 2010\SKOLProjects\2dmonopol exp2\2dmonopol exp2\2dmonopol exp2.vcxproj" (rebuild target(s)).
+     1>Done Building Project "C:\Users\Anders\Documents\Visual Studio 2010\SKOLProjects\2dmonopol exp2\2dmonopol exp2\2dmonopol exp2.vcxproj" (build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:05.81
+Time Elapsed 00:00:01.30

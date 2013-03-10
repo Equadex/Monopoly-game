@@ -20,6 +20,10 @@ public:
 		else
 			return false;
 	}
+	void set_coordinates(int pos_x1, int pos_y1, int pos_x2, int pos_y2){
+		pos_x_1 = pos_x1; pos_y_1 = pos_y1;
+		pos_x_2 = pos_x2; pos_y_2 = pos_y2;
+	}
 
 
 	void draw();

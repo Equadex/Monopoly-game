@@ -179,6 +179,7 @@ int main(int argc, char *argv[]){
 	ALLEGRO_BITMAP *street_info_el = NULL;
 	ALLEGRO_BITMAP *street_info_water = NULL;
 	ALLEGRO_BITMAP *trade_proposal = NULL;
+	ALLEGRO_BITMAP *trade_reciver = NULL;
 
 	if(!al_init()){ //Initierar allegro bibloteket
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Allegro" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
@@ -242,6 +243,7 @@ int main(int argc, char *argv[]){
 	street_info_el = al_load_bitmap("street_info_el.bmp");
 	street_info_water = al_load_bitmap("street_info_water.bmp");
 	trade_proposal = al_load_bitmap("monopoly_trade_concept.png");
+	trade_reciver = al_load_bitmap("monopoly_trade_concept_reciever.png");
 	//Skapar fonts
 
 	ALLEGRO_FONT *arial_16 = al_load_ttf_font("arial.ttf", 16, 0);
@@ -268,7 +270,7 @@ int main(int argc, char *argv[]){
 	Auction *auction = new Auction(0, 120, players, n_players, auction_image, button, box, arial_36, arial_16);
 	((Tax*)tomter[4])->create_income_tax_question(Question_pos_x_standard, Question_pos_y_standard, button, question); //Skapar fråga till inkomst skatt ruta
 	prison = new Prison(button, question);
-	trade = new Trade(0, 120, tomter, arial_16, arial_36, trade_proposal, button, box);
+	trade = new Trade(0, 120, tomter, arial_16, arial_36, trade_proposal, trade_reciver, button, box);
 
 	//Skapar event_queue, registrerar k�llor och startar timer
 	event_queue = al_create_event_queue();
@@ -291,6 +293,15 @@ int main(int argc, char *argv[]){
 		else if(ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN || roll_dice_key || end_turn_key){ //N�r musknapp �r nedtryckt
 			if(ev.mouse.button == 1 || roll_dice_key || end_turn_key){ //V�nster musknapp
 				
+				if(roll_dice_key){
+						roll_dice_key = false;
+						mouse_pos_x = 1000; mouse_pos_y = 50;
+					}
+					else if(end_turn_key){
+						end_turn_key = false;
+						mouse_pos_x = 1120; mouse_pos_y = 870;
+					}
+
 				for(int i = 0; i < ant_rutor; i++){
 					if(tomter[i]->get_typ()  == TOMT && ((Street*)tomter[i])->button_pressed(mouse_pos_x, mouse_pos_y)){ // Om tomten är av gatutyp OCH Om knapp nedtryckt(statusboxen till den gatan)
 						if((((Street*)tomter[i])->get_Street_info())->get_active()){ //OM aktiv, sätt till inaktiv och tvärtom
@@ -396,7 +407,7 @@ int main(int argc, char *argv[]){
 					}
 				}
 				else if(trade->get_active())
-					trade->pressed(mouse_pos_x, mouse_pos_y, players);
+					trade->pressed(mouse_pos_x, mouse_pos_y, players, n_players);
 				else{
 					for(int i = 0; i < ant_buttons; i++){ //Kontrollerar vilken knapp som blivit klickad
 						if(buttons[i]->Button_pressed(mouse_pos_x, mouse_pos_y)){
@@ -421,14 +432,6 @@ int main(int argc, char *argv[]){
 								((Street*)tomter[i])->mortage_street(false, tomter, tot_free_ant_houses, tot_free_ant_hotels);
 							}
 						}
-					}
-					if(roll_dice_key){
-						roll_dice_key = false;
-						ID_button_pressed = 1;
-					}
-					else if(end_turn_key){
-						end_turn_key = false;
-						ID_button_pressed = 3;
 					}
 				
 					switch(ID_button_pressed){
@@ -512,13 +515,12 @@ int main(int argc, char *argv[]){
 								un_mortage_street = true;
 							else
 								un_mortage_street = false;
+							break;
 						case 8:
-							if(!(trade->get_active())){
-								trade->set_draw_proposition(true, n_players);
-								trade->set_buyer(players[current_player]);
-							}
-							else
-								trade->set_draw_proposition(false, n_players);
+							trade->set_active(true, n_players);
+							trade->set_buyer(players[current_player]);
+							break;
+							
 					}
 
 					//Check if a status box has been pressed
@@ -534,7 +536,7 @@ int main(int argc, char *argv[]){
 				if(auction->get_active())
 					auction->button_pressed(mouse_pos_x, mouse_pos_y, true);
 				else if(trade->get_active())
-					trade->pressed(mouse_pos_x, mouse_pos_y, players, true);
+					trade->pressed(mouse_pos_x, mouse_pos_y, players, n_players, true);
 			}
 		}
 		else if(ev.type == ALLEGRO_EVENT_KEY_DOWN){
@@ -844,7 +846,7 @@ void read_Status_box_data(Property** streets){
 	char line2[max_config_line_length];
 	bool endfile = false;
 	const int displacement_x = 0;
-	const int displacement_y = 51;
+	const int displacement_y = 36;
 
 	if(!file){  //Kontrollerar att filen �r �ppen
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Status_box file config" , NULL, ALLEGRO_MESSAGEBOX_ERROR);

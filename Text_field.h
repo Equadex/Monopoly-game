@@ -17,8 +17,8 @@ public:
 		text = text_in;
 	}
 
-	void draw(){
-		al_draw_text(font, al_map_rgb(0, 0, 0), pos_x, pos_y, 0, text.c_str());
+	void draw(int special_output = 0){
+		al_draw_text(font, al_map_rgb(0, 0, 0), pos_x, pos_y, special_output, text.c_str());
 	}
 private:
 	const char *text_template;

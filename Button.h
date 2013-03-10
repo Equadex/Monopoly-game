@@ -9,7 +9,7 @@
 class Button{
 public:
 	Button(){}
-	Button(int pos_x1, int pos_y1, int pos_x2, int pos_y2, int ID, const char* label_in = "", ALLEGRO_BITMAP *image = 0) : pos_x_1(pos_x1), pos_y_1(pos_y1), pos_x_2(pos_x2), pos_y_2(pos_y2), ID(ID), image(image) {
+	Button(int pos_x1, int pos_y1, int pos_x2, int pos_y2, int ID, const char* label_in = "", ALLEGRO_BITMAP *image = 0,bool draw_own_edge_in = false) : pos_x_1(pos_x1), pos_y_1(pos_y1), pos_x_2(pos_x2), pos_y_2(pos_y2), ID(ID), image(image), draw_own_edge(draw_own_edge_in) {
 		const int max_label_length = 128;
 		label = new char[max_label_length];
 
@@ -28,6 +28,7 @@ private:
 	int pos_y_1, pos_y_2;
 	int ID;
 	char *label;
+	bool draw_own_edge;
 	ALLEGRO_BITMAP *image;
 };
 

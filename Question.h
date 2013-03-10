@@ -26,6 +26,8 @@ public:
 	~Question();
 	void set_active(bool active_in){active = active_in;}
 	bool get_active() const{return active;}
+	int get_pos_x() const {return pos_x;}
+	int get_pos_y() const {return pos_y;}
 	
 	void draw(ALLEGRO_FONT* Title, ALLEGRO_FONT* Text);
 	void set_text(char *title_in, char* message_in);
