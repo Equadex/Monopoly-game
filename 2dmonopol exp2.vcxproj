@@ -65,14 +65,20 @@
     <ClCompile Include="Auction.cpp" />
     <ClCompile Include="Auction_window.cpp" />
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="Card.cpp" />
+    <ClCompile Include="Chance.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Prison.cpp" />
     <ClCompile Include="Property.cpp" />
     <ClCompile Include="Question.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Status_box.cpp" />
     <ClCompile Include="Street.cpp" />
+    <ClCompile Include="Street_info.cpp" />
+    <ClCompile Include="Tax.cpp" />
     <ClCompile Include="Text_field.cpp" />
     <ClCompile Include="Trade.cpp" />
+    <ClCompile Include="Trade_window.cpp" />
     <ClCompile Include="Window_list.cpp" />
   </ItemGroup>
   <ItemGroup>
