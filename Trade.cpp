@@ -21,9 +21,9 @@ Trade::Trade(int pos_x, int pos_y, Property **tomter, ALLEGRO_FONT *button_text,
 	buttons[9] = new Button(pos_x + 635 + (al_get_bitmap_width(box_image) * 2), pos_y + 405, pos_x + 635 + (al_get_bitmap_width(box_image) * 2) + al_get_bitmap_width(box_image), pos_y + 405 + al_get_bitmap_height(box_image), 6, "10", box_image);
 	buttons[10] = new Button(pos_x + 635 + (al_get_bitmap_width(box_image) * 4), pos_y + 405, pos_x + 635 + (al_get_bitmap_width(box_image) * 4) + al_get_bitmap_width(box_image), pos_y + 405 + al_get_bitmap_height(box_image), 7, "100", box_image);
 
-	buttons2[0] = new Button(pos_x + 235, pos_y + 455, pos_x + 235 + al_get_bitmap_width(button_image), pos_y + 455 + al_get_bitmap_height(button_image), 1, "Accept", button_image);
-	buttons2[1] = new Button(pos_x + 525, pos_y + 455, pos_x + 525 + al_get_bitmap_width(button_image), pos_y + 455 + al_get_bitmap_height(button_image), 2, "Decline", button_image);
-	buttons2[2] = new Button(pos_x, pos_y + 455, pos_x + 40, pos_y + 455 + 30, 3, "TEST");
+	buttons2[0] = new Button(pos_x + 182, pos_y + 455, pos_x + 182 + 125, pos_y + 455 + al_get_bitmap_height(button_image), 1, "Accept", 0, true);
+	buttons2[1] = new Button(pos_x + 387, pos_y + 455, pos_x + 387 + 125, pos_y + 455 + al_get_bitmap_height(button_image), 2, "Decline", 0, true);
+	buttons2[2] = new Button(pos_x + 592, pos_y + 455, pos_x + 592 + 125, pos_y + 455 + al_get_bitmap_height(button_image), 3, "Counter proposal", 0, true);
 
 	for(int i = 0; i < max_players; i++){
 		char temp_char[100];
@@ -190,6 +190,7 @@ void Trade::pressed(int mouse_pos_x, int mouse_pos_y, Player **players, int n_pl
 		else if(button_id == 3){
 			window_approval->set_active(false);
 			window_proposition->set_active(true);
+			switch_buyer_seller();
 		}
 	}
 

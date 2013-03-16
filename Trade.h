@@ -41,7 +41,36 @@ private:
 	void reset_all_data(int n_players);
 	void set_draw_proposition(bool value_in, int current_players);
 	void make_trade();
+	void switch_buyer_seller(){
+		Player *temp;
+		int temp2;
+		Street **temp3;
 
+		//Switching players
+
+		temp = buyer;
+		buyer = seller;
+		seller = temp;
+
+		//Switching bids_sums
+
+		temp2 = sum_seller;
+		sum_seller = sum_buyer;
+		sum_buyer = temp2;
+
+		//Switching street_bids
+
+		temp3 = seller_streets;
+		seller_streets = buyer_streets;
+		buyer_streets = temp3;
+
+		//Switching street_bids_n_counter
+		temp2 = n_seller_streets;
+		n_seller_streets = n_buyer_streets;
+		n_buyer_streets = temp2;
+
+		stage_1 = true;
+	}
 };
 
 #endif
