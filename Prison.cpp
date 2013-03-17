@@ -1,11 +1,12 @@
 #include "Prison.h"
 
 Prison::Prison(ALLEGRO_BITMAP *button_image, ALLEGRO_BITMAP *question_image):n_buttons(3) {
+	char temp2[300];
 	temp = new Button*[n_buttons];
 	button_message = new char*[n_buttons];
-
 	button_message[0] = "Throw dices";
-	button_message[1] = "Pay";
+	sprintf(temp2, "Pay(%i)", prison_fee);
+	button_message[1] = temp2;
 	button_message[2] = "Use card";
 	int space_between_buttons = (al_get_bitmap_width(question_image) / (n_buttons + 1));
 	int button_width = al_get_bitmap_width(button_image);
@@ -31,4 +32,5 @@ void Prison::release_player(Player *prisoner){
 	prisoner->set_flag_prisoned(false);
 	reset_dice_tries(prisoner->get_id());
 	activate_window(false);
+	window->set_text("Prison", "You are in jail.");
 }

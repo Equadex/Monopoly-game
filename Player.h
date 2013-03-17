@@ -1,5 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
+#include "Constants.h"
+#include "Question.h"
 #include "Property.h" //Used for coordinates and transfer ownership if player loses 
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_primitives.h>
@@ -8,7 +10,7 @@
 
 class Player {
 public:
-	Player (int pos_x, int pos_y, int pos_ruta, int id, int pengar, int color1, int color2, int color3):pos_x(pos_x), pos_y(pos_y), pos_ruta(pos_ruta), id(id), pengar(pengar), color_r(color1), color_g(color2), color_b(color3), alive(true), square_size(40), passed_go(false), prisoned(false), c_jail_card(false), a_jail_card(false){}
+	Player (int pos_x, int pos_y, int pos_ruta, int id, int pengar, int color1, int color2, int color3, Question *defeat_window = 0):pos_x(pos_x), pos_y(pos_y), pos_ruta(pos_ruta), id(id), pengar(pengar), color_r(color1), color_g(color2), color_b(color3), alive(true), square_size(40), passed_go(false), prisoned(false), c_jail_card(false), a_jail_card(false), defeat_window(defeat_window){}
 	
 	void move_Player(int steg, Property** tomter, Player** players, int n_players);
 	void get_pos(int &pos_x, int &pos_y) const;
@@ -24,6 +26,9 @@ public:
 	void set_flag_prisoned(bool value){prisoned = value;}
 	void set_flag_c_jail_card(bool value){c_jail_card = value;}
 	void set_flag_a_jail_card(bool value){a_jail_card = value;}
+	void set_defeat_window(Question &defeat_window_in){
+		defeat_window = &defeat_window_in;
+	}
 	
 
 	void draw_player() const;
@@ -50,6 +55,7 @@ private:
 	const int square_size;
 	bool alive;
 	
+	Question* defeat_window;
 
 	bool passed_go; //Flags
 	bool prisoned;

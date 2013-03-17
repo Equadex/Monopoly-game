@@ -139,36 +139,78 @@ void Street::draw(bool mark){
 	}
 
 	for(int i = 0; i < houses && houses < max_houses; i++){
-		al_draw_filled_rectangle( pos_x_1 + 18 * i + 3, pos_y_1 + 5, pos_x_1 + 18 * i + 15, pos_y_1 + 20, al_map_rgb(0, 255, 0));
+		if(pos_ruta > 0 && pos_ruta < 10)
+			al_draw_filled_rectangle(pos_x_1 + 18 * i + 3, pos_y_1 + 5, pos_x_1 + 18 * i + 15, pos_y_1 + 20, al_map_rgb(0, 255, 0));
+		else if(pos_ruta > 10 && pos_ruta < 20){
+			al_draw_filled_rectangle(pos_x_2 - 5, pos_y_1 + 18 * i + 3, pos_x_2 - 20, pos_y_1 + 18 * i + 3 + 15, al_map_rgb(0, 255, 0));
+		}
+		else if(pos_ruta > 30 && pos_ruta < 40){
+			al_draw_filled_rectangle(pos_x_1 + 5, pos_y_1 + 18 * i + 3, pos_x_1 + 20, pos_y_1 + 18 * i + 3 + 15, al_map_rgb(0, 255, 0));
+		}
 	}
 	if(houses == max_houses){
-		al_draw_filled_rectangle(pos_x_1 + (pos_x_2 - pos_x_1) / 2 - 10, pos_y_1 + 5, pos_x_1 + (pos_x_2 - pos_x_1) / 2 + 10, pos_y_1 + 20, al_map_rgb(255, 0, 0));
+		int pos_temp_y_1 = 0, pos_temp_y_2 = 0;
+		int pos_temp_x_1 = 0, pos_temp_x_2 = 0;
+		if(pos_ruta > 0 && pos_ruta < 10){
+			pos_temp_y_1 = pos_y_1 + 5;
+			pos_temp_y_2 = pos_y_1 + 20;
+			pos_temp_x_1 = pos_x_1 + (pos_x_2 - pos_x_1) / 2 - 10;
+			pos_temp_x_2 = pos_x_1 + (pos_x_2 - pos_x_1) / 2 + 10;
+		}
+		else if(pos_ruta > 10 && pos_ruta < 20){
+			pos_temp_y_1 = pos_y_1 + (pos_y_2 - pos_y_1) / 2 - 10;
+			pos_temp_y_2  = pos_y_1 + (pos_y_2 - pos_y_1) / 2 + 10;
+			pos_temp_x_1 = pos_x_2 - 20;
+			pos_temp_x_2 = pos_x_2 - 5;
+		}
+		else if(pos_ruta > 20 && pos_ruta < 30){
+			pos_temp_y_1 = pos_y_2 - 20;
+			pos_temp_y_2 = pos_y_2 - 5;
+			pos_temp_x_1 = pos_x_1 + (pos_x_2 - pos_x_1) / 2 - 10;
+			pos_temp_x_2 = pos_x_1 + (pos_x_2 - pos_x_1) / 2 + 10;
+		}
+		else if(pos_ruta > 30 && pos_ruta < 40){
+			pos_temp_y_1 = pos_y_1 + (pos_y_2 - pos_y_1) / 2 - 10;
+			pos_temp_y_2  = pos_y_1 + (pos_y_2 - pos_y_1) / 2 + 10;
+			pos_temp_x_1 = pos_x_1 + 5;
+			pos_temp_x_2 = pos_x_1 + 20;
+		}
+			
+		al_draw_filled_rectangle(pos_temp_x_1, pos_temp_y_1, pos_temp_x_2, pos_temp_y_2, al_map_rgb(255, 0, 0));
 	}
 }
 
 void Street::buy_house(Player* buyer, Property **tomter, int &tot_free_ant_houses, int &tot_free_ant_hotels){
 	if(buyer == Owner && own_zone(tomter) && houses < max_houses && buyer->pay(building_cost)) {
-		houses++;
-		if(houses == max_houses)
+		if(houses == max_houses && tot_free_ant_hotels >= 1){
+			houses++;
 			tot_free_ant_hotels--;
-		else
+			tot_free_ant_houses += 4;
+		}
+		else if(tot_free_ant_houses >= 1){
+			houses++;
 			tot_free_ant_houses--;
+		}
 	}
 }
 
 void Street::sell_house(Player* seller, Property **tomter, int &tot_free_ant_houses, int &tot_free_ant_hotels){
 	if(seller == Owner && own_zone(tomter) && houses > 0){
-		if(houses == max_houses)
+		if(houses == max_houses && tot_free_ant_houses >= (max_houses - 1)){
 			tot_free_ant_hotels++;
-		else
+			tot_free_ant_houses -= (max_houses - 1);
+		}
+		else if(houses != max_houses){
 			tot_free_ant_houses++;
-		houses--;
+			houses--;
+		}
+		
 		seller->recieve_money(building_cost / 2);
 	}
 }
 
 void Street::mortage_street(bool mortage_in, Property **tomter, int &tot_free_ant_houses, int &tot_free_ant_hotels){
-	if(mortage_in == true && !mortaged){
+	if(mortage_in == true && !mortaged && (houses != max_houses || tot_free_ant_houses >= (max_houses - 1))){
 		while(houses > 0){
 			sell_house(Owner, tomter, tot_free_ant_houses, tot_free_ant_hotels);
 		}

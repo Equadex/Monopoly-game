@@ -1,7 +1,5 @@
-#include "Constants.h"
-
 #include "Player.h"
-#include "Property.h"
+
 
 void Player::move_Player(int steg, Property** tomter, Player** players, int n_players){
 		pos_ruta += steg;
@@ -128,12 +126,17 @@ void Player::get_color(int *array_in){
 }
 
 void Player::defeated(Player *winner, Property* tomter[]){
-	winner->recieve_money(pengar);
+	defeat_window->set_active(true);
+	if(!winner == 0)
+		winner->recieve_money(pengar);
+	else
+		pengar = 0;
 	for(int i = 0; i < ant_rutor; i++){
 		if(tomter[i]->get_Owner() == this){
 			tomter[i]->set_Owner(winner);
 		}
 	}
+	alive = false;
 }
 
 void Player::set_pos_ruta(int pos_ruta_in){

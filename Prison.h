@@ -1,6 +1,8 @@
 #ifndef PRISON_H
 #define PRISON_H
 
+#include <cstdio>
+
 #include <allegro5/allegro.h>
 
 #include "Player.h"
@@ -25,7 +27,7 @@ public:
 		return players_dice_tries[player_id];
 	}
 	void out_of_dice_tries(){
-		window->set_text("Can't to that!", "You can only throw the dice 3 times to get out of jail. Now you need to use a card or pay");
+		window->set_text("Can't do that!", "You can only throw the dice 3 times to get out of jail. Now you need to use a card or pay");
 	}
 	void reset_dice_tries(int player_id){
 		players_dice_tries[player_id] = 0;
