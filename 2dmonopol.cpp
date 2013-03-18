@@ -625,7 +625,7 @@ int main(int argc, char *argv[]){
 			
 		}
 
-		if(draw){
+		if(draw && al_is_event_queue_empty(event_queue)){
 			n_draw_street = 0;
 
 			//Drawing
