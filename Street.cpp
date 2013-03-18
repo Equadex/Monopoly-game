@@ -10,7 +10,7 @@ int Street::get_cost() const{
 
 void Street::buy_Street(Player* buyer, bool trade, int cost_in){
 	int temp_cost;
-	if(cost_in != 0){
+	if(cost_in != -1){
 		temp_cost = cost_in;
 	}
 	else
@@ -68,7 +68,7 @@ void Street::pay_rent(Player *guest, Property* tomter[], int dice){
 		if(guest->pay(temp_cost))//Pay, else defeat
 			Owner->recieve_money(temp_cost);
 		else
-			guest->defeated(Owner, tomter);
+			guest->defeated(Owner, temp_cost);
 	}
 	else if(group == 1){
 		int rail_roads = n_street_in_zone(tomter);
@@ -76,13 +76,13 @@ void Street::pay_rent(Player *guest, Property* tomter[], int dice){
 		if(guest->pay(rent[rail_roads - 1]))//Pay, else defeat
 			Owner->recieve_money(rent[rail_roads - 1]);
 		else
-			guest->defeated(Owner, tomter);
+			guest->defeated(Owner, rent[rail_roads - 1]);
 	}
 	else if(guest->pay(rent[houses] * double_pay_factor)){ //Normal street, guest pay and return true if succesful
 		Owner->recieve_money(rent[houses] * double_pay_factor);
 	}
 	else{
-		guest->defeated(Owner, tomter);
+		guest->defeated(Owner, rent[houses] * double_pay_factor);
 	}
 }
 
@@ -223,4 +223,17 @@ void Street::mortage_street(bool mortage_in, Property **tomter, int &tot_free_an
 			mortaged = false;
 		}
 	}
+}
+
+void Street::update_status_box(){
+	int temp_colors[3];
+	if(Owner == 0){
+		status_owner->set_active(false);
+	}
+	else{
+		status_owner->set_active(true);
+		Owner->get_color(temp_colors);
+		status_owner->set_color(temp_colors[0], temp_colors[1], temp_colors[2]);
+	}
+		
 }

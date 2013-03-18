@@ -37,7 +37,7 @@ public:
 	}
 	bool get_mortaged() const{ return mortaged;}
 
-	void buy_Street(Player* buyer, bool trade = false, int cost_in = 0);
+	void buy_Street(Player* buyer, bool trade = false, int cost_in = -1);
 	void sell_Street(Player* seller, Property **tomter, int &tot_free_ant_houses, int &tot_free_ant_hotels);
 	void buy_house(Player* buyer, Property **tomter, int &tot_free_ant_houses, int &tot_free_ant_hotels);
 	void sell_house(Player* seller, Property **tomter, int &tot_free_ant_houses, int &tot_free_ant_hotels);
@@ -57,6 +57,7 @@ public:
 		return false;
 	}
 	void draw(bool mark = false);
+	void update_status_box();
 
 protected:
 	int cost;

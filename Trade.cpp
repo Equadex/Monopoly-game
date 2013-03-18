@@ -313,11 +313,11 @@ void Trade::set_draw_proposition(bool value_in, int current_players){
 
 void Trade::make_trade(){
 	for(int i = 0; i < n_seller_streets; i++){
-		seller_streets[i]->buy_Street(buyer, true);
+		seller_streets[i]->buy_Street(buyer, true, 0);
 	}
 	for(int i = 0; i < n_buyer_streets; i++){
-		buyer_streets[i]->buy_Street(seller, true);
+		buyer_streets[i]->buy_Street(seller, true, 0);
 	}
-	buyer->pay_player(seller, sum_buyer, tomter);
-	seller->pay_player(buyer, sum_seller, tomter);
+	buyer->pay_player(seller, sum_buyer);
+	seller->pay_player(buyer, sum_seller);
 }

@@ -266,7 +266,7 @@ int main(int argc, char *argv[]){
 
 	Button *temp[2];
 	Button *button_defeat_window[1];
-	button_defeat_window[0] = new Button(Question_pos_x_standard + (al_get_bitmap_width(question) / 2) - (al_get_bitmap_width(button) / 2), Question_pos_y_standard + 250, Question_pos_x_standard + (al_get_bitmap_width(question) / 2) - (al_get_bitmap_width(button) / 2) + al_get_bitmap_width(button),  Question_pos_y_standard + 250 + al_get_bitmap_height(button), 0, "OK", button); 
+	button_defeat_window[0] = new Button(Question_pos_x_standard + (al_get_bitmap_width(question) / 2) - (al_get_bitmap_width(button) / 2), Question_pos_y_standard + 250, Question_pos_x_standard + (al_get_bitmap_width(question) / 2) - (al_get_bitmap_width(button) / 2) + al_get_bitmap_width(button),  Question_pos_y_standard + 250 + al_get_bitmap_height(button), 1, "OK", button); 
 	temp[0] = new Button(165 + 162, 275 + 250, 165 + 162 + 80, 275 + 250 + 25, 1, "Buy", button);
 	temp[1] = new Button(600 - 162 + 80, 275 + 250, 600, 275 + 250 + 25, 2, "Auction", button);
 	Question *buy_street_Q = new Question(Question_pos_x_standard, Question_pos_y_standard, temp, 2, "Buy or auction?", "This property is owned by the bank and is for sale. Do you want to buy it or let it be sold by auction?", question);
@@ -274,7 +274,7 @@ int main(int argc, char *argv[]){
 	((Tax*)tomter[4])->create_income_tax_question(Question_pos_x_standard, Question_pos_y_standard, button, question); //Skapar fråga till inkomst skatt ruta
 	prison = new Prison(button, question);
 	trade = new Trade(0, 120, tomter, arial_16, arial_36, trade_proposal, trade_reciver, button, box);
-	Question defeat_window(Question_pos_x_standard, Question_pos_y_standard, button_defeat_window, 1, "Insufficient money", "You don't have enough money to pay. Money needed: %i Money available: %i. Make sure your amount of money meet the requriment before pressing ok, otherwise you will lose, all your remaining money and property to transferred to the player/bank you owe money and you lose the game.", question);  
+	Question defeat_window(Question_pos_x_standard, Question_pos_y_standard, button_defeat_window, 1, "Insufficient money", "You don't have enough money to pay. Money needed: %i. Money available: %i.\n Make sure your amount of money meet the requirement before pressing ok, otherwise you will lose. By losing all your remaining money and property will be transferred to the player or bank you owe money and you can’t continue to play.", question);  
 	for(int i = 0; i < n_players; i++){
 		players[i]->set_defeat_window(defeat_window);
 	}
@@ -351,7 +351,7 @@ int main(int argc, char *argv[]){
 					if(ID_button_pressed_temp != 0){
 						switch(ID_button_pressed_temp){
 							case 1:
-								((Tax*)tomter[4])->pay(players[current_player], tomter);
+								((Tax*)tomter[4])->pay(players[current_player]);
 								break;
 							case 2:
 								((Tax*)tomter[4])->pay_fee(players[current_player], tomter);
@@ -393,7 +393,7 @@ int main(int argc, char *argv[]){
 							break;
 						case 2:
 							if(!players[current_player]->pay(prison_fee) && prison->get_players_dice_tries(players[current_player]->get_id()) >= max_rolled_in_row_dices && (players[current_player]->get_flag_c_jail_card() || players[current_player]->get_flag_a_jail_card())){ //Pay fee, if can't and can't thow dices or use card, defeat
-								players[current_player]->defeated(0, tomter);
+								players[current_player]->defeated(0, prison_fee);
 							}
 							else{
 								prison->release_player(players[current_player]);
@@ -485,7 +485,11 @@ int main(int argc, char *argv[]){
 							break;
 						case 3:
 							if(dice_used){
-								current_player = (current_player + 1) % n_players; //N�sta spelare
+								current_player++; //N�sta spelare
+								if(current_player > n_players)
+									current_player = 0;
+								current_player %= n_players;
+
 								dice_used = false;
 								draw_street_active = false;
 								house_sell = false;
@@ -550,18 +554,32 @@ int main(int argc, char *argv[]){
 
 					//Check if a status box has been pressed
 
-					for(int i = 0; i < ant_rutor; i++){
+					/*for(int i = 0; i < ant_rutor; i++){
 
-					}
+					}*/
 
 					ID_button_pressed = 0;
 				}
 			}
-			if(defeat_window.get_active()){
+
+			//If defeat window is active and no other windows is
+			if(defeat_window.get_active() && !prison->window_activated() && !trade->get_active() && !allmaning->get_window()->button_pressed(mouse_pos_x, mouse_pos_y) && !chans->get_window()->button_pressed(mouse_pos_x, mouse_pos_y) && !((Tax*)tomter[4])->get_question()->get_active() && !auction->get_active() && !buy_street_Q->get_active()){
 				int button_id = defeat_window.button_pressed(mouse_pos_x, mouse_pos_y);
 				switch(button_id){
 					case 1:
-						;
+						players[current_player]->player_lost(tomter);
+						for(int i = 0; i < ant_rutor; i++){
+							if(tomter[i]->get_typ() == TOMT){
+								((Street*)(tomter[i]))->update_status_box();
+							}
+						}
+						
+						delete players[current_player];
+						for(int i = current_player; i < (n_players - 1); i++){
+							players[i] = players[i + 1];
+						}
+						n_players--;
+						defeat_window.set_active(false);
 						break;
 				}
 			}
@@ -1067,7 +1085,7 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 			}
 		case 6:
 			for(int i = 0; i < n_players; i++){
-				players[i]->pay_player(c_player, action_sum_1, tomter);
+				players[i]->pay_player(c_player, action_sum_1);
 			}
 			break;
 		case 7:
@@ -1081,7 +1099,7 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 				}
 			}
 			if(!(c_player->pay(houses_to_pay * action_sum_1 + hotels_to_pay * action_sum_2)))
-				c_player->defeated(0, tomter);
+				c_player->defeated(0, houses_to_pay * action_sum_1 + hotels_to_pay * action_sum_2);
 			break;}
 		case 8:
 			prison->send_to_prison(c_player);
@@ -1118,7 +1136,7 @@ void after_movement(Player* c_player, Player** players, int n_players, Question*
 			((Tax*)tomter[c_player->get_pos_ruta()])->set_question_active(true);
 		}
 		else if(!c_player->get_flag_passed_go())
-			((Tax*)tomter[c_player->get_pos_ruta()])->pay(c_player, tomter);
+			((Tax*)tomter[c_player->get_pos_ruta()])->pay(c_player);
 	}
 	else if((tomter[c_player->get_pos_ruta()])->get_typ() == CHANS){
 		ID_card = chans->pick_card();
@@ -1133,7 +1151,7 @@ void after_movement(Player* c_player, Player** players, int n_players, Question*
 	}
 
 	if(c_player->get_flag_passed_go()){ //if passed go
-		((Tax*)tomter[0])->pay(c_player, tomter);
+		((Tax*)tomter[0])->pay(c_player);
 		c_player->set_flag_passed_go(false); //Resets flags
 	}
 }

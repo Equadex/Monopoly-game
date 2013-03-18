@@ -34,6 +34,6 @@ void Tax::pay_fee(Player* visitor, Property** tomter){
 	}
 	total_fee = total_funds / 10;
 	if(!visitor->pay(total_fee)) //Player pays, if player cannot, player is defeated
-		visitor->defeated(NULL, tomter);
+		visitor->defeated(NULL, total_fee);
 		
 }

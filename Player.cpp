@@ -97,13 +97,13 @@ bool Player::pay(int sum_to_pay){
 		return (false);
 	}
 }
-void Player::pay_player(Player* receiver, int sum_to_pay, Property** tomter){
+void Player::pay_player(Player* receiver, int sum_to_pay){
 	if(pay(sum_to_pay)){ //If i can pay/get money
 		if(!receiver->recieve_money(sum_to_pay)) //If reviever can take the money(or pay them)
-			receiver->defeated(this, tomter);
+			receiver->defeated(this, sum_to_pay);
 	}
 	else
-		defeated(receiver, tomter);
+		defeated(receiver, sum_to_pay);
 }
 
 bool Player::recieve_money(int sum_to_get){
@@ -125,18 +125,31 @@ void Player::get_color(int *array_in){
 	array_in[2] = color_b;
 }
 
-void Player::defeated(Player *winner, Property* tomter[]){
-	defeat_window->set_active(true);
-	if(!winner == 0)
-		winner->recieve_money(pengar);
-	else
-		pengar = 0;
-	for(int i = 0; i < ant_rutor; i++){
-		if(tomter[i]->get_Owner() == this){
-			tomter[i]->set_Owner(winner);
+void Player::defeated(Player *winner, int sum_required){
+	//Activates defeat window and give it the numbers it needs(sum_required and pengar)
+	
+	char **reference_text;
+	char reference_text_line[1001];
+	reference_text_line[0] = '\0';
+	char text_in[1001];
+	int n_reference_text;
+	
+	reference_text = defeat_window->get_message(n_reference_text);
+	for(int i = 0; i <= n_reference_text; i++){
+		int length = strlen(reference_text[i]);
+		if(length == 0){
+			reference_text[i][0] = '\n';
+			reference_text[i][1] = '\0';
 		}
+		strncat(reference_text_line, reference_text[i], (1000 / (n_reference_text + 1))); //Copy the content from the differnt lines in reference_text to a single line
 	}
-	alive = false;
+	sprintf(text_in, reference_text_line, sum_required, pengar);
+	defeat_window->set_text(0, text_in);
+
+	defeat_window->set_active(true);
+
+	in_dept_to = winner;
+	dept = sum_required;
 }
 
 void Player::set_pos_ruta(int pos_ruta_in){
