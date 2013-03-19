@@ -278,6 +278,7 @@ int main(int argc, char *argv[]){
 	for(int i = 0; i < n_players; i++){
 		players[i]->set_defeat_window(defeat_window);
 	}
+	defeat_window.set_orignal_message();
 
 	//Skapar event_queue, registrerar k�llor och startar timer
 	event_queue = al_create_event_queue();
@@ -384,6 +385,7 @@ int main(int argc, char *argv[]){
 								if(dice_1 == dice_2){
 									prison->release_player(players[current_player]);
 									players[current_player]->move_Player(dice_1 + dice_2, tomter, players, n_players);
+									after_movement(players[current_player], players, n_players, buy_street_Q, tomter, dice_1, dice_2, ID_card, chans, allmaning, prison, dice_used);
 									dice_used = false;
 								}
 							}
@@ -567,19 +569,21 @@ int main(int argc, char *argv[]){
 				int button_id = defeat_window.button_pressed(mouse_pos_x, mouse_pos_y);
 				switch(button_id){
 					case 1:
-						players[current_player]->player_lost(tomter);
-						for(int i = 0; i < ant_rutor; i++){
-							if(tomter[i]->get_typ() == TOMT){
-								((Street*)(tomter[i]))->update_status_box();
+						if(players[current_player]->player_lost(tomter)){
+							for(int i = 0; i < ant_rutor; i++){
+								if(tomter[i]->get_typ() == TOMT){
+									((Street*)(tomter[i]))->update_status_box();
+								}
 							}
-						}
 						
-						delete players[current_player];
-						for(int i = current_player; i < (n_players - 1); i++){
-							players[i] = players[i + 1];
+							delete players[current_player];
+							for(int i = current_player; i < (n_players - 1); i++){
+								players[i] = players[i + 1];
+							}
+							n_players--;
 						}
-						n_players--;
 						defeat_window.set_active(false);
+						dice_used = true;
 						break;
 				}
 			}
@@ -1051,6 +1055,10 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 					if(i >= ant_rutor)
 						i = 0;
 					if(((Street**)tomter)[i]->get_zon() == 5 ){ //IF belonges to group for uttility
+						//check for go
+						if(i < c_player->get_pos_ruta())
+							c_player->set_flag_passed_go(true);
+
 						c_player->set_pos_ruta(i);
 						c_player->update_Player(tomter, players, n_players);
 						after_movement(c_player, players, n_players, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning, prison, dice_used);
@@ -1071,6 +1079,10 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 					i = 0;
 				if(tomter[i]->get_typ() == TOMT){
 					if(((Street**)tomter)[i]->get_zon() == 1 ){ //IF belonges to group for railroad
+						//check for go
+						if(i < c_player->get_pos_ruta())
+							c_player->set_flag_passed_go(true);
+
 						c_player->set_pos_ruta(i);
 						c_player->update_Player(tomter, players, n_players);
 						if((((Street**)tomter)[i])->get_Owner() != c_player && (((Street**)tomter)[i])->get_Owner() != 0){ //Pay rent for railroad, will pay again later(thereby doubling the rent)

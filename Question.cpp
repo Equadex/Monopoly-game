@@ -10,8 +10,10 @@ Question::Question(int pos_x, int pos_y, Button *buttons[],int n_buttons, char* 
 		title[i] = new char[max_question_length];
 	}
 		message = new char*[max_question_lines];
+		orignal_message = new char*[max_question_lines];
 	for(int i = 0; i < max_question_lines; i++){
 		message[i] = new char[max_question_length];
+		orignal_message[i] = new char[max_question_length];
 	}
 
 	set_text(title_in, message_in);
@@ -144,4 +146,16 @@ void Question::set_text(char *title_in, char* message_in){
 			}
 		}
 	}
+}
+
+void Question::set_orignal_message(){
+	for(int i = 0; i < n_message; i++){
+		int length = strlen(message[i]);
+		int j;
+		for(j = 0; j < length; j++){
+			orignal_message[i][j] = message[i][j];
+		}
+		orignal_message[i][j] = '\0';
+	}
+	n_orignal_message = n_message;
 }

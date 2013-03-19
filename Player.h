@@ -43,7 +43,7 @@ public:
 
 	void defeated(Player *winner, int sum_required);
 	void passing_go_check(int steg);
-	void player_lost(Property **tomter){
+	bool player_lost(Property **tomter){
 		if(dept > pengar){
 			if(!in_dept_to == 0)
 				in_dept_to->recieve_money(pengar);
@@ -55,6 +55,7 @@ public:
 				}
 			}
 			alive = false;
+			return true;
 		}
 		else{
 			if(in_dept_to == 0)
@@ -63,6 +64,7 @@ public:
 				pay_player(in_dept_to, dept);
 			dept = 0;
 			in_dept_to = 0;
+			return false;
 		}
 	}
 

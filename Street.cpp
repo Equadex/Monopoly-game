@@ -54,35 +54,37 @@ void Street::pay_rent(Player *guest, Property* tomter[], int dice){
 	int util_factor_full = 10;
 	bool util_full_factor = false;
 
-	if(houses == 0 && own_zone(tomter) && group != 1){//grupp 1 = järnväg
-		double_pay_factor = 2;
-		if(pos_ruta == 12 || pos_ruta == 28)
-			util_full_factor = true;
-	}
-	if(pos_ruta == 12 || pos_ruta == 28){ //If it is a utility
-		int temp_cost;
-		if(util_full_factor)
-			temp_cost = dice * util_factor_full;
-		else
-			temp_cost = dice * util_factor;
-		if(guest->pay(temp_cost))//Pay, else defeat
-			Owner->recieve_money(temp_cost);
-		else
-			guest->defeated(Owner, temp_cost);
-	}
-	else if(group == 1){
-		int rail_roads = n_street_in_zone(tomter);
+	if(!mortaged){
+		if(houses == 0 && own_zone(tomter) && group != 1){//grupp 1 = järnväg
+			double_pay_factor = 2;
+			if(pos_ruta == 12 || pos_ruta == 28)
+				util_full_factor = true;
+		}
+		if(pos_ruta == 12 || pos_ruta == 28){ //If it is a utility
+			int temp_cost;
+			if(util_full_factor)
+				temp_cost = dice * util_factor_full;
+			else
+				temp_cost = dice * util_factor;
+			if(guest->pay(temp_cost))//Pay, else defeat
+				Owner->recieve_money(temp_cost);
+			else
+				guest->defeated(Owner, temp_cost);
+		}
+		else if(group == 1){
+			int rail_roads = n_street_in_zone(tomter);
 		
-		if(guest->pay(rent[rail_roads - 1]))//Pay, else defeat
-			Owner->recieve_money(rent[rail_roads - 1]);
-		else
-			guest->defeated(Owner, rent[rail_roads - 1]);
-	}
-	else if(guest->pay(rent[houses] * double_pay_factor)){ //Normal street, guest pay and return true if succesful
-		Owner->recieve_money(rent[houses] * double_pay_factor);
-	}
-	else{
-		guest->defeated(Owner, rent[houses] * double_pay_factor);
+			if(guest->pay(rent[rail_roads - 1]))//Pay, else defeat
+				Owner->recieve_money(rent[rail_roads - 1]);
+			else
+				guest->defeated(Owner, rent[rail_roads - 1]);
+		}
+		else if(guest->pay(rent[houses] * double_pay_factor)){ //Normal street, guest pay and return true if succesful
+			Owner->recieve_money(rent[houses] * double_pay_factor);
+		}
+		else{
+			guest->defeated(Owner, rent[houses] * double_pay_factor);
+		}
 	}
 }
 
@@ -144,6 +146,9 @@ void Street::draw(bool mark){
 		else if(pos_ruta > 10 && pos_ruta < 20){
 			al_draw_filled_rectangle(pos_x_2 - 5, pos_y_1 + 18 * i + 3, pos_x_2 - 20, pos_y_1 + 18 * i + 3 + 15, al_map_rgb(0, 255, 0));
 		}
+		else if(pos_ruta > 20 && pos_ruta < 30){
+			al_draw_filled_rectangle(pos_x_1 + 18 * i + 3, pos_y_2 - 20, pos_x_1 + 18 * i + 15, pos_y_2 - 5, al_map_rgb(0, 255, 0));
+		}
 		else if(pos_ruta > 30 && pos_ruta < 40){
 			al_draw_filled_rectangle(pos_x_1 + 5, pos_y_1 + 18 * i + 3, pos_x_1 + 20, pos_y_1 + 18 * i + 3 + 15, al_map_rgb(0, 255, 0));
 		}
@@ -199,6 +204,7 @@ void Street::sell_house(Player* seller, Property **tomter, int &tot_free_ant_hou
 		if(houses == max_houses && tot_free_ant_houses >= (max_houses - 1)){
 			tot_free_ant_hotels++;
 			tot_free_ant_houses -= (max_houses - 1);
+			houses--;
 		}
 		else if(houses != max_houses){
 			tot_free_ant_houses++;
@@ -214,7 +220,7 @@ void Street::mortage_street(bool mortage_in, Property **tomter, int &tot_free_an
 		while(houses > 0){
 			sell_house(Owner, tomter, tot_free_ant_houses, tot_free_ant_hotels);
 		}
-		Owner->recieve_money(building_cost / 2);
+		Owner->recieve_money(cost / 2);
 		mortaged = true;
 	}
 	else if(mortage_in == false && mortaged){

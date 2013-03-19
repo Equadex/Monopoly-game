@@ -1,6 +1,8 @@
 #ifndef AUCTION_WINDOW_H
 #define AUCTION_WINDOW_H
 
+#include <cstdio>
+
 #include "Question.h"
 #include "Text_field.h" //Used for drawing
 

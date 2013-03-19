@@ -60,14 +60,14 @@ public:
 	void update_status_box();
 
 protected:
-	int cost;
-	int building_cost;
+	const int cost;
+	const int building_cost;
 	int rent[max_houses + 1];
-	int group;
+	const int group;
 	int houses;
 	Status_box *status_owner;
 	Street_info *info;
-	int color_r, color_g, color_b;
+	const int color_r, color_g, color_b;
 	bool mortaged;
 
 	int n_street_in_zone(Property* tomter[]);

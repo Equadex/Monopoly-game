@@ -20,7 +20,7 @@ Prison::Prison(ALLEGRO_BITMAP *button_image, ALLEGRO_BITMAP *question_image):n_b
 
 	players_dice_tries = new int[max_players];
 	for(int i = 0; i < max_players; i++)
-		players_dice_tries[0] = 0;
+		players_dice_tries[i] = 0;
 }
 
 void Prison::send_to_prison(Player* prisoner){

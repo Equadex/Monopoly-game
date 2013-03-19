@@ -97,31 +97,31 @@ void Auction::button_pressed(int mouse_x, int mouse_y, bool right_click){
 			}
 			break;
 		case 3:
-			if((current_bid + 1) <= players[c_player]->get_money())
+			if((current_bid + 1 * sign_constant) <= players[c_player]->get_money())
 				current_bid += sign_constant;
 			break;
 		case 4:
-			if((current_bid + 5) <= players[c_player]->get_money())
+			if((current_bid + 5 * sign_constant) <= players[c_player]->get_money())
 				current_bid = current_bid + 5 * sign_constant;
 			break;
 		case 5:
-			if((current_bid + 10) <= players[c_player]->get_money())
+			if((current_bid + 10 * sign_constant) <= players[c_player]->get_money())
 				current_bid = current_bid + 10 * sign_constant;
 			break;
 		case 6:
-			if((current_bid + 50) <= players[c_player]->get_money())
+			if((current_bid + 50 * sign_constant) <= players[c_player]->get_money())
 				current_bid = current_bid + 50 * sign_constant;
 			break;
 		case 7:
-			if((current_bid + 100) <= players[c_player]->get_money())
+			if((current_bid + 100 * sign_constant) <= players[c_player]->get_money())
 				current_bid = current_bid + 100 * sign_constant;
 			break;
 		case 8:
-			if((current_bid + 500) <= players[c_player]->get_money())
+			if((current_bid + 500 * sign_constant) <= players[c_player]->get_money())
 				current_bid = current_bid + 500 * sign_constant;
 			break;
 		case 9:
-			if((current_bid + 1000) <= players[c_player]->get_money())
+			if((current_bid + 1000 * sign_constant) <= players[c_player]->get_money())
 				current_bid = current_bid + 1000 * sign_constant;
 			break;
 	}
@@ -155,8 +155,8 @@ void Auction::clr_player_data(){
 	for(int i = 0; i < n_players; i++){
 		players_bids[i] = 0;
 		no_bid[i] = false;
-		current_max_bid = 0;
-		current_bid = current_max_bid + 1;
-		c_player = 0;
 	}
+	current_max_bid = 0;
+	current_bid = current_max_bid;
+	c_player = 0;
 }

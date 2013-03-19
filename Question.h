@@ -33,6 +33,8 @@ public:
 	void draw(ALLEGRO_FONT* Title, ALLEGRO_FONT* Text);
 	void set_text(char *title_in, char* message_in);
 	int button_pressed(int mouse_pos_x, int mouse_pos_y);
+	void set_orignal_message();
+	char** get_original_message(int &n_message_out) const {n_message_out = n_orignal_message; return orignal_message;}
 
 protected:
 	bool active;
@@ -42,8 +44,9 @@ protected:
 	int n_buttons;
 	Button **buttons;
 	char **title;
-	int n_title, n_message;
+	int n_title, n_message, n_orignal_message;
 	char **message;
+	char **orignal_message;
 };
 
 #endif

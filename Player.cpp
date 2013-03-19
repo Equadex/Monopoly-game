@@ -134,7 +134,7 @@ void Player::defeated(Player *winner, int sum_required){
 	char text_in[1001];
 	int n_reference_text;
 	
-	reference_text = defeat_window->get_message(n_reference_text);
+	reference_text = defeat_window->get_original_message(n_reference_text);
 	for(int i = 0; i <= n_reference_text; i++){
 		int length = strlen(reference_text[i]);
 		if(length == 0){
