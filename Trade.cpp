@@ -170,9 +170,16 @@ void Trade::pressed(int mouse_pos_x, int mouse_pos_y, Player **players, int n_pl
 					sum_buyer-= 100;
 		}
 		else if(button_id >= 11 && button_id <= (11 + max_players) && stage_1){
-			int index = button_id - 11;
-			if(index >= 0 && index < max_players && (buyer != players[button_id - 11]))
-				seller = players[button_id - 11];
+			int index = button_id - 11; //index is the same as players id
+			int index2;
+			if(index >= 0 && index < max_players && (buyer->get_id() != index)){
+				for(int i = 0; i < n_players; i++){
+					if(players[i]->get_id() == index)
+						index2 = i;
+				}
+				
+				seller = players[index2];
+			}
 		}
 	}
 	else if(window_approval->get_active()){

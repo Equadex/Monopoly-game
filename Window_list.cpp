@@ -68,7 +68,7 @@ void Window_list::draw(ALLEGRO_FONT* Title, ALLEGRO_FONT* Text){
 char temp[9];
 	for(int i = 0; i < n_players; i++){
 		sprintf(temp, "%d", player_bids[i]);
-		al_draw_filled_rectangle(pos_x - 20, pos_y + 25 * i, pos_x - 5, pos_y + 25 * i + 15, al_map_rgb(status_color[i][0], status_color[i][1], status_color[i][2]));
+		al_draw_filled_rectangle(pos_x - 20, pos_y + 25 * i, pos_x - 5, pos_y + 25 * i + 15, al_map_rgb(status_color[players[i]->get_id()][0], status_color[players[i]->get_id()][1], status_color[players[i]->get_id()][2]));
 		al_draw_text(Text, al_map_rgb(player_color[i][0], player_color[i][1], player_color[i][2]), pos_x, pos_y + i * 25, 0, title[i]);
 		al_draw_text(Text, al_map_rgb(player_color[i][0], player_color[i][1], player_color[i][2]), pos_x + 130, pos_y + i * 25, 0, temp);
 	}

@@ -30,7 +30,7 @@ Auction::Auction(int pos_x, int pos_y, Player** players, int &n_players, ALLEGRO
 	temp_text[0] = new Text_field(300, 240,"%s is on auction and the current bid is %i" , normal_text);
 	temp_text[1] = new Text_field(340, 380,"Your bid: %i", normal_text);
 	temp_text[2] = new Text_field(20, 175, "Player %i", normal_text);
-	temp_text[3] = new Text_field(20, 190, "Funds %i", normal_text); //Variables for text_fields will be added to the string in the update funtion in Auction_window
+	temp_text[3] = new Text_field(20, 195, "Funds %i", normal_text); //Variables for text_fields will be added to the string in the update funtion in Auction_window
 
 	window = new Auction_window(pos_x, pos_y, buttons, ant_buttons, "Auction", "", image,temp_text, ant_text_fields, true);
 	player_bid_list = new Window_list(pos_x + 50, pos_y + 120, players_bids, players, n_players, 0, true);

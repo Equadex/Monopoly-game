@@ -122,6 +122,7 @@ int main(int argc, char *argv[]){
 	bool start_screen = true;
 	bool intro = true;
 	bool debug = false;
+	bool player_lost_recent = false;
 	int draw_street[ant_rutor];
 	int n_draw_street;
 	int intro_frames = 0, intro_sec = 2;
@@ -369,7 +370,7 @@ int main(int argc, char *argv[]){
 			mouse_pos_y = (ev.mouse.y * 1 - scaleY) / (double)scale;
 
 		}
-		else if(ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN || roll_dice_key || end_turn_key){ //N�r musknapp �r nedtryckt
+		else if(ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN || roll_dice_key || end_turn_key && !start_screen){ //N�r musknapp �r nedtryckt
 			if(ev.mouse.button == 1 || roll_dice_key || end_turn_key){ //V�nster musknapp
 				
 				if(roll_dice_key){
@@ -558,10 +559,15 @@ int main(int argc, char *argv[]){
 							break;
 						case 3:
 							if(dice_used){
-								current_player++; //N�sta spelare
-								if(current_player > n_players)
-									current_player = 0;
-								current_player %= n_players;
+								if(!player_lost_recent){
+									current_player++; //N�sta spelare
+									if(current_player > n_players)
+										current_player = 0;
+									current_player %= n_players;
+								}
+								else{
+									player_lost_recent = false;
+								}
 
 								dice_used = false;
 								draw_street_active = false;
@@ -657,6 +663,7 @@ int main(int argc, char *argv[]){
 								players[i] = players[i + 1];
 							}
 							n_players--;
+							player_lost_recent = true;
 							players[n_players] = 0;
 						}
 						defeat_window.set_active(false);
@@ -677,10 +684,12 @@ int main(int argc, char *argv[]){
 					done = true;
 					break;
 				case ALLEGRO_KEY_R:
-					roll_dice_key = true;
+					if(!start_screen)
+						roll_dice_key = true;
 					break;
 				case ALLEGRO_KEY_E:
-					end_turn_key = true;
+					if(!start_screen)
+						end_turn_key = true;
 					break;
 				case ALLEGRO_KEY_SPACE:
 					start_screen = false;
