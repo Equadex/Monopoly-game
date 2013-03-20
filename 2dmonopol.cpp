@@ -134,6 +134,10 @@ int main(int argc, char *argv[]){
 			if(strcmp(argv[i], "-players") == 0){
 				if(i + 1 < argc){
 					n_players = std::atoi(argv[i + 1]);
+					if(n_players <= 0)
+						n_players = 1;
+					else if(n_players > max_players)
+						n_players = max_players;
 				}
 			}
 			else if(strcmp(argv[i], "-FPS") == 0){
