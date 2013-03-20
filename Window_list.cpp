@@ -1,6 +1,6 @@
 #include "Window_list.h"
 
-Window_list::Window_list(int pos_x, int pos_y, int player_bids[],Player** players, int n_players, ALLEGRO_BITMAP *image_in , bool active) : Question(pos_x, pos_y, image_in, active), player_bids(player_bids), n_players(n_players), max_question_length(90), max_question_lines(n_players), max_question_lines_title(n_players), players(players) {
+Window_list::Window_list(int pos_x, int pos_y, int player_bids[],Player** players, int &n_players, ALLEGRO_BITMAP *image_in , bool active) : n_players(n_players), Question(pos_x, pos_y, image_in, active), player_bids(player_bids), max_question_length(90), max_question_lines(n_players), max_question_lines_title(n_players), players(players) {
 	//Default colors for status for a players bid 
 		
 	status_color = new int*[n_players];
@@ -84,5 +84,25 @@ void Window_list::update_status(bool bid, Player *player){
 		status_color[player->get_id()][0] = 255;
 		status_color[player->get_id()][1] = 0;
 		status_color[player->get_id()][2] = 0;
+	}
+}
+
+void Window_list::update_names(){
+	for(int i = 0; i < n_players; i++){
+		char temp[] = "Player ";
+		int temp_length = strlen(temp);
+		strncpy(title[i], temp, max_question_length - 1);
+		if(temp_length >= max_question_length)
+			title[i][max_question_length-1] = '\0';
+		else
+			title[i][temp_length] = 48 + players[i]->get_id();
+		message[i][0] = '\0';
+	}
+}
+
+void Window_list::update_colors(){
+	for(int i = 0; i < n_players; i++){
+		player_color[i] = new int[3];
+		(players[i])->get_color(player_color[i]);
 	}
 }

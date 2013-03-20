@@ -12,6 +12,8 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_opengl.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
 
 #include "Player.h"
 #include "Property.h"
@@ -30,6 +32,8 @@
 
 
 //Globala variabler lokala
+
+const int n_max_audio_samples = 4;
 
 const int max_config_line_length = 128;
 const int max_config_extended_length = 350;
@@ -68,7 +72,8 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 void after_movement(Player* c_player, Player** players, int n_players, Question* buy_street_Q, Property **tomter, int dice_1, int dice_2, int &ID_card, Chance *chans, Chance *allmaning, Prison *prison, bool &dice_used);
 void show_streets_zones();
 void show_error_message(char* message);
-bool roll_dices(int &dice_1, int &dice_2, Sprite *dice_sprite_0,Sprite *dice_sprite_1, int &dice_rolled_times);
+bool roll_dices(int &dice_1, int &dice_2, Sprite *dice_sprite_0,Sprite *dice_sprite_1, int &dice_rolled_times, ALLEGRO_SAMPLE_INSTANCE *dice_roll_instance);
+int get_player_total_assets(Property** tomter, Player* player_in);
 
 
 int main(int argc, char *argv[]){
@@ -113,8 +118,13 @@ int main(int argc, char *argv[]){
 	bool mortage_street = false;
 	bool un_mortage_street = false;
 	bool dice_manual_input = false;
+	bool player_won = false;
+	bool start_screen = true;
+	bool intro = true;
+	bool debug = false;
 	int draw_street[ant_rutor];
 	int n_draw_street;
+	int intro_frames = 0, intro_sec = 2;
 
 	//Read command line options
 
@@ -134,6 +144,19 @@ int main(int argc, char *argv[]){
 				if(i + 1 < argc){
 					OpenGL = std::atoi(argv[i + 1]);
 				}
+			}
+			else if(strcmp(argv[i], "-skip_intro") == 0){
+				intro = false;
+			}
+			else if(strcmp(argv[i], "-set_intro_time") == 0){
+				intro_sec = std::atoi(argv[i + 1]);
+			}
+			else if(strcmp(argv[i], "-skip_all") == 0){
+				intro = false;
+				start_screen = false;
+			}
+			else if(strcmp(argv[i], "-debug") == 0){
+				debug = std::atoi(argv[i + 1]);
 			}
 		}
 	}
@@ -164,6 +187,18 @@ int main(int argc, char *argv[]){
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_MONITOR_INFO info;
 	ALLEGRO_MONITOR_INFO* p_info = &info;
+	
+	//Allegro Samples
+
+	ALLEGRO_SAMPLE *monopoly_song = NULL;
+	ALLEGRO_SAMPLE *dice_roll = NULL;
+	ALLEGRO_SAMPLE *win = NULL;
+	ALLEGRO_SAMPLE *police = NULL;
+
+	ALLEGRO_SAMPLE_INSTANCE *start_screen_song = NULL;
+	ALLEGRO_SAMPLE_INSTANCE *dice_roll_instance = NULL;
+	ALLEGRO_SAMPLE_INSTANCE *win_instance = NULL;
+	ALLEGRO_SAMPLE_INSTANCE *police_instance = NULL;
 
 	//Allegro Bitmaps
 
@@ -181,6 +216,10 @@ int main(int argc, char *argv[]){
 	ALLEGRO_BITMAP *street_info_water = NULL;
 	ALLEGRO_BITMAP *trade_proposal = NULL;
 	ALLEGRO_BITMAP *trade_reciver = NULL;
+	ALLEGRO_BITMAP *allegro_logo = NULL;
+	ALLEGRO_BITMAP *allegro_logo2 = NULL;
+	ALLEGRO_BITMAP *allegro_logo3 = NULL;
+	ALLEGRO_BITMAP *background = NULL;
 
 	if(!al_init()){ //Initierar allegro bibloteket
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Allegro" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
@@ -193,7 +232,7 @@ int main(int argc, char *argv[]){
 		return(-1);
 	}
 	window_width = p_info->x2; 
-	window_height = p_info->y2 - 30;
+	window_height = p_info->y2;
 
 	sx = window_width / (double)width;
 	sy = window_height / (double)height;
@@ -208,9 +247,10 @@ int main(int argc, char *argv[]){
 
 	//Skapar och testar display
 	//al_set_new_display_flags(ALLEGRO_WINDOWED);
+	al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
 	if(OpenGL)
 		al_set_new_display_flags(ALLEGRO_OPENGL);
-	display = al_create_display(scaleW, scaleH);
+	display = al_create_display(window_width, window_height);
 	if(!display){
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Display" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
 		return (-1);
@@ -224,11 +264,33 @@ int main(int argc, char *argv[]){
 	al_init_image_addon();
 	al_install_mouse();
 	al_install_keyboard();
+	al_install_audio();
 	al_init_primitives_addon();
 	al_init_font_addon();
 	al_init_ttf_addon();
+	al_init_acodec_addon();
 	
+	if(!al_reserve_samples(n_max_audio_samples))
+		return -1;
 	srand(time(NULL));
+
+	//Laddar samples
+
+	monopoly_song = al_load_sample("(Come on) Let's Play Monopoly.wav");
+	dice_roll = al_load_sample("dice_roll_edit.wav");
+	win = al_load_sample("won.wav");
+	police = al_load_sample("police.wav");
+
+	start_screen_song = al_create_sample_instance(monopoly_song);
+	dice_roll_instance = al_create_sample_instance(dice_roll);
+	win_instance = al_create_sample_instance(win);
+	police_instance = al_create_sample_instance(police);
+	al_set_sample_instance_playmode(start_screen_song, ALLEGRO_PLAYMODE_LOOP);
+
+	al_attach_sample_instance_to_mixer(start_screen_song, al_get_default_mixer());
+	al_attach_sample_instance_to_mixer(dice_roll_instance, al_get_default_mixer());
+	al_attach_sample_instance_to_mixer(win_instance, al_get_default_mixer());
+	al_attach_sample_instance_to_mixer(police_instance, al_get_default_mixer());
 
 	//Laddar bitmaps
 	spelplan = al_load_bitmap("spelplan.bmp");
@@ -245,12 +307,21 @@ int main(int argc, char *argv[]){
 	street_info_water = al_load_bitmap("street_info_water.bmp");
 	trade_proposal = al_load_bitmap("monopoly_trade_concept.png");
 	trade_reciver = al_load_bitmap("monopoly_trade_concept_reciever.png");
+	allegro_logo = al_load_bitmap("cooltextUtopia128.png");
+	allegro_logo2 = al_load_bitmap("allegro_logo.png");
+	allegro_logo3 = al_load_bitmap("allegro_logo3.png");
+	background = al_load_bitmap("pixel77-free-vector-metal-pattern-[Konvert].jpg");
+
+	al_convert_mask_to_alpha(allegro_logo, al_map_rgb(255, 255, 255));
+	al_convert_mask_to_alpha(allegro_logo2, al_map_rgb(255, 255, 255));
 	//Skapar fonts
 
 	ALLEGRO_FONT *arial_16 = al_load_ttf_font("arial.ttf", 16, 0);
 	ALLEGRO_FONT *arial_36 = al_load_ttf_font("arial.ttf", 36, 0);
 	ALLEGRO_FONT *arial_20 = al_load_ttf_font("arial.ttf", 20, 0);
 	ALLEGRO_FONT *arial_10 = al_load_ttf_font("arial.ttf", 12, 0); 
+	ALLEGRO_FONT *winner_font = al_load_ttf_font("arial.ttf", 36, 0);
+	ALLEGRO_FONT *start_screen_font = al_load_ttf_font("arial.ttf", 112, 0);
 
 	//Temp kod som inte borde se ut s�h�r
 	
@@ -272,7 +343,7 @@ int main(int argc, char *argv[]){
 	Question *buy_street_Q = new Question(Question_pos_x_standard, Question_pos_y_standard, temp, 2, "Buy or auction?", "This property is owned by the bank and is for sale. Do you want to buy it or let it be sold by auction?", question);
 	Auction *auction = new Auction(0, 120, players, n_players, auction_image, button, box, arial_36, arial_16);
 	((Tax*)tomter[4])->create_income_tax_question(Question_pos_x_standard, Question_pos_y_standard, button, question); //Skapar fråga till inkomst skatt ruta
-	prison = new Prison(button, question);
+	prison = new Prison(button, question, police_instance);
 	trade = new Trade(0, 120, tomter, arial_16, arial_36, trade_proposal, trade_reciver, button, box);
 	Question defeat_window(Question_pos_x_standard, Question_pos_y_standard, button_defeat_window, 1, "Insufficient money", "You don't have enough money to pay. Money needed: %i. Money available: %i.\n Make sure your amount of money meet the requirement before pressing ok, otherwise you will lose. By losing all your remaining money and property will be transferred to the player or bank you owe money and you can’t continue to play.", question);  
 	for(int i = 0; i < n_players; i++){
@@ -294,8 +365,8 @@ int main(int argc, char *argv[]){
 		ALLEGRO_EVENT ev;
 		al_wait_for_event(event_queue, &ev);
 		if(ev.type == ALLEGRO_EVENT_MOUSE_AXES){  //L�ser av koordinater fr�n musen
-			mouse_pos_x = (ev.mouse.x * 1 ) / (double)scale;
-			mouse_pos_y = (ev.mouse.y * 1 ) / (double)scale;
+			mouse_pos_x = (ev.mouse.x * 1 - scaleX) / (double)scale;
+			mouse_pos_y = (ev.mouse.y * 1 - scaleY) / (double)scale;
 
 		}
 		else if(ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN || roll_dice_key || end_turn_key){ //N�r musknapp �r nedtryckt
@@ -375,7 +446,7 @@ int main(int argc, char *argv[]){
 						switch(button_id){
 						case 1:
 							if(prison->get_players_dice_tries(players[current_player]->get_id()) < max_rolled_in_row_dices){ //OM spelaren har slått mindre än 3 slag
-								if(!roll_dices(dice_1, dice_2, dice_sprite_0, dice_sprite_1, dice_rolled_times)){
+								if(!roll_dices(dice_1, dice_2, dice_sprite_0, dice_sprite_1, dice_rolled_times, dice_roll_instance)){
 									prison->send_to_prison(players[current_player]);
 								}
 								dice_used = true;
@@ -451,7 +522,7 @@ int main(int argc, char *argv[]){
 								int temp[max_players];
 
 								if(!dice_manual_input){
-									if(!roll_dices(dice_1, dice_2, dice_sprite_0, dice_sprite_1, dice_rolled_times)){
+									if(!roll_dices(dice_1, dice_2, dice_sprite_0, dice_sprite_1, dice_rolled_times, dice_roll_instance)){
 										prison->send_to_prison(players[current_player]);
 									}
 								}
@@ -505,6 +576,10 @@ int main(int argc, char *argv[]){
 								if(players[current_player]->get_flag_prisoned()){
 									prison->activate_window(true);
 								}
+								if(n_players <= 1){
+									player_won = true;
+									al_play_sample_instance(win_instance);
+								}
 							}
 							break;
 						case 4: //Köpa hus
@@ -548,6 +623,7 @@ int main(int argc, char *argv[]){
 								un_mortage_street = false;
 							break;
 						case 8:
+							trade->update_trade_buttons(players, n_players);
 							trade->set_active(true, n_players);
 							trade->set_buyer(players[current_player]);
 							break;
@@ -581,6 +657,7 @@ int main(int argc, char *argv[]){
 								players[i] = players[i + 1];
 							}
 							n_players--;
+							players[n_players] = 0;
 						}
 						defeat_window.set_active(false);
 						dice_used = true;
@@ -604,8 +681,14 @@ int main(int argc, char *argv[]){
 					break;
 				case ALLEGRO_KEY_E:
 					end_turn_key = true;
+					break;
+				case ALLEGRO_KEY_SPACE:
+					start_screen = false;
+					if(!start_screen)
+						al_stop_sample_instance(start_screen_song);
+					break;
 			}
-			if(ev.keyboard.keycode >= ALLEGRO_KEY_0 && ev.keyboard.keycode <= ALLEGRO_KEY_9){
+			if(debug && ev.keyboard.keycode >= ALLEGRO_KEY_0 && ev.keyboard.keycode <= ALLEGRO_KEY_9){
 				if(!dice_manual_input)
 					dice_1 = ev.keyboard.keycode - ALLEGRO_KEY_0;
 				else
@@ -618,23 +701,50 @@ int main(int argc, char *argv[]){
 			done = true;
 		}
 		else if(ev.type == ALLEGRO_EVENT_TIMER){
+			draw = true;
 			
+		}
+
+		if(draw && al_is_event_queue_empty(event_queue)){
+
 			frames++; //R�knar frames
 			if(al_get_time() - gameTime >= 1){ //Uppdaterar fps efter 1 sekund 
 				gameTime = al_current_time();
 				gameFPS = frames;
 				frames = 0;
 			}
-			draw = true;
-			
-		}
 
-		if(draw && al_is_event_queue_empty(event_queue)){
+			al_set_target_bitmap(buffer);
+			al_clear_to_color(al_map_rgb(0, 0, 0));
+
+			if(intro){
+				if(intro_frames > (FPS * intro_sec))
+					intro = false;
+				al_draw_text(winner_font, al_map_rgb(255, 255, 255), 640, 200, ALLEGRO_ALIGN_CENTRE, "Game made by Anders Pehrsson");
+				al_draw_text(winner_font, al_map_rgb(255, 255, 255), 640 - (al_get_bitmap_width(allegro_logo3) / 2) , 520, ALLEGRO_ALIGN_RIGHT, "Power by");
+				al_draw_bitmap_region(allegro_logo3, 0, 0, al_get_bitmap_width(allegro_logo3), 120, 640 - (al_get_bitmap_width(allegro_logo3) / 2), 500, 0);
+				intro_frames++;
+			}
+			else if(start_screen){
+				if(!al_get_sample_instance_playing(start_screen_song)){
+					al_play_sample_instance(start_screen_song);
+				}
+				al_draw_bitmap(background, 0, 0, 0);
+				al_draw_filled_rectangle(220, 130, 1060, 265, al_map_rgb(255, 0, 0));
+				al_draw_text(start_screen_font, al_map_rgb(255, 255, 255), 640, 130, ALLEGRO_ALIGN_CENTRE, "2d-MONOPOLY");
+				al_draw_text(winner_font, al_map_rgb(255, 255, 255), 600, 640, ALLEGRO_ALIGN_CENTRE, "Press space to start the game");
+				//al_draw_text(start_screen_font, al_map_rgb(
+			}
+			else if(player_won){
+				al_draw_textf(winner_font, al_map_rgb(255, 255, 0), 640, 500, ALLEGRO_ALIGN_CENTRE, "Player %i have won the game with %i in total assets!", players[current_player]->get_id(), get_player_total_assets(tomter, players[current_player]));
+				al_draw_textf(winner_font, al_map_rgb(255, 255, 0), 640, 230, ALLEGRO_ALIGN_CENTRE, "GAME OVER");
+			}
+			else{
+
 			n_draw_street = 0;
 
 			//Drawing
-			al_set_target_bitmap(buffer);
-			al_clear_to_color(al_map_rgb(0, 0, 0));
+			
 			al_draw_bitmap(spelplan, 0, 0, 0);
 			al_draw_bitmap(spelbrade, 0, 0, 0);
 			for(int i = 0; i < ant_rutor && draw_street_active; i++){//Kontrollerar vilka zoner som ägs av nuvarande spelare
@@ -650,7 +760,7 @@ int main(int argc, char *argv[]){
 					if((((Street*)tomter[i])->get_Street_info())->get_active())
 						(((Street*)tomter[i])->get_Street_info())->draw();
 
-					//Ritar eventuella markeringar
+						//Ritar eventuella markeringar
 
 					if(sell_street && ((Street*)tomter[i])->get_Owner() == players[current_player] && ((Street*)tomter[i])->get_mortaged() == false && ((Street*)tomter[i])->undeveloped_zone(tomter)){
 						((Street*)tomter[i])->draw(true);
@@ -713,20 +823,26 @@ int main(int argc, char *argv[]){
 			}
 
 			//al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 5, 0, "FPS: %i", gameFPS);
-			al_draw_textf(arial_16, al_map_rgb(c_player_color[0], c_player_color[1] , c_player_color[2]), 15, 940, 0, "Player %i", current_player);
-			al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 100, 940, 0, "Funds: %i", (players[current_player])->get_money());
+			if(players[current_player] != 0){
+				al_draw_textf(arial_16, al_map_rgb(c_player_color[0], c_player_color[1] , c_player_color[2]), 15, 940, 0, "Player %i", players[current_player]->get_id());
+				al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 100, 940, 0, "Funds: %i", (players[current_player])->get_money());
+			}
 			//al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 20, 0, "Mouse_x: %lf Mouse_y: %lf", mouse_pos_x, mouse_pos_y);
 
 			//Skalar om bilden och ritar till backbuffern. Vänder sedan på buffern
-
+			}
 			al_set_target_backbuffer(display);
 			al_clear_to_color(al_map_rgb(0, 0, 0));
-			al_draw_scaled_bitmap(buffer, 0, 0, width, height, 0, 0, scaleW , scaleH, 0);
-			al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 20, 0, "Mouse_x: %lf Mouse_y: %lf", mouse_pos_x, mouse_pos_y);
-			al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 5, 0, "FPS: %i", gameFPS);
+			al_draw_scaled_bitmap(buffer, 0, 0, width, height, scaleX, scaleY, scaleW , scaleH, 0);
+			if(debug){
+				al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 20, 0, "Mouse_x: %lf Mouse_y: %lf", mouse_pos_x, mouse_pos_y);
+				al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 5, 0, "FPS: %i", gameFPS);
+			}
+
 			al_flip_display();
 			draw = false;
 		}
+		
 		
 	}
 	//Destruktorer
@@ -737,6 +853,29 @@ int main(int argc, char *argv[]){
 	al_destroy_bitmap(spelbrade);
 	al_destroy_bitmap(dice);
 	al_destroy_bitmap(question);
+	al_destroy_bitmap(button);
+	al_destroy_bitmap(buffer);
+	al_destroy_bitmap(auction_image);
+	al_destroy_bitmap(box);
+	al_destroy_bitmap(street_info);
+	al_destroy_bitmap(street_info_railroad);
+	al_destroy_bitmap(street_info_el);
+	al_destroy_bitmap(street_info_water);
+	al_destroy_bitmap(trade_proposal);
+	al_destroy_bitmap(trade_reciver);
+	al_destroy_bitmap(allegro_logo);
+	al_destroy_bitmap(allegro_logo2);
+	al_destroy_bitmap(allegro_logo3);
+	al_destroy_bitmap(background);
+	al_destroy_sample(monopoly_song);
+	al_destroy_sample(dice_roll);
+	al_destroy_sample(win);
+	al_destroy_sample(police);
+	al_destroy_font(arial_36);
+	al_destroy_font(arial_20);
+	al_destroy_font(arial_10);
+	al_destroy_font(winner_font);
+	al_destroy_font(start_screen_font);
 }
 
 void read_Property_data(Property *tomter[]){
@@ -1168,12 +1307,13 @@ void after_movement(Player* c_player, Player** players, int n_players, Question*
 	}
 }
 
-bool roll_dices(int &dice_1, int &dice_2, Sprite *dice_sprite_0,Sprite *dice_sprite_1, int &dice_rolled_times){
+bool roll_dices(int &dice_1, int &dice_2, Sprite *dice_sprite_0,Sprite *dice_sprite_1, int &dice_rolled_times, ALLEGRO_SAMPLE_INSTANCE *dice_roll_instance){
 	if(dice_rolled_times++ < max_rolled_in_row_dices){
 		roll_dice(dice_1);
 		roll_dice(dice_2);
 		dice_sprite_0->set_curret_frame(max_tarning - (dice_1)); //Byter bild p� t�rning
 		dice_sprite_1->set_curret_frame(max_tarning - (dice_2));
+		al_play_sample_instance(dice_roll_instance);
 		return true;
 	}
 	return false;
@@ -1181,4 +1321,24 @@ bool roll_dices(int &dice_1, int &dice_2, Sprite *dice_sprite_0,Sprite *dice_spr
 
 void show_error_message(char* message){
 	al_show_native_message_box(NULL, "ERROR", "ERROR", message, NULL, ALLEGRO_MESSAGEBOX_ERROR);
+}
+
+int get_player_total_assets(Property** tomter, Player* player_in){
+	int total_funds = 0;
+	total_funds += (player_in->get_money());
+
+	for(int i = 0; i < ant_rutor; i++){ //Adding owned property
+		if(tomter[i]->get_Owner() == player_in && tomter[i]->get_typ() == TOMT){
+			if(((Street*)tomter[i])->get_mortaged()) //if mortaged, add mortaged value
+				total_funds += ((((Street*)tomter[i])->get_cost()) / 2);
+			else{
+				total_funds += (((Street*)tomter[i])->get_cost());
+				if(((Street*)tomter[i])->own_zone(tomter)){ //if zone is owned, check for houses and hotels
+					total_funds += ((Street*)tomter[i])->get_ant_houses() * ((Street*)tomter[i])->get_building_cost();
+				}
+			}
+		}
+	}
+
+	return total_funds;
 }

@@ -4,6 +4,8 @@
 #include <cstdio>
 
 #include <allegro5/allegro.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
 
 #include "Player.h"
 #include "Question.h"
@@ -14,7 +16,7 @@ public:
 
 	
 
-	Prison(ALLEGRO_BITMAP *button_image, ALLEGRO_BITMAP *question_image);
+	Prison(ALLEGRO_BITMAP *button_image, ALLEGRO_BITMAP *question_image, ALLEGRO_SAMPLE_INSTANCE* police_instance);
 	void send_to_prison(Player* prisoner);
 	void activate_window(bool value){
 		window->set_active(value);
@@ -47,6 +49,7 @@ private:
 	const int n_buttons;
 	Button** temp;
 	char** button_message;
+	ALLEGRO_SAMPLE_INSTANCE* police_instance;
 };
 
 #endif

@@ -2,7 +2,7 @@
 
 
 
-Auction::Auction(int pos_x, int pos_y, Player** players, int n_players, ALLEGRO_BITMAP *image, ALLEGRO_BITMAP *button, ALLEGRO_BITMAP *box, ALLEGRO_FONT *title, ALLEGRO_FONT *normal_text, Street *property_on_sale,bool active) : pos_x(pos_x), pos_y(pos_y), players(players), n_players(n_players), image(image), ant_buttons(9), title(title), normal_text(normal_text), property_on_sale(property_on_sale), active(active), current_max_bid(0), c_player(0), current_bid(0){
+Auction::Auction(int pos_x, int pos_y, Player** players, int &n_players, ALLEGRO_BITMAP *image, ALLEGRO_BITMAP *button, ALLEGRO_BITMAP *box, ALLEGRO_FONT *title, ALLEGRO_FONT *normal_text, Street *property_on_sale,bool active) : pos_x(pos_x), pos_y(pos_y), players(players), n_players(n_players), image(image), ant_buttons(9), title(title), normal_text(normal_text), property_on_sale(property_on_sale), active(active), current_max_bid(0), c_player(0), current_bid(0){
 	const int ant_text_fields = 4;
 	Text_field** temp_text = new Text_field*[ant_text_fields];
 	
@@ -66,8 +66,10 @@ void Auction::set_active(bool active_in){
 	active = active_in;
 	if(active_in == true)
 		property_on_sale->get_namn(temp, 100);
+	player_bid_list->update_names();
+	player_bid_list->update_colors();
 	window->set_active(active_in);
-	window->update(temp, current_max_bid, current_max_bid, c_player, players[c_player]->get_money());
+	window->update(temp, current_max_bid, current_max_bid, players[c_player]->get_id(), players[c_player]->get_money());
 }
 
 void Auction::button_pressed(int mouse_x, int mouse_y, bool right_click){
@@ -128,7 +130,7 @@ void Auction::button_pressed(int mouse_x, int mouse_y, bool right_click){
 	
 	char temp[100];
 	property_on_sale->get_namn(temp, 100);
-	window->update(temp, current_max_bid, current_bid, c_player, players[c_player]->get_money());
+	window->update(temp, current_max_bid, current_bid, players[c_player]->get_id(), players[c_player]->get_money());
 	
 	int folders = 0;
 	for(int i = 0; i < n_players; i++){

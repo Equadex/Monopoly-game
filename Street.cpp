@@ -187,12 +187,12 @@ void Street::draw(bool mark){
 
 void Street::buy_house(Player* buyer, Property **tomter, int &tot_free_ant_houses, int &tot_free_ant_hotels){
 	if(buyer == Owner && own_zone(tomter) && houses < max_houses && buyer->pay(building_cost)) {
-		if(houses == max_houses && tot_free_ant_hotels >= 1){
+		if(houses == (max_houses - 1) && tot_free_ant_hotels >= 1){
 			houses++;
 			tot_free_ant_hotels--;
 			tot_free_ant_houses += 4;
 		}
-		else if(tot_free_ant_houses >= 1){
+		else if(tot_free_ant_houses >= 1 && houses < max_houses){
 			houses++;
 			tot_free_ant_houses--;
 		}

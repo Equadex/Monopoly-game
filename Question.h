@@ -28,6 +28,7 @@ public:
 	bool get_active() const{return active;}
 	int get_pos_x() const {return pos_x;}
 	int get_pos_y() const {return pos_y;}
+	int get_n_buttons() const {return n_buttons;}
 	char** get_message(int &n_message_out) const {n_message_out = n_message; return message;}
 	
 	void draw(ALLEGRO_FONT* Title, ALLEGRO_FONT* Text);

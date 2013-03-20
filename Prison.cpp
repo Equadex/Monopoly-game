@@ -1,6 +1,6 @@
 #include "Prison.h"
 
-Prison::Prison(ALLEGRO_BITMAP *button_image, ALLEGRO_BITMAP *question_image):n_buttons(3) {
+Prison::Prison(ALLEGRO_BITMAP *button_image, ALLEGRO_BITMAP *question_image, ALLEGRO_SAMPLE_INSTANCE* police_instance):n_buttons(3), police_instance(police_instance) {
 	char temp2[300];
 	temp = new Button*[n_buttons];
 	button_message = new char*[n_buttons];
@@ -24,6 +24,7 @@ Prison::Prison(ALLEGRO_BITMAP *button_image, ALLEGRO_BITMAP *question_image):n_b
 }
 
 void Prison::send_to_prison(Player* prisoner){
+	al_play_sample_instance(police_instance);
 	prisoner->set_flag_prisoned(true);
 	prisoner->set_pos_ruta(10);
 }

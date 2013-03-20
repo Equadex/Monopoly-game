@@ -7,9 +7,9 @@ Trade::Trade(int pos_x, int pos_y, Property **tomter, ALLEGRO_FONT *button_text,
 	buttons = new Button*[n_buttons_created];
 	buttons2 = new Button*[n_buttons2_created];
 
-	buttons[0] = new Button(pos_x + 15, pos_y + 120, pos_x + 255, pos_y + 150, -4, "Select player to trade with");
-	buttons[1] = new Button(pos_x + 280, pos_y + 120, pos_x + 560, pos_y + 150, -3, "Select what you want to trade for");
-	buttons[2] = new Button(pos_x + 650, pos_y + 120, pos_x + 890, pos_y + 150, -2, "Select what do you want to pay for it");
+	buttons[0] = new Button(pos_x + 15, pos_y + 120, pos_x + 255, pos_y + 150, -4, "Select player to trade with", 0, true);
+	buttons[1] = new Button(pos_x + 280, pos_y + 120, pos_x + 560, pos_y + 150, -3, "Select what you want to trade for", 0, true);
+	buttons[2] = new Button(pos_x + 650, pos_y + 120, pos_x + 890, pos_y + 150, -2, "Select what do you want to pay for it", 0, true);
 	buttons[3] = new Button(pos_x + 290, pos_y + 455, pos_x + 290 + al_get_bitmap_width(button_image), pos_y + 455 + al_get_bitmap_height(button_image), -1, "Trade", button_image);
 	buttons[4] = new Button(pos_x + 530, pos_y + 455, pos_x + 530 + al_get_bitmap_width(button_image), pos_y + 455 + al_get_bitmap_height(button_image), 1, "Cancel", button_image);
 
@@ -28,7 +28,7 @@ Trade::Trade(int pos_x, int pos_y, Property **tomter, ALLEGRO_FONT *button_text,
 	for(int i = 0; i < max_players; i++){
 		char temp_char[100];
 		sprintf(temp_char, "Player %i", i);
-		buttons[11 + i] = new Button(pos_x + 40, pos_y + 180 + player_draw_y_distance * i, pos_x + 220, pos_y + 180 + player_draw_y_distance * (i + 1), 11 + i, temp_char);
+		buttons[11 + i] = new Button(pos_x + 40, pos_y + 180 + player_draw_y_distance * i, pos_x + 220, pos_y + 180 + player_draw_y_distance * (i + 1), 11 + i, temp_char, 0, true);
 	}
 
 
@@ -320,4 +320,19 @@ void Trade::make_trade(){
 	}
 	buyer->pay_player(seller, sum_buyer);
 	seller->pay_player(buyer, sum_seller);
+}
+
+void Trade::update_trade_buttons(Player **players, int n_players){
+	for(int i = 0; i < n_players; i++){
+		char temp_char[100];
+		sprintf(temp_char, "Player %i", players[i]->get_id());
+		buttons[11 + i]->set_ID(11 + players[i]->get_id());
+		buttons[11 + i]->set_label(temp_char);
+	}
+	int n_buttons_temp = window_proposition->get_n_buttons() - 11;
+	if(n_buttons_temp > n_players){
+		for(int i = 0; i < (n_buttons_temp - n_players); i++){
+			buttons[11 + max_players - 1 - i]->set_active(false);
+		}
+	}
 }

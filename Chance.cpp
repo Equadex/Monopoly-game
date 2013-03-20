@@ -10,7 +10,7 @@ Chance::Chance(Card **cards, ALLEGRO_BITMAP *image, ALLEGRO_BITMAP *button) : ca
 int Chance::pick_card(){ //Returns id of card
 	char c[] = {"Chance"};
 	char a[] = {"Community Chest"};
-	if(picked_cards > (ant_cards / 2)){
+	if(picked_cards >= (ant_cards / 2)){
 		suffle_cards();
 		picked_cards = 0;
 	}

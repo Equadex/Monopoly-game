@@ -20,6 +20,7 @@ public:
 	bool get_active();
 	void set_buyer(Player *buyer_in);
 	void pressed(int mouse_pos_x, int mouse_pos_y, Player **players, int n_players, bool rightclick = false);
+	void update_trade_buttons(Player **players, int n_players);
 private:
 	Trade_window *window_proposition;
 	Trade_window *window_approval;

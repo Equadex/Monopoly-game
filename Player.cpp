@@ -62,7 +62,14 @@ void Player::update_Player(Property *tomter[], Player **players, int n_players, 
 
 		for(int i = 0; i < n_player_setoff; i++){
 			bool loop_done = false;
-			players[player_IDs[i]]->get_pos(temp_pos_x, temp_pos_y);
+			int index = 0;
+
+			for(int j = 0; j < n_players; j++){
+				if(players[j]->get_id() == player_IDs[i])
+					index = j;
+			}
+
+			players[index]->get_pos(temp_pos_x, temp_pos_y);
 			while(!loop_done){
 				if(temp_pos_x == new_pos_x && temp_pos_y == new_pos_y){
 					if(pos_ruta == 0){

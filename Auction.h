@@ -11,7 +11,7 @@
 
 class Auction{
 public:
-	Auction(int pos_x, int pos_y, Player** players, int n_players, ALLEGRO_BITMAP *image, ALLEGRO_BITMAP *button, ALLEGRO_BITMAP *box, ALLEGRO_FONT *title, ALLEGRO_FONT *normal_text, Street *property_on_sale = 0,bool active = false);
+	Auction(int pos_x, int pos_y, Player** players, int &n_players, ALLEGRO_BITMAP *image, ALLEGRO_BITMAP *button, ALLEGRO_BITMAP *box, ALLEGRO_FONT *title, ALLEGRO_FONT *normal_text, Street *property_on_sale = 0,bool active = false);
 	~Auction();
 	void draw();
 	void set_property(Street *property_on_sale_in){property_on_sale = property_on_sale_in;}
@@ -27,7 +27,8 @@ private:
 	Window_list *player_bid_list;
 	Player** players;
 	Street *property_on_sale;
-	int n_players, c_player, current_bid;
+	int c_player, current_bid;
+	int &n_players;
 	int *players_bids;
 	int current_max_bid;
 	int pos_x, pos_y;
