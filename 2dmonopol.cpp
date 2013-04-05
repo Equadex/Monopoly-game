@@ -1203,9 +1203,9 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 			p_pos = c_player->get_pos_ruta();
 			bool loop_done = false;
 			for(int i = p_pos; !loop_done; i++){
+				if(i >= ant_rutor)
+					i = 0;
 				if(tomter[i]->get_typ() == TOMT){
-					if(i >= ant_rutor)
-						i = 0;
 					if(((Street**)tomter)[i]->get_zon() == 5 ){ //IF belonges to group for uttility
 						//check for go
 						if(i < c_player->get_pos_ruta())

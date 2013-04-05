@@ -1,4 +1,4 @@
-﻿Build started 3/20/2013 9:53:05 AM.
+﻿Build started 4/5/2013 5:12:00 AM.
      1>Project "C:\Users\Anders\Documents\Visual Studio 2010\SKOLProjects\2dmonopol exp2\2dmonopol exp2\2dmonopol exp2.vcxproj" on node 2 (rebuild target(s)).
      1>_PrepareForClean:
          Deleting file "Release\2dmonopol exp2.lastbuildstate".
@@ -175,4 +175,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:06.51
+Time Elapsed 00:00:06.11
