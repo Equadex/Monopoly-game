@@ -186,7 +186,7 @@ void Street::draw(bool mark){
 }
 
 void Street::buy_house(Player* buyer, Property **tomter, int &tot_free_ant_houses, int &tot_free_ant_hotels){
-	if(buyer == Owner && own_zone(tomter) && houses < max_houses && buyer->pay(building_cost)) {
+	if(buyer == Owner && own_zone(tomter) && houses < max_houses && !mortaged && ok_to_build_house(tomter) && buyer->pay(building_cost)) {
 		if(houses == (max_houses - 1) && tot_free_ant_hotels >= 1){
 			houses++;
 			tot_free_ant_hotels--;
@@ -200,7 +200,7 @@ void Street::buy_house(Player* buyer, Property **tomter, int &tot_free_ant_house
 }
 
 void Street::sell_house(Player* seller, Property **tomter, int &tot_free_ant_houses, int &tot_free_ant_hotels){
-	if(seller == Owner && own_zone(tomter) && houses > 0){
+	if(seller == Owner && own_zone(tomter) && ok_to_sell_house(tomter) && houses > 0){
 		if(houses == max_houses && tot_free_ant_houses >= (max_houses - 1)){
 			tot_free_ant_hotels++;
 			tot_free_ant_houses -= (max_houses - 1);
@@ -242,4 +242,25 @@ void Street::update_status_box(){
 		status_owner->set_color(temp_colors[0], temp_colors[1], temp_colors[2]);
 	}
 		
+}
+
+bool Street::ok_to_build_house(Property **tomter){
+	for(int i = 0; i < ant_rutor; i++){
+		if(tomter[i]->get_typ() == TOMT && ((Street*)tomter[i])->get_zon() == group){
+			if(((Street*)tomter[i])->get_ant_houses() - houses + 1 < 1){
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+bool Street::ok_to_sell_house(Property **tomter){
+	for(int i = 0; i < ant_rutor; i++){
+		if(tomter[i]->get_typ() == TOMT && ((Street*)tomter[i])->get_zon() == group){
+			if(((Street*)tomter[i])->get_ant_houses() - houses - 1 > -1)
+				return false;
+		}
+	}
+	return true;
 }

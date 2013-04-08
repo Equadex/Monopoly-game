@@ -71,6 +71,8 @@ protected:
 	bool mortaged;
 
 	int n_street_in_zone(Property* tomter[]);
+	bool ok_to_build_house(Property **tomter);
+	bool ok_to_sell_house(Property **tomter);
 private:
 };
 

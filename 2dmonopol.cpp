@@ -236,8 +236,8 @@ int main(int argc, char *argv[]){
 		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to get screen info" , NULL, ALLEGRO_MESSAGEBOX_ERROR); 
 		return(-1);
 	}
-	window_width = p_info->x2; 
-	window_height = p_info->y2;
+	window_width = p_info->x2 - 40; 
+	window_height = p_info->y2 - 40;
 
 	sx = window_width / (double)width;
 	sy = window_height / (double)height;
@@ -252,7 +252,7 @@ int main(int argc, char *argv[]){
 
 	//Skapar och testar display
 	//al_set_new_display_flags(ALLEGRO_WINDOWED);
-	al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
+	//al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
 	if(OpenGL)
 		al_set_new_display_flags(ALLEGRO_OPENGL);
 	display = al_create_display(window_width, window_height);
@@ -571,6 +571,8 @@ int main(int argc, char *argv[]){
 								}
 								else{
 									player_lost_recent = false;
+									if(current_player >= n_players)
+										current_player = 0;
 								}
 
 								dice_used = false;
