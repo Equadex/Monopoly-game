@@ -736,7 +736,7 @@ int main(int argc, char *argv[]){
 				if(intro_frames > (FPS * intro_sec))
 					intro = false;
 				al_draw_text(winner_font, al_map_rgb(255, 255, 255), 640, 200, ALLEGRO_ALIGN_CENTRE, "Game made by Anders Pehrsson");
-				al_draw_text(winner_font, al_map_rgb(255, 255, 255), 640 - (al_get_bitmap_width(allegro_logo3) / 2) , 520, ALLEGRO_ALIGN_RIGHT, "Power by");
+				al_draw_text(winner_font, al_map_rgb(255, 255, 255), 640 - (al_get_bitmap_width(allegro_logo3) / 2) , 520, ALLEGRO_ALIGN_RIGHT, "Powered by");
 				al_draw_bitmap_region(allegro_logo3, 0, 0, al_get_bitmap_width(allegro_logo3), 120, 640 - (al_get_bitmap_width(allegro_logo3) / 2), 500, 0);
 				intro_frames++;
 			}
