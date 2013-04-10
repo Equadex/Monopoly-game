@@ -33,7 +33,7 @@
 
 //Globala variabler lokala
 
-const int n_max_audio_samples = 4;
+const int n_max_audio_samples = 1;
 
 const int max_config_line_length = 128;
 const int max_config_extended_length = 350;
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]){
 	float mouse_pos_x = 0;
 	float mouse_pos_y = 0;
 	int frames = 0, gameFPS = 0;
-	float gameTime = 0;
+	float gameTime = 0, animationTime = 0;
 	double sx, sy, scale, scaleW, scaleH, scaleX, scaleY;
 
 	bool done = false;
@@ -123,6 +123,7 @@ int main(int argc, char *argv[]){
 	bool intro = true;
 	bool debug = false;
 	bool player_lost_recent = false;
+	bool player_changed_recently = true;
 	int draw_street[ant_rutor];
 	int n_draw_street;
 	int intro_frames = 0, intro_sec = 2;
@@ -199,11 +200,13 @@ int main(int argc, char *argv[]){
 	ALLEGRO_SAMPLE *dice_roll = NULL;
 	ALLEGRO_SAMPLE *win = NULL;
 	ALLEGRO_SAMPLE *police = NULL;
+	ALLEGRO_SAMPLE *alert = NULL;
 
 	ALLEGRO_SAMPLE_INSTANCE *start_screen_song = NULL;
 	ALLEGRO_SAMPLE_INSTANCE *dice_roll_instance = NULL;
 	ALLEGRO_SAMPLE_INSTANCE *win_instance = NULL;
 	ALLEGRO_SAMPLE_INSTANCE *police_instance = NULL;
+	ALLEGRO_SAMPLE_INSTANCE *alert_instance = NULL;
 
 	//Allegro Bitmaps
 
@@ -285,17 +288,20 @@ int main(int argc, char *argv[]){
 	dice_roll = al_load_sample("dice_roll_edit.wav");
 	win = al_load_sample("won.wav");
 	police = al_load_sample("police.wav");
+	alert = al_load_sample("alert.wav");
 
 	start_screen_song = al_create_sample_instance(monopoly_song);
 	dice_roll_instance = al_create_sample_instance(dice_roll);
 	win_instance = al_create_sample_instance(win);
 	police_instance = al_create_sample_instance(police);
 	al_set_sample_instance_playmode(start_screen_song, ALLEGRO_PLAYMODE_LOOP);
+	alert_instance = al_create_sample_instance(alert);
 
 	al_attach_sample_instance_to_mixer(start_screen_song, al_get_default_mixer());
 	al_attach_sample_instance_to_mixer(dice_roll_instance, al_get_default_mixer());
 	al_attach_sample_instance_to_mixer(win_instance, al_get_default_mixer());
 	al_attach_sample_instance_to_mixer(police_instance, al_get_default_mixer());
+	al_attach_sample_instance_to_mixer(alert_instance, al_get_default_mixer());
 
 	//Laddar bitmaps
 	spelplan = al_load_bitmap("spelplan.bmp");
@@ -364,6 +370,7 @@ int main(int argc, char *argv[]){
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
 	al_start_timer(timer);
 	gameTime = al_get_time();
+	animationTime = al_get_time();
 
 	//Spelloop
 	while(!done){
@@ -592,6 +599,9 @@ int main(int argc, char *argv[]){
 									player_won = true;
 									al_play_sample_instance(win_instance);
 								}
+								player_changed_recently = true;
+								al_play_sample_instance(alert_instance);
+								animationTime = al_get_time();
 							}
 							break;
 						case 4: //Köpa hus
@@ -701,6 +711,7 @@ int main(int argc, char *argv[]){
 					start_screen = false;
 					if(!start_screen)
 						al_stop_sample_instance(start_screen_song);
+					animationTime = al_get_time();
 					break;
 			}
 			if(debug && ev.keyboard.keycode >= ALLEGRO_KEY_0 && ev.keyboard.keycode <= ALLEGRO_KEY_9){
@@ -733,8 +744,9 @@ int main(int argc, char *argv[]){
 			al_clear_to_color(al_map_rgb(0, 0, 0));
 
 			if(intro){
-				if(intro_frames > (FPS * intro_sec))
+				if(animationTime + intro_sec < al_get_time()){
 					intro = false;
+				}
 				al_draw_text(winner_font, al_map_rgb(255, 255, 255), 640, 200, ALLEGRO_ALIGN_CENTRE, "Game made by Anders Pehrsson");
 				al_draw_text(winner_font, al_map_rgb(255, 255, 255), 640 - (al_get_bitmap_width(allegro_logo3) / 2) , 520, ALLEGRO_ALIGN_RIGHT, "Powered by");
 				al_draw_bitmap_region(allegro_logo3, 0, 0, al_get_bitmap_width(allegro_logo3), 120, 640 - (al_get_bitmap_width(allegro_logo3) / 2), 500, 0);
@@ -843,9 +855,15 @@ int main(int argc, char *argv[]){
 				al_draw_textf(arial_16, al_map_rgb(0, 0, 0), 100, 940, 0, "Funds: %i", (players[current_player])->get_money());
 			}
 			//al_draw_textf(arial_16, al_map_rgb(255, 0, 255), 5, 20, 0, "Mouse_x: %lf Mouse_y: %lf", mouse_pos_x, mouse_pos_y);
-
-			//Skalar om bilden och ritar till backbuffern. Vänder sedan på buffern
+			if(player_changed_recently && animationTime + 1.5 > al_get_time()){
+				al_draw_textf(start_screen_font, al_map_rgb(c_player_color[0], c_player_color[1], c_player_color[2]), 440, 160, ALLEGRO_ALIGN_CENTRE, "Player %i", players[current_player]->get_id());
 			}
+			else if(animationTime + 1.5 <= al_get_time())
+				player_changed_recently = false;
+			
+			}
+			//Skalar om bilden och ritar till backbuffern. Vänder sedan på buffern
+			
 			al_set_target_backbuffer(display);
 			al_clear_to_color(al_map_rgb(0, 0, 0));
 			al_draw_scaled_bitmap(buffer, 0, 0, width, height, scaleX, scaleY, scaleW , scaleH, 0);

@@ -2,10 +2,10 @@
 
 
 void Player::move_Player(int steg, Property** tomter, Player** players, int n_players){
-		pos_ruta += steg;
-		passed_go_check();
-		pos_ruta = pos_ruta % ant_rutor;
-		update_Player(tomter, players, n_players);
+	pos_ruta += steg;
+	passed_go_check();
+	pos_ruta = pos_ruta % ant_rutor;
+	update_Player(tomter, players, n_players);
 }
 
 void Player::get_pos(int &pos_x_in, int &pos_y_in) const{
