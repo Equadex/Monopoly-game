@@ -69,7 +69,7 @@ void al_set_street_info_false(Property *tomter[], bool full = false); //Full = t
 void read_card_data(Card *cards[]);
 void seperate_cards(Card** cards, Card** cards_1, Card** cards_2, int n1, int n2, int n);
 void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players, int n_players, Property **tomter, Question *buy_street_Q, int &ID_card, Chance* chans, Chance* allmaning, int dice_1, int dice_2, Prison* prison, bool &dice_used);
-void after_movement(Player* c_player, Player** players, int n_players, Question* buy_street_Q, Property **tomter, int dice_1, int dice_2, int &ID_card, Chance *chans, Chance *allmaning, Prison *prison, bool &dice_used);
+void after_movement(Player* c_player, Player** players, int n_players, Question* buy_street_Q, Property **tomter, int dice_1, int dice_2, int &ID_card, Chance *chans, Chance *allmaning, Prison *prison, bool &dice_used, bool pay_double = false);
 void show_streets_zones();
 void show_error_message(char* message);
 bool roll_dices(int &dice_1, int &dice_2, Sprite *dice_sprite_0,Sprite *dice_sprite_1, int &dice_rolled_times, ALLEGRO_SAMPLE_INSTANCE *dice_roll_instance);
@@ -445,15 +445,18 @@ int main(int argc, char *argv[]){
 					}
 				}
 				else if(chans->get_window()->button_pressed(mouse_pos_x, mouse_pos_y)){
+					mouse_pos_x = 0;
 					chans->get_window()->set_active(false);
 					do_action(chans, ID_card, players[current_player], players, n_players, tomter, buy_street_Q, ID_card, chans, allmaning, dice_1, dice_2, prison, dice_used);
 				}
 				else if(allmaning->get_window()->button_pressed(mouse_pos_x, mouse_pos_y)){
+					mouse_pos_x = 0;
 					allmaning->get_window()->set_active(false);
 					do_action(allmaning, ID_card, players[current_player], players, n_players, tomter, buy_street_Q, ID_card, chans, allmaning, dice_1, dice_2, prison, dice_used);
 				}
 				else if(prison->window_activated()){
 					int button_id = prison->button_pressed(mouse_pos_x, mouse_pos_y);
+					mouse_pos_x = 0;
 					if(button_id != 0){
 						switch(button_id){
 						case 1:
@@ -1233,7 +1236,7 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 
 						c_player->set_pos_ruta(i);
 						c_player->update_Player(tomter, players, n_players);
-						after_movement(c_player, players, n_players, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning, prison, dice_used);
+						after_movement(c_player, players, n_players, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning, prison, dice_used, true);
 						loop_done = true;
 					}
 				}
@@ -1260,7 +1263,7 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 						if((((Street**)tomter)[i])->get_Owner() != c_player && (((Street**)tomter)[i])->get_Owner() != 0){ //Pay rent for railroad, will pay again later(thereby doubling the rent)
 							(((Street**)tomter)[i])->pay_rent(c_player, tomter);
 						}
-						after_movement(c_player, players, n_players, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning, prison, dice_used);
+						after_movement(c_player, players, n_players, buy_street_Q , tomter, dice_1, dice_2, ID_card, chans, allmaning, prison, dice_used, true);
 						loop_done = true;
 					}
 				}
@@ -1301,7 +1304,7 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 
 }
 
-void after_movement(Player* c_player, Player** players, int n_players, Question* buy_street_Q, Property **tomter, int dice_1, int dice_2, int &ID_card, Chance *chans, Chance *allmaning, Prison *prison, bool &dice_used){
+void after_movement(Player* c_player, Player** players, int n_players, Question* buy_street_Q, Property **tomter, int dice_1, int dice_2, int &ID_card, Chance *chans, Chance *allmaning, Prison *prison, bool &dice_used, bool pay_double){
 						
 	if((tomter[c_player->get_pos_ruta()]->get_typ() == TOMT)){
 		if((tomter[c_player->get_pos_ruta()]->get_Owner()) == 0){ //Om en tomt �r �gd av banken
@@ -1309,7 +1312,7 @@ void after_movement(Player* c_player, Player** players, int n_players, Question*
 		}
 		else if((tomter[c_player->get_pos_ruta()]->get_Owner()) != c_player && (tomter[c_player->get_pos_ruta()]->get_Owner()) != 0){ //Om tomten �r en gata och inte �r �gd av dig eller banken
 			if(c_player->get_pos_ruta() == 12 || c_player->get_pos_ruta() == 28){ //Om det är en utility(el och vatten)
-				(((Street*)tomter[c_player->get_pos_ruta()])->pay_rent(c_player, tomter, dice_1 + dice_2));
+				(((Street*)tomter[c_player->get_pos_ruta()])->pay_rent(c_player, tomter, dice_1 + dice_2, pay_double));
 			}
 			else									
 				((Street*)tomter[c_player->get_pos_ruta()])->pay_rent(c_player, tomter);

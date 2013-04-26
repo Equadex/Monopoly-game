@@ -48,14 +48,14 @@ void Street::draw_status(){
 	status_owner->draw();
 }
 
-void Street::pay_rent(Player *guest, Property* tomter[], int dice){
+void Street::pay_rent(Player *guest, Property* tomter[], int dice, bool full_pay_factor){
 	int double_pay_factor = 1;
 	int util_factor = 4; //util is special for electric company and water works
 	int util_factor_full = 10;
 	bool util_full_factor = false;
 
 	if(!mortaged){
-		if(houses == 0 && own_zone(tomter) && group != 1){//grupp 1 = järnväg
+		if(houses == 0 && own_zone(tomter) && group != 1 || full_pay_factor){//grupp 1 = järnväg
 			double_pay_factor = 2;
 			if(pos_ruta == 12 || pos_ruta == 28)
 				util_full_factor = true;

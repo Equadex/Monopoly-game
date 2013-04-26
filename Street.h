@@ -47,7 +47,7 @@ public:
 	}
 	void mortage_street(bool mortage_in, Property **tomter, int &tot_free_ant_houses, int &tot_free_ant_hotels);
 	void draw_status();
-	void pay_rent(Player *guest, Property* tomter[], int dice = 0);
+	void pay_rent(Player *guest, Property* tomter[], int dice = 0, bool full_pay_factor = false);
 	bool own_zone(Property* tomter[], Player* Owner_in = 0);
 	bool undeveloped_zone(Property* tomter[]);
 	bool button_pressed(int mouse_pos_x, int mouse_pos_y){
