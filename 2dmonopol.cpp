@@ -8,10 +8,10 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
-#include <allegro5/allegro_native_dialog.h>
+//#include <allegro5/allegro_native_dialog.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
-#include <allegro5/allegro_opengl.h>
+//#include <allegro5/allegro_opengl.h>
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
 
@@ -230,13 +230,15 @@ int main(int argc, char *argv[]){
 	ALLEGRO_BITMAP *background = NULL;
 
 	if(!al_init()){ //Initierar allegro bibloteket
-		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Allegro" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
+		std::cerr << "Failed to init allegro";
+//al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Allegro" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
 		return (-1);
 	}
 
 	//Tar reda p� sk�rmens storlek och omskalninsf�rh�llanden
 	if(!al_get_monitor_info(0, p_info)){
-		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to get screen info" , NULL, ALLEGRO_MESSAGEBOX_ERROR); 
+		std::cerr << "Failed to get screen info";
+//al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to get screen info" , NULL, ALLEGRO_MESSAGEBOX_ERROR); 
 		return(-1);
 	}
 	window_width = p_info->x2; 
@@ -251,16 +253,18 @@ int main(int argc, char *argv[]){
 	scaleX = (window_width - scaleW) / 2;
 	scaleY = (window_height - scaleH) / 2;
 
-
+	std::cout << "Window_width detected: " << window_width << "\n";
+	std::cout << "Window_height detected: " << window_height << "\n";
 
 	//Skapar och testar display
 	//al_set_new_display_flags(ALLEGRO_WINDOWED);
-	al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
-	if(OpenGL)
-		al_set_new_display_flags(ALLEGRO_OPENGL);
+	//al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
+	//if(OpenGL)
+		//al_set_new_display_flags(ALLEGRO_OPENGL);
 	display = al_create_display(window_width, window_height);
 	if(!display){
-		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Display" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
+		std::cerr << "Failed to create display";
+	//al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Display" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
 		return (-1);
 	}
 
@@ -865,6 +869,8 @@ int main(int argc, char *argv[]){
 				player_changed_recently = false;
 			
 			}
+
+			al_draw_filled_rectangle(mouse_pos_x, mouse_pos_y, mouse_pos_x + 5, mouse_pos_y + 5, al_map_rgb(255, 0, 255));
 			//Skalar om bilden och ritar till backbuffern. Vänder sedan på buffern
 			
 			al_set_target_backbuffer(display);
@@ -927,7 +933,7 @@ void read_Property_data(Property *tomter[]){
 	bool endfile = false;
 	
 	if(!file){  //Kontrollerar att filen �r �ppen
-		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize load Property file config" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
+		//al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize load Property file config" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
 		exit(EXIT_FAILURE);
 	}
 
@@ -1043,7 +1049,7 @@ void read_Button_data(Button* buttons[]) {
 	bool endfile = false;
 
 	if(!file){  //Kontrollerar att filen �r �ppen
-		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize load Property file config" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
+		//al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize load Property file config" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
 		exit(EXIT_FAILURE);
 	}
 
@@ -1081,7 +1087,7 @@ void read_Status_box_data(Property** streets){
 	const int displacement_y = 36;
 
 	if(!file){  //Kontrollerar att filen �r �ppen
-		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Status_box file config" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
+		//al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Status_box file config" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
 		exit(EXIT_FAILURE);
 	}
 
@@ -1151,7 +1157,7 @@ void read_card_data(Card *cards[]){
 	bool endfile = false;
 	
 	if(!file){  //Kontrollerar att filen �r �ppen
-		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize load Cards file config" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
+		//al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize load Cards file config" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
 		exit(EXIT_FAILURE);
 	}
 
@@ -1356,7 +1362,7 @@ bool roll_dices(int &dice_1, int &dice_2, Sprite *dice_sprite_0,Sprite *dice_spr
 }
 
 void show_error_message(char* message){
-	al_show_native_message_box(NULL, "ERROR", "ERROR", message, NULL, ALLEGRO_MESSAGEBOX_ERROR);
+	//al_show_native_message_box(NULL, "ERROR", "ERROR", message, NULL, ALLEGRO_MESSAGEBOX_ERROR);
 }
 
 int get_player_total_assets(Property** tomter, Player* player_in){
