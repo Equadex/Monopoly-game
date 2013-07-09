@@ -210,6 +210,7 @@ int main(int argc, char *argv[]){
 
 	//Allegro Bitmaps
 
+
 	ALLEGRO_BITMAP *buffer = NULL;
 	ALLEGRO_BITMAP *spelplan = NULL;
 	ALLEGRO_BITMAP *spelbrade = NULL;
@@ -230,17 +231,17 @@ int main(int argc, char *argv[]){
 	ALLEGRO_BITMAP *background = NULL;
 
 	if(!al_init()){ //Initierar allegro bibloteket
-		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Allegro" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
+		show_error_message("Failed to initilize Allegro");
 		return (-1);
 	}
 
 	//Tar reda p� sk�rmens storlek och omskalninsf�rh�llanden
 	if(!al_get_monitor_info(0, p_info)){
-		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to get screen info" , NULL, ALLEGRO_MESSAGEBOX_ERROR); 
+		show_error_message("Failed to get screen info");
 		return(-1);
 	}
 	window_width = p_info->x2; 
-	window_height = p_info->y2;
+	window_height = p_info->y2 - 40;
 
 	sx = window_width / (double)width;
 	sy = window_height / (double)height;
@@ -255,12 +256,12 @@ int main(int argc, char *argv[]){
 
 	//Skapar och testar display
 	//al_set_new_display_flags(ALLEGRO_WINDOWED);
-	al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
+	//al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
 	if(OpenGL)
 		al_set_new_display_flags(ALLEGRO_OPENGL);
 	display = al_create_display(window_width, window_height);
 	if(!display){
-		al_show_native_message_box(NULL, "ERROR", "ERROR", "Failed to initilize Display" , NULL, ALLEGRO_MESSAGEBOX_ERROR);
+		show_error_message("Failed to initilize Display");
 		return (-1);
 	}
 
@@ -304,6 +305,7 @@ int main(int argc, char *argv[]){
 	al_attach_sample_instance_to_mixer(alert_instance, al_get_default_mixer());
 
 	//Laddar bitmaps
+
 	spelplan = al_load_bitmap("spelplan.bmp");
 	spelbrade = al_load_bitmap("monopoly.jpg");
 	dice = al_load_bitmap("dice_sprite.bmp");
@@ -1276,18 +1278,20 @@ void do_action(Chance *card_pile, int id_card, Player* c_player,Player** players
 			}
 			break;
 		case 7:
-			{int houses_to_pay = 0, hotels_to_pay = 0;
-			for(int i = 0; i < ant_rutor; i++){ //Finds out how many hotels and houses a player has
-				if(tomter[i]->get_typ() == TOMT && tomter[i]->get_Owner() == c_player){
-					if(((Street*)tomter[i])->get_ant_houses() == max_houses)
-						hotels_to_pay++;
-					else if(((Street*)tomter[i])->get_ant_houses() < max_houses - 1 && ((Street*)tomter[i])->get_ant_houses() > 0)
-						houses_to_pay += ((Street*)tomter[i])->get_ant_houses();
+			{
+				int houses_to_pay = 0, hotels_to_pay = 0;
+				for(int i = 0; i < ant_rutor; i++){ //Finds out how many hotels and houses a player has
+					if(tomter[i]->get_typ() == TOMT && tomter[i]->get_Owner() == c_player){
+						if(((Street*)tomter[i])->get_ant_houses() == max_houses)
+							hotels_to_pay++;
+						else if(((Street*)tomter[i])->get_ant_houses() < max_houses - 1 && ((Street*)tomter[i])->get_ant_houses() > 0)
+							houses_to_pay += ((Street*)tomter[i])->get_ant_houses();
+					}
 				}
-			}
 			if(!(c_player->pay(houses_to_pay * action_sum_1 + hotels_to_pay * action_sum_2)))
 				c_player->defeated(0, houses_to_pay * action_sum_1 + hotels_to_pay * action_sum_2);
-			break;}
+			break;
+			}
 		case 8:
 			prison->send_to_prison(c_player);
 			c_player->update_Player(tomter, players, n_players);
